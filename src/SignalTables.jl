@@ -4,6 +4,7 @@ const path = dirname(dirname(@__FILE__))
 
 using  OrderedCollections
 using  Unitful
+using  Test
 import DataFrames
 #import Measurements
 #import MonteCarloMeasurements
@@ -21,9 +22,11 @@ export showInfo
 
 
 include("AbstractSignalTableInterface.jl")
+include("AbstractLinePlotInterface.jl")
 include("SignalTable.jl")
 include("SignalTableFunctions.jl")
-
+include("PlotPackageDefinition.jl")
+ 
 #include("SilentNoPlot.jl")
 #include("UserFunctions.jl")
 #include("OverloadedMethods.jl")

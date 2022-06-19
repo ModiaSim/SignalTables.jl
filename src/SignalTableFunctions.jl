@@ -31,13 +31,75 @@ end
 
 
 """
+    getValues(signalTable, name)
+    
+Returns the *values* of a [`Var`](@ref) signal name from signalTable.
+"""
+getValues(signalTable, name::String) = getSignal(signalTable, name)[:values]
+
+
+"""
+    getValue(signalTable, name)
+    
+Returns the *value* of a [`Par`](@ref) signal name from signalTable.
+"""
+getValue( signalTable, name::String) = getSignal(signalTable, name)[:value]
+
+
+"""
+    getValuesWithUnit(signalTable, name)
+    
+Returns the *values* of a [`Var`](@ref) signal name from signalTable including its unit.
+"""
+getValuesWithUnit(signalTable, name::String) = begin
+    sig = getSignal(signalTable, name)
+    sigUnit = get(sig, :unit, "") 
+    sigVal  = sig[:values]
+    if typeof(sigUnit) <: AbstractArray
+        error("getValuesWithUnit(signalTable, $name) is not yet supported for unit arrays (= $sigUnit)")
+    elseif sigUnit != ""
+        sigVal = sigVal*uparse(sigUnit)
+    end
+end
+
+
+"""
+    getValueWithUnit(signalTable, name)
+    
+Returns the *value* of a [`Par`](@ref) signal name from signalTable including its unit.
+"""
+getValueWithUnit(signalTable, name::String) = begin
+    sig = getSignal(signalTable, name)
+    sigUnit = get(sig, :unit, "") 
+    sigVal  = sig[:value]
+    if typeof(sigUnit) <: AbstractArray
+        error("getValueWithUnit(signalTable, $name) is not yet supported for unit arrays (= $sigUnit)")
+    elseif sigUnit != ""
+        sigVal = sigVal*uparse(sigUnit)
+    end
+end
+
+
+const doNotShowAttributes = [:_class, :eltype, :type, :size, :unit, :values, :value]
+
+# Base Type of a data structure
+SignalBaseType(::Type{T}) where {T}                 = nothing
+SignalBaseType(::Type{T}) where {T<:Number}         = T
+SignalBaseType(::Type{T}) where {T<:AbstractString} = T
+SignalBaseType(::Type{Array{T,N}})      where {T,N} = T
+
+# Base Type of an eltype
+SignalElementBaseType(::Type{T})                where {T} = T
+SignalElementBaseType(::Type{Union{Missing,T}}) where {T} = T
+
+"""
     showInfo([io::IO=stdout,] signalTable;
              sorted=false, Var=true, Par=true, attributes=true)
 
-Writes info about signalTable to the output stream `io`.
+Writes info about a signal table to the output stream.
 
-The independent signal is always printed first. Otherwise, ordering is according
-to signalTable (if sorted=false) or signals are sorted.
+The independent signal is always printed first. 
+Otherwise, ordering is according to `sorted`.
 
 The other keyword arguments define what information shall be printed.
 
@@ -45,29 +107,48 @@ The other keyword arguments define what information shall be printed.
 
 ```julia
 using SignalTables
+using Unitful
 
-include("$(SignalTables.path)/test/signalTables.jl")
+t = 0.0:0.1:0.5
+sigTable = SignalTable(
+  "time"         => Var(values= t, unit="s", variability="independent"),
+  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"), 
+  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
+  "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
+  "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
+                                info="Reference angle and speed"),  
+  "wm"           => Var(alias = "motor.w"),
+  "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
+                                 variability="clock"),  
+  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
+                                 variability="trigger"), 
+  "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
+                                variability="clocked", clock="ref.clock"),
+  "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
+  "motor.data"   => Par(value = "resources/motorMap.json"),
+  "attributes"   => Par(info  = "This is a test signal table")
+)
 
-signalInfo(sigTable1, attributes=true)
+signalInfo(sigTable)
 ```
 
 results in the following output
 
 ```julia
-#
-name        unit      size      eltype                  kind   info
-─────────────────────────────────────────────────────────────────────────
-time        s         (208,)    Float64                 Indep.
-load.f      N         (208, 3)  Vector{Float64}         Const.
-load.phi    rad       (208,)    Float64                 Depen.
-load.r_abs  m         (208, 3)  Float64                
-load.w      rad*s^-1  (208,)    Union{Missing,Float64}             
-motor.J     kg*m^2    (208,)    Float64                 Const.
-motor.b               (208,)    Bool                   
-motor.data            (208,)    MotorStruct             Const.
-motor.phi   rad       (208,)    Float64                 
-motor.w_m   rad/s     (208,)    Union{Missing,Float64}         Clocked
-reference             (208,)    String                  Const.
+name          unit          size  basetype kind attributes
+─────────────────────────────────────────────────────────────────────────────────────────
+time          "s"           (6,)  Float64  Var  variability="independent"
+load.r        "m"           (6,3) Float64  Var
+motor.angle   "rad"         (6,)  Float64  Var  state=true
+motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
+motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
+wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
+ref.clock                   (6,)  Bool     Var  variability="clock"
+ref.trigger                 (6,)  Bool     Var  variability="trigger"
+motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"    ()    Float32  Par
+motor.data                        String   Par
+attributes                                 Par  info="This is a test signal table"
 ```
 """
 function showInfo(io::IO, signalTable; 
@@ -93,32 +174,54 @@ function showInfo(io::IO, signalTable;
     end
     
     for name in sigNames
-        sigInfo = signalInfo(signalTable, name)
-        kind    = isVar(sigInfo) ? "Var" : "Par"
+        signal = getSignal(signalTable, name, require_values=false)
+        kind   = isVar(signal) ? "Var" : "Par"
 
         if Var && kind == "Var" || Par && kind == "Par"
             if attributes
                 first = true
-                for (key,val) in sigInfo
-                    if !(key == :unit || key == :type || key == :size || key == :_class)
-                        if first
-                            first = false
-                        else
-                            print(iostr, ", ")
-                        end
-                        print(iostr, key, "=")
-                        show(iostr, val)
+                for (key,val) in signal
+                    if key in doNotShowAttributes
+                        continue
                     end
+                    
+                    if first
+                        first = false
+                    else
+                        print(iostr, ", ")
+                    end
+                    print(iostr, key, "=")
+                    show(iostr, val)
                 end
                 attr = String(take!(iostr))
             end
-            independent = get(sigInfo, :independent, false)
-            valType     = get(sigInfo, :type, nothing) 
-            valElType   = isnothing(valType) ? "" : string(eltype(valType))
-            valSize     = string( get(sigInfo, :size, "") )
+            independent = get(signal, :variability, "continuous") == "independent"
+            valElType   = get(signal, :eltype, "")
+            if valElType == ""
+                valElType = get(signal, :type, "")
+                if valElType != ""
+                    valElType = SignalBaseType(valElType)
+                    if !isnothing(valElType)
+                        valElType = string( valElType )
+                    end
+                end
+            else
+                valElType = string( SignalElementBaseType(valElType) )
+            end
+            valSize = string( get(signal, :size, "") )
+            valUnit = get(signal, :unit, "")
+            if typeof(valUnit) <: AbstractString
+                if valUnit != ""
+                    valUnit = "\"$valUnit\""
+                end
+            else
+                show(iostr, valUnit)
+                valUnit = String(take!(iostr))
+            end
+            
             if independent
                 pushfirst!(name2  , name)
-                pushfirst!(unit2  , get(sigInfo, :unit, ""))
+                pushfirst!(unit2  , valUnit)
                 pushfirst!(size2  , valSize)
                 pushfirst!(eltype2, valElType)
                 pushfirst!(kind2  , kind)
@@ -127,7 +230,7 @@ function showInfo(io::IO, signalTable;
                 end
             else
                 push!(name2  , name)
-                push!(unit2  , get(sigInfo, :unit, ""))
+                push!(unit2  , valUnit)
                 push!(size2  , valSize)
                 push!(eltype2, valElType)
                 push!(kind2  , kind)
@@ -139,9 +242,9 @@ function showInfo(io::IO, signalTable;
     end
     
     if attributes
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltype=eltype2, kind=kind2, attributes=attr2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=eltype2, kind=kind2, attributes=attr2)
     else
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltype=eltype2, kind=kind2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=eltype2, kind=kind2)
     end
 
     show(io, infoTable, show_row_number=false, summary=false, allcols=true, eltypes=false, truncate=50) # rowlabel=Symbol("#")
@@ -151,19 +254,26 @@ end
 showInfo(signalTable; kwargs...) = showInfo(stdout, signalTable; kwargs...)
                   
 
-#=
 const TypesForPlotting = [Float64, Float32, Int]
 
 nameWithUnit(name::String, unit::String) = unit == "" ? name : string(name, " [", unit, "]")
 
-
+#=
 """
-    (sig, legend, kind) = signalValuesForLinePlots(signalTable, name)
+    (linePlotSignal, legend, kind) = getSignalForLinePlots(signalTable, name)
+                    linePlotSignal = getSignalForLinePlots(signal)
 
-Given the signalTable data structure `signalTable` and a variable `name::AbstractString` with
+Transforms signal data and returns it for use in line plots (e.g. Vector/Matrix with NaN). 
+
+Returns signal data in a form as needed for a line plot. 
+
+ (e.g. signal values/value transformed      |
+|                                 | to `Vector` or `Matrix` with potentially *NaN* but *no missing* values + interpolation type + legend).
+
+Given the signal table `signalTable` and a variable `name::String` with
 or without array range indices (for example `name = "a.b.c[2,3:5]"`) 
 return the values `sig::Union{AbstractVector,AbstractMatrix}` of `name` without units prepared for a plot package,
-including `legend::Vector{String}` and `kind::ModiaResult.VariableKind`.
+including `legend::Vector{String}` and `kind::SignalTables.VariableKind`.
 
 If `name` is not valid, or no signal values are available, or the signal values
 are not suited for plotting (and cannot be converted to Float64), a warning message
@@ -184,9 +294,9 @@ is printed and `(nothing, nothing, nothing)` is returned.
   For example, if variable `"a.b.c"` has unit `m/s`, then `sigName = "a.b.c[2,3:5]"` signalTables in
   `legend = ["a.b.c[2,3] [m/s]", "a.b.c[2,3] [m/s]", "a.b.c[2,5] [m/s]"]`.
   
-- `kind::`[`ModiaResult.VariableKind`](@ref): The variable kind (independent, constant, continuous, ...).
+- `kind::`[`SignalTables.VariableKind`](@ref): The variable kind (independent, constant, continuous, ...).
 """
-function signalValuesForLinePlots(signalTable, name::String)
+function getForLinePlots(signalTable, name::String)
     sigPresent = false
     negate     = false
     
@@ -194,7 +304,7 @@ function signalValuesForLinePlots(signalTable, name::String)
         # name is a signal name without range  
         sigInfo = SignalInfo(signalTable,name)  
         sigKind = sigInfo.kind
-        if sigKind == ModiaResult.Eliminated
+        if sigKind == SignalTables.Eliminated
             sigInfo = SignalInfo(signalTable,sigInfo.aliasName)
             negate  = sigInfo.aliasNegate
             sigKind = sigInfo.kind            
@@ -231,7 +341,7 @@ function signalValuesForLinePlots(signalTable, name::String)
                 if hasSignal(signalTable, arrayName)
                     sigInfo = SignalInfo(signalTable,arrayName)
                     sigKind = sigInfo.kind
-                    if sigKind == ModiaResult.Eliminated
+                    if sigKind == SignalTables.Eliminated
                         sigInfo = SignalInfo(signalTable,sigInfo.aliasName)
                         negate  = sigInfo.aliasNegate
                         sigKind = sigInfo.kind
@@ -388,15 +498,5 @@ Return `heading` if no empty string. Otherwise, return `defaultHeading(signalTab
 getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : defaultHeading(signalTable)
 
 
-"""
-    prepend!(prefix, signalLegend)
 
-Add `prefix` string in front of every element of the `signalLegend` string-Vector.
-"""
-function prepend!(prefix::AbstractString, signalLegend::Vector{AbstractString})
-   for i in eachindex(signalLegend)
-      signalLegend[i] = prefix*signalLegend[i]
-   end
-   return signalLegend
-end
 =#

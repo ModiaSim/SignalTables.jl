@@ -4,21 +4,26 @@
 CurrentModule = SignalTables
 ```
 
-Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl) defines
-an [Abstract Signal Table Interface](@ref) and an [Abstract Line Plot Interface](@ref)  
-together with concrete implementations of these interfaces. 
-Furthermore, useful functionality is provided on top of these interfaces (see [Functions](@ref)).
+Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl)
+provides types and functions for *signals* that
+are represented by *multi-dimensional* arrays and are collected in *tables*.
+Typically, simulation results, reference signals, and table-based input signals
+can be represented by a *signal table*. More specifically:
 
 A *signal table* is a (dictionary-like) type that supports the [Abstract Signal Table Interface](@ref) 
-for example [`SignalTable`](@ref). It defines a set of *signals* in tabular format. A *signal* is identified by its *name::String*
-and is a representation of the values of a variable ``v`` as a (partial) function ``v(t)``
-of the values of independent variable ``t = v_{independent}``. 
-The values of ``v`` are represented by an array where
-`v.values[i,j,k,...]` is element `v[j,k,...]` of variable ``v`` at ``t_i``, i.e. at `t.values[i]`.
-If an element is *not defined* at ``t_ì``, it has a value of *missing*.
+for example [`SignalTable`](@ref). It defines a set of *signals* in tabular format. A *signal* is identified 
+by its String *name* and is a representation of the values of a variable ``v`` as a (partial) function ``v(t)``
+of the independent variable ``t = v_{independent}``. 
 
-Example (*Par(..)* are parameters, *motor.w_ref* is a continuous variable,
-*motor.w_m* is a clocked variable, *load.r* is a continuous vector variable):
+The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*) 
+and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of 
+variable ``v`` at ``t_i``. If an element of ``v`` is *not defined* at 
+``t_ì``, it has a value of *missing*.\
+If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in dictionary [`Par`](@ref) 
+(= abbreviation for *Parameter*) and is represented by any Julia type where
+`v.value` is the value of ``v_{const}`` at all elements ``t_i``.
+
+Example:
 
 ```julia
 using SignalTables
@@ -26,36 +31,51 @@ using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", independent=true),
-  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)]),  
-  "motor.angle"  => Var(values= sin.(t), unit="rad"),
-  "motor.w_ref"  => Var(values= cos.(t), unit="rad/s", info="Reference"),                       
-  "motor.w_m"    => Var(values= Clocked(0.9*cos.(t),factor=2), unit="rad/s", info="Measured"),
-  "motor.inertia"=> Par(value = 0.02, unit="kg*m/s^2"),
+  "time"         => Var(values= t, unit="s", variability="independent"),
+  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"), 
+  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
+  "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
+  "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
+                                info="Reference angle and speed"),  
+  "wm"           => Var(alias = "motor.w"),
+  "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
+                                 variability="clock"),  
+  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
+                                 variability="trigger"), 
+  "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
+                                variability="clocked", clock="ref.clock"),
+
+  "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
+  "motor.data"   => Par(value = "resources/motorMap.json"),
   "attributes"   => Par(info  = "This is a test signal table")
 )
-                      
-# Abstract Signal Tables Interface
-w_m_sig = getSignal(        sigTable, "motor.w_ref")   # = Var(values=..., unit=..., info=...)
-w_ref   = getValuesWithUnit(sigTable, "motor.w_ref")   # = [0.0, 0.0998, 0.1986, ...]u"rad/s"
-w_m     = getValues(        sigTable, "motor.w_m"  )   # = [0.9, missing, missing, 0.859, ...]
-inertia = getValueWithUnit( sigTable, "motor.inertia") # = 0.02u"kg*m/s^2"
+
+phi_m_sig = getSignal(        sigTable, "motor.angle")   # = Var(values=..., unit=..., ...)
+phi_m     = getValuesWithUnit(sigTable, "motor.angle")   # = [0.0, 0.0998, 0.1986, ...]u"rad"
+w_c       = getValues(        sigTable, "motor.w_c"  )   # = [0.8, missing, missing, 1.5, ...]
+inertia   = getValueWithUnit( sigTable, "motor.inertia") # = 0.02u"kg*m/s^2"
+getValues(sigTable, "motor.w") === getValues(sigTable, "wm")
 
 showInfo(sigTable)
 ```
 
-results in the following output:
+The last command generates the following output:
 
 ```julia
- name           unit       size  eltype   kind   attributes
-───────────────────────────────────────────────────────────────────
- time           s          (6,)  Float64  Var    independent=true
- load.r                    (6,3) Float64  Var
- motor.angle    rad        (6,)  Float64  Var
- motor.w_ref    rad*s^-1   (6,)  Float64  Var    info="Reference"
- motor.w_m      rad*s^-1   (6,)  Float64  Var    info="Measured"
- motor.inertia  kg*m/s^2   ()    Float64  Par
- attributes                               Par    info="This is a.."
+name          unit          size  basetype kind attributes
+─────────────────────────────────────────────────────────────────────────────────────────
+time          "s"           (6,)  Float64  Var  variability="independent"
+load.r        "m"           (6,3) Float64  Var
+motor.angle   "rad"         (6,)  Float64  Var  state=true
+motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
+motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
+wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
+ref.clock                   (6,)  Bool     Var  variability="clock"
+ref.trigger                 (6,)  Bool     Var  variability="trigger"
+motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"    ()    Float32  Par
+motor.data                        String   Par
+attributes                                 Par  info="This is a test signal table"
 ```
 
 The commands
@@ -64,7 +84,7 @@ The commands
 # Define Plot Package in startup.jl, e.g. `ENV["SignalTablesPlotPackage"] = "PyPlot"`
 # Or in Julia session, e.g. `usePlotPackage("PyPlot")`
 
-@usingModiaPlot                                        # activate plot package
+@usingPlotPackage                                      # activate plot package
 plot(sigTable, [("sigA", "sigB", "sigC"), "r[2:3]"])   # generate line plots
 ```
 
@@ -98,10 +118,10 @@ in order that no plot package needs to be loaded during the tests:
 
 ## Installation
 
-All packages are registered and are installed with:
+The packages are not yet registered. Once this is done, installation is performed with
 
 ```julia
-julia> ]add ModiaResult
+julia> ]add SignalTables
         add ModiaPlot_PyPlot        # if plotting with PyPlot desired
         add ModiaPlot_GLMakie       # if plotting with GLMakie desired
         add ModiaPlot_WGLMakie      # if plotting with WGLMakie desired
@@ -109,7 +129,7 @@ julia> ]add ModiaResult
 ```
 
 If you have trouble installing `ModiaPlot_PyPlot`, see 
-[Installation of PyPlot.jl](https://modiasim.github.io/ModiaResult.jl/stable/index.html#Installation-of-PyPlot.jl)
+[Installation of PyPlot.jl](https://modiasim.github.io/SignalTables.jl/stable/index.html#Installation-of-PyPlot.jl)
 
 
 ## Installation of PyPlot.jl
@@ -162,7 +182,7 @@ are different to the Python 2.x version.
 
 **Non-backwards compatible changes**
 
-- A result data structure has only one time axis (previously, a result datastructure could have several time axes).
+- A signalTable data structure has only one time axis (previously, a signalTable datastructure could have several time axes).
   Therefore, function `hasOneTimeSignal` makes no sense anymore and is removed.
   
 
@@ -175,8 +195,8 @@ are different to the Python 2.x version.
 
 ### Version 0.4.2
 
-- `showResultInfo(..)` and `resultInfo(..)` improved
-  (signals with one value defined with ModiaResult.OneValueVector are specially marked,
+- `showResultInfo(..)` and `signalTableInfo(..)` improved
+  (signals with one value defined with SignalTables.OneValueVector are specially marked,
   for example parameters).
 
 
@@ -194,7 +214,7 @@ are different to the Python 2.x version.
 
 ### Version 0.3.10
 
-- Packages used in test models, prefixed with `ModiaResult.` to avoid missing package errors.
+- Packages used in test models, prefixed with `SignalTables.` to avoid missing package errors.
 
 
 ### Version 0.3.9
@@ -235,7 +255,7 @@ are different to the Python 2.x version.
 
 ### Version 0.3.3
 
-- ModiaResult/test/Project.toml: DataStructures replaced by OrderedCollections.
+- SignalTables/test/Project.toml: DataStructures replaced by OrderedCollections.
 
 
 ### Version 0.3.2
@@ -246,7 +266,7 @@ are different to the Python 2.x version.
 
 ### Version 0.3.1
 
-- Two new views on results added (SignalView and FlattenedSignalView).
+- Two new views on signalTables added (SignalView and FlattenedSignalView).
 
 
 ### Version 0.3
@@ -272,7 +292,7 @@ are different to the Python 2.x version.
 
 - Abstract Interface slightly redesigned (therefore 0.2.0 is not backwards compatible to 0.1.0).
 
-- Modules NoPlot and SilentNoPlot added as sub-modules of ModiaResult. These modules are
+- Modules NoPlot and SilentNoPlot added as sub-modules of SignalTables. These modules are
   activated if plot package "NoPlot" or "SilentNoPlot" are selected.
 
 - Content of directory src_plot moved into src. Afterwards src_plot was removed.
@@ -282,7 +302,7 @@ are different to the Python 2.x version.
 
 ### Version 0.1.0
 
-- Initial version (based on the result plotting developed for [ModiaMath](https://github.com/ModiaSim/ModiaMath.jl)).
+- Initial version (based on the signalTable plotting developed for [ModiaMath](https://github.com/ModiaSim/ModiaMath.jl)).
 
 ## Main developer
 

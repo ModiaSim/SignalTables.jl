@@ -40,7 +40,7 @@ inertia = getValueWithUnit( sigTable, "motor.inertia") # = 0.02u"kg*m/s^2"
 showInfo(sigTable)
 ```
 
-results in the following output:
+signalTables in the following output:
 
 ```julia
  name           unit       size  eltype   kind   attributes
@@ -60,7 +60,7 @@ The commands
 # Define Plot Package in startup.jl, e.g. `ENV["SignalTablesPlotPackage"] = "PyPlot"`
 # Or in Julia session, e.g. `usePlotPackage("PyPlot")`
 
-@usingModiaPlot                                        # activate plot package
+@usingPlotPackage                                        # activate plot package
 plot(sigTable, [("sigA", "sigB", "sigC"), "r[2:3]"])   # generate line plots
 ```
 
