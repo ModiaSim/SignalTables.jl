@@ -13,7 +13,7 @@ for example [`SignalTable`](@ref). A *signal* is identified by its string *name*
 a [`Var`](@ref) dictionary with a signal array or a [`Par`](@ref) dictionary with a constant value of
 any type. In both dictionaries, additional attributes can be stored, e.g., units, description text,
 signal variability (continuous, clocked, trigger, ...). A signal array has indices `[i,j,k,...]`
-to hold variable elements `j,k,...` at the i-th value of the independent variable (which is often "time").
+to hold variable elements `[j,k,...]` at the i-th value of the independent signal.
 
 Example:
 
