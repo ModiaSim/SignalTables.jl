@@ -87,7 +87,7 @@ plot(sigTable, [("sigA", "sigB", "sigC"), "r[2:3]"])  # generate line plots
 
 generate the following line plot:
 
-![Line plots of SigTable](../resources/images/sigTable-line-plots.png)
+![Line plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
 
 *Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
 
