@@ -22,7 +22,7 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`getValuesWithUnit`](@ref)     | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)              | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
 | [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
-| [`getSignalForLinePlots`](@ref) | Transforms signal data and returns it for use in line plots (e.g. Matrix with NaN).            |
+| [`getFlattenedSignal`](@ref)    | Returns a copy of a signal where the values or the value are *flattened* and converted for use in line plots or traditional tables. |
 
 
 ```@docs
@@ -36,5 +36,5 @@ getValues
 getValuesWithUnit
 getValue
 getValueWithUnit
-getSignalForLinePlots
+getFlattenedSignal
 ```

@@ -1,6 +1,9 @@
 
 include("SignalTableFunctions/test_SignalTypes.jl")
 include("SignalTableFunctions/test_SignalTable.jl")
+include("SignalTable1.jl")
+include("SignalTable2.jl")
+include("SignalTable3.jl")
 
 include("LinePlots/test_01_OneScalarSignal.jl")
 include("LinePlots/test_02_OneScalarSignalWithUnit.jl")

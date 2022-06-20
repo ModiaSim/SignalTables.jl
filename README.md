@@ -9,23 +9,16 @@ Typically, simulation results, reference signals, and table-based input signals
 can be represented by a *signal table*. More specifically:
 
 A *signal table* is a (dictionary-like) type that supports the [Abstract Signal Table Interface](@ref)
-for example [`SignalTable`](@ref). It defines a set of *signals* in tabular format. A *signal* is identified
-by its String *name* and is a representation of the values of a variable ``v`` as a (partial) function ``v(t)``
-of the independent variable ``t = v_{independent}``.
-
-The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*)
-and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of
-variable ``v`` at ``t_i``. If an element of ``v`` is *not defined* at
-``t_ì``, it has a value of *missing*.\
-If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in dictionary [`Par`](@ref)
-(= abbreviation for *Parameter*) and is represented by any Julia type where
-`v.value` is the value of ``v_{const}`` at all elements ``t_i``.
+for example [`SignalTable`](@ref). A *signal* is identified by its string *name* and is either
+a [`Var`](@ref) dictionary with a signal array or a [`Par`](@ref) dictionary with a constant value of
+any type. In both dictionaries, additional attributes can be stored, e.g., units, description text,
+signal variability (continuous, clocked, trigger, ...). A signal array has indices `[i,j,k,...]`
+to hold variable elements `j,k,...` at the i-th value of the independent variable (which is often "time").
 
 Example:
 
 ```julia
 using SignalTables
-using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(

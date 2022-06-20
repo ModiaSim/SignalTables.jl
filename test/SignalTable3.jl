@@ -1,8 +1,6 @@
-module test_70_MissingValues
-
 using SignalTables
-@usingPlotPackage
 
+println("\n... Constructing signalTable3")
 time1 =  0.0 : 0.1 : 3.0
 time2 =  3.0 : 0.1 : 11.0
 time3 = 11.0 : 0.1 : 15
@@ -32,9 +30,4 @@ sigTable = SignalTable(
     "sigD"   => Var(values=sigD(), unit="rad/s", variability="clocked", info="Motor angular velocity")  
 )
 
-println("\n... test_70_MissingValues:\n")
-showInfo(sigTable)
-
-plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
-
-end
+#showInfo(signalTable3)

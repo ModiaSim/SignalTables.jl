@@ -1,10 +1,8 @@
-module TestSet
-
 using SignalTables
-using SignalTables.Unitful
 
+println("\n... Constructing signalTable1")
 t = 0.0:0.1:0.5
-sigTable1 = SignalTable(
+signalTable1 = SignalTable(
   "time"         => Var(values= t, unit="s", variability="independent"),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
@@ -24,6 +22,5 @@ sigTable1 = SignalTable(
   "attributes"   => Par(info  = "This is a test signal table")
 )
 
-#@show sigTable1
-#show(IOContext(stdout, :compact => true), sigTable1)
-end
+#showInfo(signalTable1)
+#show(IOContext(stdout, :compact => true), signalTable1)

@@ -288,7 +288,7 @@ end
                                          targetInt    = Int,
                                          targetFloat  = Float64)
 
-Returns a copy of a [`Val`](@ref) signal with additional keys :flattenedValues` and `:legend`.
+Returns a copy of a signal where the values or the value are *flattened* and converted (e.g.: missing -> NaN).
 A flattened signal can be, for example, used for traditional plot functions or for traditional tables.
 
 Flattened values is a reshape of values into a vector or a matrix with optionally the following transformations:
