@@ -17,11 +17,13 @@ export Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsP
 export independentSignalName, signalNames, getSignal, hasSignal
 
 # Signal table functions
-export getValues, getValue, getValuesWithUnit, getValueWithUnit, showInfo
+export getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
 
 # SignalTable
 export SignalTable
 
+# Plot Package
+export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPackage
 
 include("Signals.jl")
 include("AbstractSignalTableInterface.jl")

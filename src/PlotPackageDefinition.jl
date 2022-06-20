@@ -22,7 +22,7 @@ macro usingPlotPackage()
             expr = :( using SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
             return esc( expr )
         else
-            PlotPackage = Symbol("PlotPackage_" * PlotPackage)
+            PlotPackage = Symbol("SignalTablesInterface_" * PlotPackage)
             expr = :(using $PlotPackage)
             println("$expr")
             return esc( :(using $PlotPackage) )
@@ -83,7 +83,7 @@ function usePlotPackage(plotPackage::String; pushPreviousOnStack=true)::Bool
             ENV["SignalTablesPlotPackage"] = "SilentNoPlot"
         end
     else
-        plotPackageName = "PlotPackage_" * plotPackage
+        plotPackageName = "SignalTablesInterface_" * plotPackage
         if plotPackage in AvailablePlotPackages
             # Check that plotPackage is defined in current environment
             if isinstalled(plotPackageName)

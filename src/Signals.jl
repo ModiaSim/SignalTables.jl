@@ -174,7 +174,7 @@ Par(; kwargs...) = newSignal(kwargs, :Par)
 
 Returns true, if signal is a [`Var`](@ref).
 """
-isVar(signal)    = get(signal, :_class, :_) == :Var
+isVar(signal) = typeof(signal) <: SymbolDictType && get(signal, :_class, :_) == :Var
 
 
 """
@@ -182,7 +182,7 @@ isVar(signal)    = get(signal, :_class, :_) == :Var
 
 Returns true, if signal is a [`Par`](@ref).
 """
-isPar(signal)    = get(signal, :_class, :_) == :Par
+isPar(signal) = typeof(signal) <: SymbolDictType && get(signal, :_class, :_) == :Par
 
 
 """
@@ -190,10 +190,7 @@ isPar(signal)    = get(signal, :_class, :_) == :Par
 
 Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).
 """
-isSignal(signal) = begin
-    _class = get(signal, :_class, :_)
-    _class == :Var || _class == :Par
-end
+isSignal(signal) = isVar(signal) || isPar(signal)
 
 
 const doNotShow = [:_class, :basetype, :size]

@@ -107,20 +107,27 @@ struct SignalTable <: AbstractDict{String,Any}
         len = 0
         for (key, sig) in args
             if !isSignal(sig)
-                error("SignalTable($key=signal, ...): The added signal is not a Var(..) or a Par(..)!")
+                error("SignalTable(\"$key\" => signal, ...): The added signal is neither a Var(..) nor a Par(..)\ntypeof(signal) = $(typeof(sig))!")
             end
             if first
                 first = false
-                if sig[:variability] != "independent"
-                    error("SignalTable(\"$key\"=>signal, ...): The first added signal has not variability=\"independent\", which is required!")
+                if haskey(sig, :variability)
+                    variability = sig[:variability]
+                    if variability != "independent"
+                        error("SignalTable(\"$key\" => signal, ...): The first added signal has variability = \"$variability\"\nbut must have variability=\"independent\"!")
+                    end
+                else
+                    sig[:variability] = "independent"
+                    @info "SignalTable(\"$key\" => signal, ...): The first added signal had no variability defined.\nSetting it to variability=\"independent\"!"
+                end
+                if !haskey(sig, :values)
+                    error("SignalTable(\"$key\" => signal, ...): The first added signal has no `values=...` defined, which is required!")
                 elseif !haskey(sig, :values)
-                    error("SignalTable(\"$key\"=>signal, ...): The first added signal has no `values=...` defined, which is required!")
-                elseif !haskey(sig, :values)
-                    error("SignalTable(\"$key\"=>signal, ...): The first added signal has no `signal[:values]=...` defined, which is required!")
+                    error("SignalTable(\"$key\" => signal, ...): The first added signal has no `signal[:values]=...` defined, which is required!")
                 end
                 sig_values = sig[:values]
                 if !(typeof(sig_values) <: AbstractVector)
-                     error("SignalTable(\"$key\"=>signal, ...): typeof(signal[:values]) = $(typeof(sig_values))\nbut must be `AbstractVector` since first added signal must be independent variable!")
+                     error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values))\nbut must be `AbstractVector` since first added signal must be independent variable!")
                 end
                 len = length(sig_values)
             else
@@ -128,23 +135,23 @@ struct SignalTable <: AbstractDict{String,Any}
                     if haskey(sig, :values)
                         sig_values = sig[:values]
                         if !(typeof(sig_values) <: AbstractArray)
-                            error("SignalTable(\"$key\"=>signal, ...): typeof(signal[:values]) = $(typeof(sig_values)) but must be an `AbstractArray`!")
+                            error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values)) but must be an `AbstractArray`!")
                         elseif size(sig_values,1) != len
-                            error("SignalTable(\"$key\"=>signal, ...): size(signal[:values],1) = $(size(sig_values,1)) but must be $len (= length of independent signal values)!")
+                            error("SignalTable(\"$key\" => signal, ...): size(signal[:values],1) = $(size(sig_values,1)) but must be $len (= length of independent signal values)!")
                         end
                     end
                     if haskey(sig, :integral)
                         sigIntegral = sig[:integral]
                         if !haskey(dict, sigIntegral)
-                            error("SignalTable(\"$key\"=>Var(integral=\"$sigIntegral\"...): referenced signal does not exist")
+                            error("SignalTable(\"$key\" => Var(integral=\"$sigIntegral\"...): referenced signal does not exist")
                         end
                     end
                     if haskey(sig, :alias)
                         aliasName = sig[:alias]
                         if haskey(sig,:values)
-                            error("SignalTable(\"$key\"=>Var(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
+                            error("SignalTable(\"$key\" => Var(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
                         elseif !haskey(dict, aliasName)
-                            error("SignalTable(\"$key\"=>Var(alias=\"$aliasName\"...): referenced signal does not exist.")
+                            error("SignalTable(\"$key\" => Var(alias=\"$aliasName\"...): referenced signal does not exist.")
                         end
                         sigAlias = dict[aliasName]
                         sig = merge(sigAlias,sig)
@@ -153,9 +160,9 @@ struct SignalTable <: AbstractDict{String,Any}
                     if haskey(sig, :alias)
                         aliasName = sig[:alias]
                         if haskey(sig,:value)
-                            error("SignalTable(\"$key\"=>Par(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
+                            error("SignalTable(\"$key\" => Par(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
                         elseif !haskey(dict, aliasName)
-                            error("SignalTable(\"$key\"=>Par(alias=\"$aliasName\"...): referenced signal does not exist.")
+                            error("SignalTable(\"$key\" => Par(alias=\"$aliasName\"...): referenced signal does not exist.")
                         end
                         sigAlias = dict[:aliasName]
                         sig = merge(sigAlias,sig)
@@ -211,4 +218,15 @@ end
 independentSignalName(sigTable::SignalTable) = first(sigTable).first
 signalNames(sigTable::SignalTable) = String.(keys(sigTable))
 getSignal(sigTable::SignalTable, name::String; require_values=true) = sigTable[name]
+hasSignal(sigTable::SignalTable, name::String) = haskey(sigTable, name)
+Base.size(sigTable::SignalTable)   = (sigTable.len, length(sigTable))
+Base.size(sigTable::SignalTable,i) = i==1 ? sigTable.len : (i == 2 ? length(sigTable) : error("size(sigTable,i): i=$i, but must be 1 or 2."))
 
+function defaultHeading(sigTable::SignalTable)::String 
+    attr = get(sigTable, "attributes", "")        
+    if attr == ""
+        return ""
+    else
+        return get(attr, :plotHeading, "")
+    end
+end

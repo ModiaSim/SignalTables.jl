@@ -1,0 +1,41 @@
+module test_70_MissingValues
+
+using SignalTables
+@usingPlotPackage
+
+time1 =  0.0 : 0.1 : 3.0
+time2 =  3.0 : 0.1 : 11.0
+time3 = 11.0 : 0.1 : 15
+t     = vcat(time1,time2,time3)
+sigA  = 0.5*sin.(t)
+sigB  = 1.1*sin.(t)     
+sigC  = vcat(fill(missing,length(time1)), cos.(time2), fill(missing,length(time3)))
+
+function sigD()
+    global t, time1, time2
+    sigD = Vector{Union{Missing,Float64}}(undef, length(t))
+    
+    j = 1
+    for i = length(time1)+1:length(time1)+length(time2)
+        if j == 1 
+            sigD[i] = 0.5*cos(t[i])
+        end
+        j = j > 3 ? 1 : j+1
+    end
+    return sigD
+end
+
+sigTable = SignalTable(
+    "time" => Var(values=t, unit="s"), 
+    "sigA" => Var(values=sigA, unit="m"),
+    "sigB" => Var(values=sigB, unit="m/s"),
+    "sigC" => Var(values=sigC, unit="N*m"),
+    "sigD" => Var(values=sigD(), unit="rad/s", variability="clocked", info="Motor angular velocity")  
+)
+
+println("\n... test_70_MissingValues:\n")
+showInfo(sigTable)
+
+plot(sigTable, [("sigA", "sigC"), ("sigB", "sigD")])
+
+end

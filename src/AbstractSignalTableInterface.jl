@@ -51,3 +51,5 @@ function hasSignal(signalTable, name::String)::Bool
     end
     return hasName
 end
+
+defaultHeading(signalTable)::String = ""

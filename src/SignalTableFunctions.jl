@@ -37,7 +37,6 @@ Returns the *values* of a [`Var`](@ref) signal name from signalTable.
 """
 getValues(signalTable, name::String) = getSignal(signalTable, name)[:values]
 
-
 """
     getValue(signalTable, name)
 
@@ -167,7 +166,6 @@ function showInfo(io::IO, signalTable;
     for name in sigNames
         signal = getSignal(signalTable, name, require_values=false)
         kind   = isVar(signal) ? "Var" : "Par"
-
         if Var && kind == "Var" || Par && kind == "Par"
             if attributes
                 first = true
@@ -239,7 +237,51 @@ const TypesForPlotting = [Float64, Float32, Int]
 nameWithUnit(name::String, unit::String) = unit == "" ? name : string(name, " [", unit, "]")
 
 
-#=
+#TargetElType(::Type{T})                                           where {T}     = T
+#TargetElType(::Type{Measurements.Measurement{T}})                 where {T}     = T
+#TargetElType(::Type{MonteCarloMeasurements.Particles{T,N}})       where {T,N}   = T
+#TargetElType(::Type{MonteCarloMeasurements.StaticParticles{T,N}}) where {T,N}   = T
+
+function basetypeWithMeasurements(obj)
+    btype = basetype(obj)
+    #if typeof(obj) <: AbstractArray
+    #    obj1 = obj[1]
+    #    if eltype(obj1) <: Real
+    #        if hasfield(obj1, :particles)    # MonteCarloMeasurements
+    #            btype = eltype(obj1.particles)
+    #        elseif hasfield(obj1, :val) && hasfield(obj1, :err) # Measurements
+    #            btype = typeof(obj1.val)
+    #        end
+    #    end
+    #end
+    return btype
+end
+
+
+function getValuesFromPar(signal, len::Int)
+    sigValue = signal[:value]
+    if typeof(sigValue) <: Number || typeof(sigValue) <: AbstractArray
+        sigSize = (len,size(sigValue)...)
+        sigValues2 = Array{eltype(sigValue),ndims(sigValue)+1}(undef, sigSize)
+        if ndims(sigValue) == 0
+            for i = 1:len
+                sigValues2[i] = sigValue
+            end
+        else
+            nsig = prod(sigSize[i] for i=2:length(sigSize))
+            sig1 = reshape(sigValues2, (len, nsig))
+            sig2 = reshape(sigValue, nsig)
+            for i = 1:len, j=1:nsig
+                sig1[i,j] = sig2[j]
+            end
+            sigValues2 = reshape(sig1, sigSize)
+        end
+        return sigValues2
+    end
+    return nothing
+end
+    
+
 """
     flattenedSignal = getFlattenedSignal(signalTable, name;
                                          missingToNaN = true,
@@ -256,26 +298,32 @@ Flattened values is a reshape of values into a vector or a matrix with optionall
   If NaN does not exist in the corresponding type, the values are first converted to `targetFloat`.
 - If targetInt is not nothing, Int-types are converted to targetInt
 - If targetFloat is not nothing, Float-types are converted to targetFloat
+- collect(..) is performed on the result.
 
 Legend is a vector of strings that provides a description for every array column
 (e.g. if `"name=a.b.c[2,3:5]", unit="m/s"`, then `legend = ["a.b.c[2,3] [m/s]", "a.b.c[2,3] [m/s]", "a.b.c[2,5] [m/s]"]`.
 
 If the required transformation is not possible, a warning message is printed and `nothing` is returned.
 """
-function getFlattenedSignal(signalTable, name::Name;
+function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
                                          targetInt    = Int,
-                                         targetFloat  = Float64)
-
+                                         targetFloat  = Float64)                              
     sigPresent = false
     if hasSignal(signalTable,name)
         # name is a signal name without range
-        signal = getSignal(signalTable,name)
-        if !haskey(signal, :values)
-            @goto ERROR
+        signal = getSignal(signalTable,name)  
+        if isVar(signal) && haskey(signal, :values)
+            sigValues = signal[:values]
+        elseif isPar(signal) && haskey(signal, :value)
+            sigValues = getValuesFromPar(signal, size(signalTable,1))
+            if isnothing(sigValues)
+                @goto ERROR
+            end
+        else
+            @goto ERROR            
         end
-        sigValues = getValues(signal)
-        dims      = size(sigValues)
+        dims = size(sigValues)
         if dims[1] > 0
             sigPresent = true
             if length(dims) > 2
@@ -295,7 +343,7 @@ function getFlattenedSignal(signalTable, name::Name;
                 nScalarSignals = prod(i for i in varDims)
             end
         end
-
+ 
     else
         # Handle signal arrays, such as a.b.c[3] or a.b.c[2:3, 1:5, 3]
         if name[end] == ']'
@@ -305,10 +353,16 @@ function getFlattenedSignal(signalTable, name::Name;
                 indices   = name[i+1:end-1]
                 if hasSignal(signalTable, arrayName)
                     signal = getSignal(signalTable,arrayName)
-                    if !haskey(signal, :values)
-                        @goto ERROR
+                    if isVar(signal) && haskey(signal, :values)
+                        sigValues = signal[:values]
+                    elseif isPar(signal) && haskey(signal, :value)
+                        sigValues = getValuesFromPar(signal, size(signalTable,1))
+                        if isnothing(sigValues)
+                            @goto ERROR
+                        end
+                    else
+                        @goto ERROR            
                     end
-                    sigValues = getValues(signal)
                     dims = size(sigValues)
 
                     if dims[1] > 0
@@ -325,7 +379,7 @@ function getFlattenedSignal(signalTable, name::Name;
                         # Extract sub-array and collect info for legend
                         sigValues = getindex(sigValues, (:, arrayIndices...)...)
                         sigUnit   = get(signal, :unit, "")
-                        dims      = size(sig)
+                        dims      = size(sigValues)
                         nScalarSignals = length(dims) == 1 ? 1 : prod(i for i in dims[2:end])
                         if length(dims) > 2
                             # Reshape to a matrix
@@ -339,69 +393,50 @@ function getFlattenedSignal(signalTable, name::Name;
     if !sigPresent
         @goto ERROR
     end
-
+        
     # Transform sigValues
-    sigElType = get(signal, :basetype, Float64)
-    if sigElType in TypesForPlotting ||
-       (sigElType <: Measurements.Measurement && BaseType(sigElType) in TypesForPlotting) ||
-       (sigElType <: MonteCarloMeasurements.AbstractParticles && BaseType(sigElType) in TypesForPlotting)
-        # Signal can be plotted - do nothing
+    sigElType = eltype(sigValues)
+    basetype2 = basetypeWithMeasurements(sigValues)
+    hasMissing = isa(missing, sigElType)
 
-    elseif sigElType <: Bool
-        # Transform to Int
-        sig2 = Array{Int, ndims(sig)}(undef, size(sig))
-        for i = 1:length(sig)
-            sig2[i] = convert(Int, sig[i])
-        end
-        sig2 = sig
+    if  (!isnothing(targetInt)   && basetype2 == targetInt || 
+         !isnothing(targetFloat) && basetype2 == targetFloat) &&
+         !(missingToNaN && hasMissing)        
+        # Signal need not be converted - do nothing
 
-    elseif isa(missing, sigElType) || isa(nothing, sigElType)
-        # sig contains missing or nothing - try to remove and if necessary convert to Float64
-        canBePlottedWithoutConversion = false
-        for T in TypesForPlotting
-            if isa(T(0), sigElType)
-                canBePlottedWithoutConversion = true
-                break
-            end
-        end
-
-        if canBePlottedWithoutConversion
-            # Remove missing and nothing
-            sigNaN = convert(sigElType, NaN)
-            for i = 1:length(sig)
-                if ismissing(sig[i]) || isnothing(sig[i])
-                    sig[i] = sigNaN
-                end
-            end
-
-        else
-            # Convert to Float64 if possible and remove missing and nothing
-            sig2 = similar(sig, element_type=Float64)
-            try
-                for i = 1:length(sig)
-                    sig2[i] = ismissing(sig[i]) || isnothing(sig[i]) ? NaN : convert(Float64, sig[i])
-                end
-            catch
-                # Cannot be plotted
-                @warn "Signal \"$name\" is ignored, because its element type = $sigElType\nand therefore its values cannot be plotted."
-                return (nothing,nothing,nothing)
-            end
-            sig = sig2
-        end
-
-    else
-        # Convert to Float64 if possible
-        sig2 = Array{Float64, ndims(sig)}(undef, size(sig))
+    elseif hasMissing && missingToNaN && !isnothing(targetFloat)
+        # sig contains missing or nothing - convert to targetFloat and replace missing by NaN
+        sigNaN     = convert(targetFloat, NaN)
+        sigValues2 = Array{targetFloat, ndims(sigValues)}(undef, size(sigValues))        
         try
-            for i = 1:length(sig)
-                sig2[i] = convert(Float64, sig[i])
+            for i = 1:length(sigValues)
+                sigValues2[i] = ismissing(sigValues[i]) ? sigNaN : convert(targetFloat, sigValues[i])
             end
         catch
-            # Cannot be plotted
-            @warn "Signal \"$name\" is ignored, because its element type = $sigElType\nand therefore its values cannot be plotted."
-            return (nothing,nothing,nothing)
+            # Cannot be converted
+            @warn "\"$name\" is ignored, because its element type = $sigElType\nwhich cannot be converted to targetFloat = $targetFloat."
+            return nothing
         end
-        sig = sig2
+        sigValues = sigValues2
+        
+    elseif !hasMissing && sigElType <: Integer && !isnothing(targetInt)
+        # Transform to targetInt
+        sigValues2 = Array{targetInt, ndims(sigValues)}(undef, size(sigValues))
+        for i = 1:length(sigValues)
+            sigValues2[i] = convert(targetInt, sigValues[i])
+        end
+        sigValues = sigValues2
+
+    elseif !hasMissing && sigElType <: Real && !isnothing(targetFloat)
+        # Transform to targetFloat
+        sigValues2 = Array{targetFloat, ndims(sigValues)}(undef, size(sigValues))
+        for i = 1:length(sigValues)
+            sigValues2[i] = convert(targetFloat, sigValues[i])
+        end
+        sigValues = sigValues2
+        
+    else
+        @goto ERROR
     end
 
     # Build legend
@@ -440,248 +475,69 @@ function getFlattenedSignal(signalTable, name::Name;
         end
     end
 
-    if negate
-        sig = -sig
-    end
-
-    return (collect(sig), legend, sigKind)
+    signal = copy(signal)
+    signal[:flattenedValues] = collect(sigValues)
+    signal[:legend] = legend
+    return signal
 
     @label ERROR
     @warn "\"$name\" is ignored, because it is not defined or is not correct or has no values."
     return nothing
 end
-=#
 
 
-#=
-"""
-    (linePlotSignal, legend, kind) = getSignalForLinePlots(signalTable, name)
-                    linePlotSignal = getSignalForLinePlots(signal)
+# Deprecated (provided to use the plot functions without any changes
 
-Transforms signal data and returns it for use in line plots (e.g. Vector/Matrix with NaN).
+@enum SignalType Independent=1 Continuous=2 Clocked=3
 
-Returns signal data in a form as needed for a line plot.
 
- (e.g. signal values/value transformed      |
-|                                 | to `Vector` or `Matrix` with potentially *NaN* but *no missing* values + interpolation type + legend).
-
-Given the signal table `signalTable` and a variable `name::String` with
-or without array range indices (for example `name = "a.b.c[2,3:5]"`)
-return the values `sig::Union{AbstractVector,AbstractMatrix}` of `name` without units prepared for a plot package,
-including `legend::Vector{String}` and `kind::SignalTables.VariableKind`.
-
-If `name` is not valid, or no signal values are available, or the signal values
-are not suited for plotting (and cannot be converted to Float64), a warning message
-is printed and `(nothing, nothing, nothing)` is returned.
-
-# Return arguments
-
-- `sig::AbstractVector` or `::AbstractMatrix`:
-  For example, if `name = "a.b.c[2,3:5]"`, then
-  `sig` consists of a matrix with three columns corresponding to the variable values of
-  `"a.b.c[2,3]", "a.b.c[2,4]", "a.b.c[2,5]"` with the (potential) units are stripped off.
-  `missing` values in the signal are replaced by `NaN`. If necessary,
-  the signal is converted to `Float64`.
-
-- `legend::Vector{AbstractString}`: The legend of the signal as a vector
-  of strings, where `legend[1]` is the legend for `sig`, if `sig` is a vector,
-  and `legend[i]` is the legend for the i-th column of `sig`, if `sig` is a matrix.
-  For example, if variable `"a.b.c"` has unit `m/s`, then `sigName = "a.b.c[2,3:5]"` signalTables in
-  `legend = ["a.b.c[2,3] [m/s]", "a.b.c[2,3] [m/s]", "a.b.c[2,5] [m/s]"]`.
-
-- `kind::`[`SignalTables.VariableKind`](@ref): The variable kind (independent, constant, continuous, ...).
-"""
-function getForLinePlots(signalTable, name::String)
-    sigPresent = false
-    negate     = false
-
-    if hasSignal(signalTable,name)
-        # name is a signal name without range
-        sigInfo = SignalInfo(signalTable,name)
-        sigKind = sigInfo.kind
-        if sigKind == SignalTables.Eliminated
-            sigInfo = SignalInfo(signalTable,sigInfo.aliasName)
-            negate  = sigInfo.aliasNegate
-            sigKind = sigInfo.kind
-        end
-        sig     = signalValues(signalTable,name; unitless=true)
-        dims    = size(sig)
-        if dims[1] > 0
-            sigPresent = true
-            if length(dims) > 2
-                # Reshape to a matrix
-                sig = reshape(sig, dims[1], prod(dims[i] for i=2:length(dims)))
-            end
-
-            # Collect information for legend
-            arrayName = name
-            sigUnit   = sigInfo.unit
-            if length(dims) == 1
-                arrayIndices   = ()
-                nScalarSignals = 1
-            else
-                varDims = dims[2:end]
-                arrayIndices   = Tuple(1:Int(ni) for ni in varDims)
-                nScalarSignals = prod(i for i in varDims)
-            end
-        end
-
-    else
-        # Handle signal arrays, such as a.b.c[3] or a.b.c[2:3, 1:5, 3]
-        if name[end] == ']'
-            i = findlast('[', name)
-            if i >= 2
-                arrayName = name[1:i-1]
-                indices   = name[i+1:end-1]
-                if hasSignal(signalTable, arrayName)
-                    sigInfo = SignalInfo(signalTable,arrayName)
-                    sigKind = sigInfo.kind
-                    if sigKind == SignalTables.Eliminated
-                        sigInfo = SignalInfo(signalTable,sigInfo.aliasName)
-                        negate  = sigInfo.aliasNegate
-                        sigKind = sigInfo.kind
-                    end
-                    sig  = signalValues(signalTable,arrayName; unitless=true)
-                    dims = size(sig)
-
-                    if dims[1] > 0
-                        sigPresent = true
-
-                        # Determine indices as tuple
-                        arrayIndices = ()
-                        try
-                            arrayIndices = eval( Meta.parse( "(" * indices * ",)" ) )
-                        catch
-                            @goto ERROR
-                        end
-
-                        # Extract sub-array and collect info for legend
-                        sig     = getindex(sig, (:, arrayIndices...)...)
-                        sigUnit = sigInfo.unit
-                        dims    = size(sig)
-                        nScalarSignals = length(dims) == 1 ? 1 : prod(i for i in dims[2:end])
-                        if length(dims) > 2
-                            # Reshape to a matrix
-                            sig  = reshape(sig, dims[1], nScalarSignals)
-                        end
-                    end
-                end
-            end
-        end
+function signalValuesForLinePlots(sigTable, name)
+    signal = getFlattenedSignal(sigTable, name)
+    if isnothing(signal)
+        return (nothing, nothing, nothing)
     end
-    if !sigPresent
+    sig         = signal[:flattenedValues]
+    sigLegend   = signal[:legend]
+    variability = get(signal, :variability, "")  
+    if variability == "independent"
+        sigKind = Independent
+    elseif variability == "clocked" || variability == "clock" || variability == "trigger" || get(signal, "interpolation", "") == "none"
+        sigKind = Clocked
+    else
+        sigKind = Continuous
+    end
+    return (sig, sigLegend, sigKind)
+end
+
+
+function getPlotSignal(sigTable, ysigName::AbstractString; xsigName=nothing)
+    (ysig, ysigLegend, ysigKind) = signalValuesForLinePlots(sigTable, ysigName)
+    if isnothing(ysig)
         @goto ERROR
     end
+    
+    xsigName2 = isnothing(xsigName) ? independentSignalName(sigTable) : xsigName
+    (xsig, xsigLegend, xsigKind) = signalValuesForLinePlots(sigTable, xsigName2)
+    if isnothing(xsig)
+        @goto ERROR
+    end    
 
-    # Check that sig can be plotted or convert it, so that it can be plotted
-    sigElType = sigInfo.elementType
-    if sigElType in TypesForPlotting ||
-       (sigElType <: Measurements.Measurement && BaseType(sigElType) in TypesForPlotting) ||
-       (sigElType <: MonteCarloMeasurements.AbstractParticles && BaseType(sigElType) in TypesForPlotting)
-        # Signal can be plotted - do nothing
-
-    elseif sigElType <: Bool
-        # Transform to Int
-        sig2 = Array{Int, ndims(sig)}(undef, size(sig))
-        for i = 1:length(sig)
-            sig2[i] = convert(Int, sig[i])
-        end
-        sig2 = sig
-
-    elseif isa(missing, sigElType) || isa(nothing, sigElType)
-        # sig contains missing or nothing - try to remove and if necessary convert to Float64
-        canBePlottedWithoutConversion = false
-        for T in TypesForPlotting
-            if isa(T(0), sigElType)
-                canBePlottedWithoutConversion = true
-                break
-            end
-        end
-
-        if canBePlottedWithoutConversion
-            # Remove missing and nothing
-            sigNaN = convert(sigElType, NaN)
-            for i = 1:length(sig)
-                if ismissing(sig[i]) || isnothing(sig[i])
-                    sig[i] = sigNaN
-                end
-            end
-
-        else
-            # Convert to Float64 if possible and remove missing and nothing
-            sig2 = similar(sig, element_type=Float64)
-            try
-                for i = 1:length(sig)
-                    sig2[i] = ismissing(sig[i]) || isnothing(sig[i]) ? NaN : convert(Float64, sig[i])
-                end
-            catch
-                # Cannot be plotted
-                @warn "Signal \"$name\" is ignored, because its element type = $sigElType\nand therefore its values cannot be plotted."
-                return (nothing,nothing,nothing)
-            end
-            sig = sig2
-        end
-
-    else
-        # Convert to Float64 if possible
-        sig2 = Array{Float64, ndims(sig)}(undef, size(sig))
-        try
-            for i = 1:length(sig)
-                sig2[i] = convert(Float64, sig[i])
-            end
-        catch
-            # Cannot be plotted
-            @warn "Signal \"$name\" is ignored, because its element type = $sigElType\nand therefore its values cannot be plotted."
-            return (nothing,nothing,nothing)
-        end
-        sig = sig2
+    # Check x-axis signal
+    if ndims(xsig) != 1
+        @warn "\"$xsigName\" does not characterize a scalar variable as needed for the x-axis."
+        @goto ERROR
+    #elseif !(typeof(xsigValue) <: Real                                   || 
+    #         typeof(xsigValue) <: Measurements.Measurement               ||
+    #         typeof(xsigValue) <: MonteCarloMeasurements.StaticParticles ||
+    #         typeof(xsigValue) <: MonteCarloMeasurements.Particles       )
+    #    @warn "\"$xsigName\" is of type " * string(typeof(xsigValue)) * " which is not supported for the x-axis."
+    #    @goto ERROR        
     end
 
-    # Build legend
-    if arrayIndices == ()
-        # sig is a scalar variable
-        legend = String[nameWithUnit(name, sigUnit)]
-
-    else
-        # sig is an array variable
-        legend = [arrayName * "[" for i = 1:nScalarSignals]
-        i = 1
-        sizeLength = Int[]
-        for j1 in eachindex(arrayIndices)
-            push!(sizeLength, length(arrayIndices[j1]))
-            i = 1
-            if j1 == 1
-                for j2 in 1:div(nScalarSignals, sizeLength[1])
-                    for j3 in arrayIndices[1]
-                        legend[i] *= string(j3)
-                        i += 1
-                    end
-                end
-            else
-                ncum = prod( sizeLength[1:j1-1] )
-                for j2 in arrayIndices[j1]
-                    for j3 = 1:ncum
-                        legend[i] *= "," * string(j2)
-                        i += 1
-                    end
-                end
-            end
-        end
-
-        for i = 1:nScalarSignals
-            legend[i] *= nameWithUnit("]", sigUnit)
-        end
-    end
-
-    if negate
-        sig = -sig
-    end
-
-    return (collect(sig), legend, sigKind)
+    return (xsig, xsigLegend[1], ysig, ysigLegend, ysigKind)
 
     @label ERROR
-    @warn "\"$name\" is ignored, because it is not defined or is not correct or has no values."
-    return (nothing,nothing,nothing)
+    return (nothing, nothing, nothing, nothing, nothing)
 end
 
 
@@ -691,7 +547,3 @@ end
 Return `heading` if no empty string. Otherwise, return `defaultHeading(signalTable)`.
 """
 getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : defaultHeading(signalTable)
-
-
-
-=#
