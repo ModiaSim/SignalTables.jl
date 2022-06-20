@@ -80,17 +80,8 @@ getValueWithUnit(signalTable, name::String) = begin
 end
 
 
-const doNotShowAttributes = [:_class, :eltype, :type, :size, :unit, :values, :value]
+const doNotShowAttributes = [:_class, :basetype, :size, :unit, :values, :value]
 
-# Base Type of a data structure
-SignalBaseType(::Type{T}) where {T}                 = nothing
-SignalBaseType(::Type{T}) where {T<:Number}         = T
-SignalBaseType(::Type{T}) where {T<:AbstractString} = T
-SignalBaseType(::Type{Array{T,N}})      where {T,N} = T
-
-# Base Type of an eltype
-SignalElementBaseType(::Type{T})                where {T} = T
-SignalElementBaseType(::Type{Union{Missing,T}}) where {T} = T
 
 """
     showInfo([io::IO=stdout,] signalTable;
@@ -147,7 +138,7 @@ ref.clock                   (6,)  Bool     Var  variability="clock"
 ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
 motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                        String   Par
+motor.data                  ()    String   Par
 attributes                                 Par  info="This is a test signal table"
 ```
 """
@@ -158,12 +149,12 @@ function showInfo(io::IO, signalTable;
         return
     end
 
-    name2   = String[]
-    unit2   = String[]
-    size2   = String[]
-    eltype2 = String[]
-    kind2   = String[]
-    attr2   = String[]
+    name2     = String[]
+    unit2     = String[]
+    size2     = String[]
+    basetype2 = String[]
+    kind2     = String[]
+    attr2     = String[]
   
     sigNames = signalNames(signalTable)
     if sorted
@@ -196,20 +187,9 @@ function showInfo(io::IO, signalTable;
                 attr = String(take!(iostr))
             end
             independent = get(signal, :variability, "continuous") == "independent"
-            valElType   = get(signal, :eltype, "")
-            if valElType == ""
-                valElType = get(signal, :type, "")
-                if valElType != ""
-                    valElType = SignalBaseType(valElType)
-                    if !isnothing(valElType)
-                        valElType = string( valElType )
-                    end
-                end
-            else
-                valElType = string( SignalElementBaseType(valElType) )
-            end
-            valSize = string( get(signal, :size, "") )
-            valUnit = get(signal, :unit, "")
+            valBaseType = string( get(signal, :basetype, "") )
+            valSize     = string( get(signal, :size, "") )
+            valUnit     = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString
                 if valUnit != ""
                     valUnit = "\"$valUnit\""
@@ -220,20 +200,20 @@ function showInfo(io::IO, signalTable;
             end
             
             if independent
-                pushfirst!(name2  , name)
-                pushfirst!(unit2  , valUnit)
-                pushfirst!(size2  , valSize)
-                pushfirst!(eltype2, valElType)
-                pushfirst!(kind2  , kind)
+                pushfirst!(name2    , name)
+                pushfirst!(unit2    , valUnit)
+                pushfirst!(size2    , valSize)
+                pushfirst!(basetype2, valBaseType)
+                pushfirst!(kind2    , kind)
                 if attributes
                     pushfirst!(attr2, attr)
                 end
             else
-                push!(name2  , name)
-                push!(unit2  , valUnit)
-                push!(size2  , valSize)
-                push!(eltype2, valElType)
-                push!(kind2  , kind)
+                push!(name2    , name)
+                push!(unit2    , valUnit)
+                push!(size2    , valSize)
+                push!(basetype2, valBaseType)
+                push!(kind2    , kind)
                 if attributes
                     push!(attr2, attr)
                 end       
@@ -242,9 +222,9 @@ function showInfo(io::IO, signalTable;
     end
     
     if attributes
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=eltype2, kind=kind2, attributes=attr2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=basetype2, kind=kind2, attributes=attr2)
     else
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=eltype2, kind=kind2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=basetype2, kind=kind2)
     end
 
     show(io, infoTable, show_row_number=false, summary=false, allcols=true, eltypes=false, truncate=50) # rowlabel=Symbol("#")

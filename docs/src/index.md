@@ -5,8 +5,8 @@ CurrentModule = SignalTables
 ```
 
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl)
-provides types and functions for *signals* that
-are represented by *multi-dimensional* arrays and are collected in *tables*.
+provides types and functions for *signals* that are represented by 
+*multi-dimensional* arrays with identical first dimensions and are collected in *tables*.
 Typically, simulation results, reference signals, and table-based input signals
 can be represented by a *signal table*. More specifically:
 
@@ -122,24 +122,24 @@ The packages are not yet registered. Once this is done, installation is performe
 
 ```julia
 julia> ]add SignalTables
-        add ModiaPlot_PyPlot        # if plotting with PyPlot desired
-        add ModiaPlot_GLMakie       # if plotting with GLMakie desired
-        add ModiaPlot_WGLMakie      # if plotting with WGLMakie desired
-        add ModiaPlot_CairoMakie    # if plotting with CairoMakie desired
+        add SignalTablesInterface_PyPlot        # if plotting with PyPlot desired
+        add SignalTablesInterface_GLMakie       # if plotting with GLMakie desired
+        add SignalTablesInterface_WGLMakie      # if plotting with WGLMakie desired
+        add SignalTablesInterface_CairoMakie    # if plotting with CairoMakie desired
 ```
 
-If you have trouble installing `ModiaPlot_PyPlot`, see 
+If you have trouble installing `SignalTablesInterface_PyPlot`, see 
 [Installation of PyPlot.jl](https://modiasim.github.io/SignalTables.jl/stable/index.html#Installation-of-PyPlot.jl)
 
 
 ## Installation of PyPlot.jl
 
-`ModiaPlot_PyPlot.jl` uses `PyPlot.jl` which in turn uses Python. 
+`SignalTablesInterface_PyPlot.jl` uses `PyPlot.jl` which in turn uses Python. 
 Therefore a Python installation is needed. Installation 
 might give problems in some cases. Here are some hints what to do
 (you may also consult the documentation of [PyPlot.jl](https://github.com/JuliaPy/PyPlot.jl)).
 
-Before installing `ModiaPlot_PyPlot.jl` make sure that `PyPlot.jl` is working:
+Before installing `SignalTablesInterface_PyPlot.jl` make sure that `PyPlot.jl` is working:
 
 ```julia
 ]add PyPlot
@@ -169,7 +169,7 @@ plot(t,2*t)
 If the above does not work, or you want to use another Python distribution,
 install a [Python 3.x distribution](https://wiki.python.org/moin/PythonDistributions) that contains Matplotlib,
 set `ENV["PYTHON"] = "<path-above-python-installation>/python.exe"` and follow the steps above.
-Note, `ModiaPlot_PyPlot` is based on the Python 3.x version of Matplotlib where some keywords
+Note, `SignalTablesInterface_PyPlot` is based on the Python 3.x version of Matplotlib where some keywords
 are different to the Python 2.x version.
 
 

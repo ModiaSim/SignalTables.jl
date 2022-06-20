@@ -1,7 +1,7 @@
 # Line Plots
 
 ```@meta
-CurrentModule = ModiaPlot_PyPlot
+CurrentModule = SignalTablesInterface_PyPlot
 ```
 
 The functions below are used to *plot* one or more signalTable signals in one or more *diagrams*
@@ -20,7 +20,7 @@ using Modia
 @usingPlotPackage
 ```
 
-have been executed. The documentation has been generated with [ModiaPlot_PyPlotResult.jl](https://github.com/ModiaSim/ModiaPlot_PyPlot.jl).
+have been executed. The documentation has been generated with [SignalTablesInterface_PyPlot](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl).
 
 !!! note
     [SignalTables.jl](https://github.com/ModiaSim/SignalTables.jl) exports all symbols of the table.\

@@ -13,8 +13,6 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | Signal table functions          | Description                                                                                    |
 |:--------------------------------|:-----------------------------------------------------------------------------------------------|
 | [`SignalTable`](@ref)           | Returns a new SignalTable dictionary.                                                          |
-| [`Var`](@ref)                   | Returns a variable signal definition in form of a dictionary.                                  |
-| [`Par`](@ref)                   | Returns a parameter signal definition in form of a dictionary.                                 |
 | [`showInfo`](@ref)              | Writes info about a signal table to the output stream.                                         |
 | [`independentSignalName`](@ref) | Returns the name of the independent signal.                                                    |
 | [`signalNames`](@ref)           | Returns a string vector of the signal names that are present in a signal table.                |
@@ -29,8 +27,6 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 
 ```@docs
 SignalTable
-Var
-Par
 showInfo
 independentSignalName
 signalNames

@@ -1,4 +1,4 @@
-using Documenter, SignalTables, ModiaPlot_PyPlot
+using Documenter, SignalTables, SignalTablesInterface_PyPlot
 
 makedocs(
   sitename = "SignalTables",
@@ -9,6 +9,7 @@ makedocs(
      #"Getting Started"  => "GettingStarted.md",
 	 "Functions"  => [
        "Functions/Overview.md",
+       "Functions/Signals.md",       
        "Functions/SignalTables.md",  
        "Functions/PlotPackages.md",    
        "Functions/LinePlots.md",                  

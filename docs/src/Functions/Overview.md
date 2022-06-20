@@ -4,12 +4,12 @@
 CurrentModule = SignalTables
 ```
 
-This chapter documents functions that operate on signals and on signal tables.
+This chapter documents functions that operate on signals and on signal tables
+(= *multi-dimensional* arrays with identical first dimensions that are collected in *tabular* format
+and support the [Abstract Signal Table Interface](@ref)).
 
-A *signal table* is a (dictionary-like) type that supports the [Abstract Signal Table Interface](@ref) 
-for example [`SignalTable`](@ref). It defines a set of *signals* in tabular format. A *signal* is identified 
-by its String *name* and is a representation of the values of a variable ``v`` as a (partial) function ``v(t)``
-of the independent variable ``t = v_{independent}``. 
+A *signal* is identified by its String *name* and is a representation of the values of a 
+variable ``v`` as a (partial) function ``v(t)`` of the independent variable ``t = v_{independent}``. 
 
 The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*) 
 and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of 
@@ -20,12 +20,22 @@ If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in diction
 (= abbreviation for *Parameter*) and is represented by any Julia type, that is
 `v.value` is the value of variable ``v_{const}`` at all elements ``t_i``.
 
+| Signal functions                | Description                                                                                |
+|:--------------------------------|:-------------------------------------------------------------------------------------------|
+| [`Var`](@ref)                   | Returns a variable signal definition in form of a dictionary.                              |
+| [`Par`](@ref)                   | Returns a parameter signal definition in form of a dictionary.                             |
+| [`isVar`](@ref)                 | Returns true, if signal is a [`Var`](@ref).                                                |
+| [`isPar`](@ref)                 | Returns true, if signal is a [`Par`](@ref).                                                |
+| [`isSignal`](@ref)              | Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).                             |
+| [`showSignal`](@ref)            | Prints a [`Var`](@ref)(...) or [`Par`](@ref)(...) signal to io.                            |
+| [`basetype`](@ref)              | Returns eltype of an array (but without Missing) and otherwise returns typeof.             |                                 |
+| [`quantity`](@ref)              | Returns `Unitful.Quantity` from numberType and numberUnit, e.g. `quantity(Float64,u"m/s")` | 
+| [`unitAsParseableString`](@ref) | Returns the unit as a String that can be parsed with `Unitful.uparse`, e.g. "m*s^-1"       | 
+
 
 | Signal table functions          | Description                                                                                    |
 |:--------------------------------|:-----------------------------------------------------------------------------------------------|
 | [`SignalTable`](@ref)           | Returns a new SignalTable dictionary.                                                          |
-| [`Var`](@ref)                   | Returns a variable signal definition in form of a dictionary.                                  |
-| [`Par`](@ref)                   | Returns a parameter signal definition in form of a dictionary.                                 |
 | [`showInfo`](@ref)              | Writes info about a signal table to the output stream.                                         |
 | [`independentSignalName`](@ref) | Returns the name of the independent signal.                                                    |
 | [`signalNames`](@ref)           | Returns a string vector of the signal names that are present in a signal table.                |
@@ -47,7 +57,7 @@ If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in diction
 
 
 ```@meta
-CurrentModule = ModiaPlot_PyPlot
+CurrentModule = SignalTablesInterface_PyPlot
 ```
 
 | Line plot functions       | Description                                                    |

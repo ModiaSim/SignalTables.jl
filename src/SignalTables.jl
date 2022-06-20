@@ -10,17 +10,20 @@ import DataFrames
 #import MonteCarloMeasurements
 import Pkg
 
-# Abstract Signal Table Interface
-export Var, Par, isVar, isPar
-export hasSignal, signalInfo, getValues, getValue, getValuesWithUnit, getValueWithUnit
+# Signals
+export Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsParseableString
 
-# SignalTable
-export SignalTable, independentSignalName, signalNames, getSignal
+# Abstract Signal Table Interface
+export independentSignalName, signalNames, getSignal, hasSignal
 
 # Signal table functions
-export showInfo
+export getValues, getValue, getValuesWithUnit, getValueWithUnit, showInfo
+
+# SignalTable
+export SignalTable
 
 
+include("Signals.jl")
 include("AbstractSignalTableInterface.jl")
 include("AbstractLinePlotInterface.jl")
 include("SignalTable.jl")
