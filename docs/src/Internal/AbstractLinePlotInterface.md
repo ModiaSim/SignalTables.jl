@@ -22,12 +22,12 @@ can be just dummy functions; the docu below was generated with [SignalTablesInte
 
 *Concrete implementations* of these functions are provided for:
 
-- [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python), 
+- [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python),
 - [GLMakie](https://github.com/JuliaPlots/GLMakie.jl) (interactive plots in an OpenGL window),
 - [WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) (interactive plots in a browser window),
 - [CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) (static plots on file with publication quality).
 
-Furthermore, there are two dummy modules included in SignalTables, that are useful when performing tests with runtests.jl, 
+Furthermore, there are two dummy modules included in SignalTables, that are useful when performing tests with runtests.jl,
 in order that no plot package needs to be loaded during the tests:
 
 - NoPlot (= all plot calls are ignored and info messages are instead printed), or

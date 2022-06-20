@@ -10,14 +10,14 @@ The plot package `XXX` to be used can be defined by:
   (e.g. in .julia/config/startup.jl file: `ENV["SignalTablesPlotPackage"] = "PyPlot"`), or
 - by calling [`usePlotPackage`](@ref)(XXX) (e.g. `usePlotPackage("PyPlot")`).
 
-Supported values for `XXX`: 
+Supported values for `XXX`:
 
-- `"PyPlot"` ([PyPlot](https://github.com/JuliaPy/PyPlot.jl) plots with Matplotlib from Python), 
+- `"PyPlot"` ([PyPlot](https://github.com/JuliaPy/PyPlot.jl) plots with Matplotlib from Python),
 - `"GLMakie"` ([GLMakie](https://github.com/JuliaPlots/GLMakie.jl) provides interactive plots in an OpenGL window),
 - `"WGLMakie"` ([WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) provides interactive plots in a browser window),
 - `"CairoMakie"` ([CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) provides static plots on file with publication quality).
 
-Furthermore, there is a dummy implementation included in SignalTables that is useful when performing tests with runtests.jl, 
+Furthermore, there is a dummy implementation included in SignalTables that is useful when performing tests with runtests.jl,
 in order that no plot package needs to be loaded during the tests:
 
 - `"SilentNoPlot"` (= all plot calls are silently ignored).
@@ -37,7 +37,7 @@ The following functions are provided to define/inquire the current plot package.
 !!! note
     [SignalTables.jl](https://github.com/ModiaSim/SignalTables.jl) exports all symbols of this table.\
     [Modia.jl](https://github.com/ModiaSim/Modia.jl) reexports all symbols.
-    
+
 | Plot package functions           | Description                                               |
 |:---------------------------------|:----------------------------------------------------------|
 | [`@usingPlotPackage`](@ref)      | Expands into `using PlotPackage_<PlotPackageName>`        |

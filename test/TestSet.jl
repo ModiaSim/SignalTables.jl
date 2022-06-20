@@ -6,16 +6,16 @@ using SignalTables.Unitful
 t = 0.0:0.1:0.5
 sigTable1 = SignalTable(
   "time"         => Var(values= t, unit="s", variability="independent"),
-  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"), 
+  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
   "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
   "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
-                                info="Reference angle and speed"),  
+                                info="Reference angle and speed"),
   "wm"           => Var(alias = "motor.w"),
   "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
-                                 variability="clock"),  
+                                 variability="clock"),
   "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
-                                 variability="trigger"), 
+                                 variability="trigger"),
   "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
                                 variability="clocked", clock="ref.clock"),
 

@@ -21,7 +21,7 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`getValues`](@ref)             | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
 | [`getValuesWithUnit`](@ref)     | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)              | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
-| [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          | 
+| [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
 | [`getSignalForLinePlots`](@ref) | Transforms signal data and returns it for use in line plots (e.g. Matrix with NaN).            |
 
 

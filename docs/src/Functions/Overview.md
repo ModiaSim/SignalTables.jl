@@ -8,15 +8,15 @@ This chapter documents functions that operate on signals and on signal tables
 (= *multi-dimensional* arrays with identical first dimensions that are collected in *tabular* format
 and support the [Abstract Signal Table Interface](@ref)).
 
-A *signal* is identified by its String *name* and is a representation of the values of a 
-variable ``v`` as a (partial) function ``v(t)`` of the independent variable ``t = v_{independent}``. 
+A *signal* is identified by its String *name* and is a representation of the values of a
+variable ``v`` as a (partial) function ``v(t)`` of the independent variable ``t = v_{independent}``.
 
-The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*) 
-and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of 
-variable ``v`` at ``t_i``. If an element of ``v`` is *not defined* at 
+The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*)
+and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of
+variable ``v`` at ``t_i``. If an element of ``v`` is *not defined* at
 ``t_ì``, it has a value of *missing*.
 
-If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in dictionary [`Par`](@ref) 
+If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in dictionary [`Par`](@ref)
 (= abbreviation for *Parameter*) and is represented by any Julia type, that is
 `v.value` is the value of variable ``v_{const}`` at all elements ``t_i``.
 
@@ -29,8 +29,8 @@ If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in diction
 | [`isSignal`](@ref)              | Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).                             |
 | [`showSignal`](@ref)            | Prints a [`Var`](@ref)(...) or [`Par`](@ref)(...) signal to io.                            |
 | [`basetype`](@ref)              | Returns eltype of an array (but without Missing) and otherwise returns typeof.             |                                 |
-| [`quantity`](@ref)              | Returns `Unitful.Quantity` from numberType and numberUnit, e.g. `quantity(Float64,u"m/s")` | 
-| [`unitAsParseableString`](@ref) | Returns the unit as a String that can be parsed with `Unitful.uparse`, e.g. "m*s^-1"       | 
+| [`quantity`](@ref)              | Returns `Unitful.Quantity` from numberType and numberUnit, e.g. `quantity(Float64,u"m/s")` |
+| [`unitAsParseableString`](@ref) | Returns the unit as a String that can be parsed with `Unitful.uparse`, e.g. "m*s^-1"       |
 
 
 | Signal table functions          | Description                                                                                    |
@@ -44,7 +44,7 @@ If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in diction
 | [`getValues`](@ref)             | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
 | [`getValuesWithUnit`](@ref)     | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)              | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
-| [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          | 
+| [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
 | [`getSignalForLinePlots`](@ref) | Transforms signal data and returns it for use in line plots (e.g. Matrix with NaN).            |
 
 

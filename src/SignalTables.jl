@@ -1,6 +1,6 @@
 module SignalTables
 
-const path = dirname(dirname(@__FILE__)) 
+const path = dirname(dirname(@__FILE__))
 
 using  OrderedCollections
 using  Unitful
@@ -29,7 +29,7 @@ include("AbstractLinePlotInterface.jl")
 include("SignalTable.jl")
 include("SignalTableFunctions.jl")
 include("PlotPackageDefinition.jl")
- 
+
 #include("SilentNoPlot.jl")
 #include("UserFunctions.jl")
 #include("OverloadedMethods.jl")

@@ -11,7 +11,7 @@ within one or more *windows* (figures), and *save* a window (figure) in various 
 ```julia
 using SignalTables   # Make Symbols available
 @usingPlotPackage    # Define used Plot package (expands e.g., into: using PlotPackage_PyPlot)
-``` 
+```
 
 or
 

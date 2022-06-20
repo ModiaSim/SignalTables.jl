@@ -9,15 +9,15 @@ makedocs(
      #"Getting Started"  => "GettingStarted.md",
 	 "Functions"  => [
        "Functions/Overview.md",
-       "Functions/Signals.md",       
-       "Functions/SignalTables.md",  
-       "Functions/PlotPackages.md",    
-       "Functions/LinePlots.md",                  
-      ],     
+       "Functions/Signals.md",
+       "Functions/SignalTables.md",
+       "Functions/PlotPackages.md",
+       "Functions/LinePlots.md",
+      ],
 	 "Internal"  => [
        "Internal/AbstractSignalTableInterface.md",
-       "Internal/AbstractLinePlotInterface.md",       
-     #  "internal/UtilityFunctions.md"       
+       "Internal/AbstractLinePlotInterface.md",
+     #  "internal/UtilityFunctions.md"
       ],
   ]
 )

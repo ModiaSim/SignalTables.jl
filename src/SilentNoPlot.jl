@@ -5,8 +5,8 @@ module SilentNoPlot
 
 include("AbstractLinePlotInterface.jl")
 
-plot(signalTable, names::AbstractMatrix; heading::AbstractString="", grid::Bool=true, xAxis="time", 
-     figure::Int=1, prefix::AbstractString="", reuse::Bool=false, maxLegend::Integer=10, 
+plot(signalTable, names::AbstractMatrix; heading::AbstractString="", grid::Bool=true, xAxis="time",
+     figure::Int=1, prefix::AbstractString="", reuse::Bool=false, maxLegend::Integer=10,
      minXaxisTickLabels::Bool=false, MonteCarloAsArea=false) = nothing
 showFigure(figure::Int)  = nothing
 closeFigure(figure::Int) = nothing

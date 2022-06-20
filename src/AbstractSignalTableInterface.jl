@@ -6,7 +6,7 @@
 
 """
     independentSignalName(signalTable)
-    
+
 Returns the name of the independent signal (typically: "time") from signalTable
 """
 function independentSignalName end
@@ -14,7 +14,7 @@ function independentSignalName end
 
 """
     signalNames(signalTable)
-    
+
 Returns a string vector of the signal names that are present in signalTable
 (including independent signal name).
 """
@@ -23,7 +23,7 @@ function signalNames end
 
 """
     getSignal(signalTable, name::String; require_values=true)
-    
+
 Returns signal `name` from `signalTable` (that is a [`Var`](@ref) or a [`Par`](@ref)).
 
 - If `name` does not exist, an error is raised.
@@ -39,7 +39,7 @@ function getSignal end
 
 """
     hasSignal(signalTable, name::String)
-    
+
 Returns `true` if signal `name` is present in `signalTable`.
 """
 function hasSignal(signalTable, name::String)::Bool

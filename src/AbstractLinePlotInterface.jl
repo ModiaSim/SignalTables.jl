@@ -17,7 +17,7 @@ end
 
 
 """
-    plot(signalTable, names; 
+    plot(signalTable, names;
          heading = "", grid = true, xAxis = nothing,
          figure = 1, prefix = "", reuse = false, maxLegend = 10,
          minXaxisTickLabels = false,
@@ -35,8 +35,8 @@ Argument `names` defines the diagrams to be drawn and the signals to be included
 
 - If `names` is a **Tuple** of Strings, generate one diagram with the time series of the variables
   with the keys given in the tuple.
-  
-- If names is a **Vector** or a **Matrix** of **Strings** and/or **Tuples**, 
+
+- If names is a **Vector** or a **Matrix** of **Strings** and/or **Tuples**,
   generate a vector or matrix of diagrams.
 
 Note, the names (and their units, if available in the signals) are automatically used as legends in the
@@ -48,9 +48,9 @@ a corresponding vector of signal values, and the signal type (continuous or cloc
 
 Note, before passing data to the plot package,
 it is converted to Float64. This allows to, for example, also plot rational numbers,
-even if not supported by the plot package. `Measurements.Measurement{xxx}` 
+even if not supported by the plot package. `Measurements.Measurement{xxx}`
 and `MonteCarloMeasurements` is specially handled.
-  
+
 
 # Optional Arguments
 - `heading::AbstractString`: Optional heading above the diagram.
@@ -62,17 +62,17 @@ and `MonteCarloMeasurements` is specially handled.
 
 - `figure::Int`: Integer identifier of the window in which the diagrams shall be drawn.
 
-- `prefix::AbstractString`: String that is appended in front of every legend label 
+- `prefix::AbstractString`: String that is appended in front of every legend label
   (useful especially if `reuse=true`).
-  
+
 - `reuse::Bool`: If figure already exists and reuse=false, clear the figure before adding the plot.
    Otherwise, include the plot in the existing figure without removing the curves present in the figure.
    `reuse = true` is ignored for `"WGLMakie"` (because not supported).
 
-- `maxLegend::Int`: If the number of legend entries in one plot command `> maxLegend`, 
+- `maxLegend::Int`: If the number of legend entries in one plot command `> maxLegend`,
   the legend is suppressed.
-  All curves have still their names as labels. In PyPlot, the curves can be inspected by 
-  their names by clicking in the toolbar of the plot on button `Edit axis, curve ..` 
+  All curves have still their names as labels. In PyPlot, the curves can be inspected by
+  their names by clicking in the toolbar of the plot on button `Edit axis, curve ..`
   and then on `Curves`.
 
 - `minXaxisTickLabels::Bool`: = true, if xaxis tick labels shall be
@@ -90,7 +90,7 @@ and `MonteCarloMeasurements` is specially handled.
 using SignalTables
 using Unitful
 
-# Generate "using xxx" statement 
+# Generate "using xxx" statement
 # (where "xxx" is from a previous SignalTables.usePlotPackage("xxx"))
 @usingPlotPackage
 
@@ -136,9 +136,9 @@ Example of a matrix of plots:
 
 ![Matrix of plots](../../resources/images/matrix-of-plots.png)
 """
-plot(result, names::AbstractString; kwargs...) = plot(result, [names]        ; kwargs...) 
+plot(result, names::AbstractString; kwargs...) = plot(result, [names]        ; kwargs...)
 plot(result, names::Symbol        ; kwargs...) = plot(result, [string(names)]; kwargs...)
-plot(result, names::Tuple         ; kwargs...) = plot(result, [names]        ; kwargs...) 
+plot(result, names::Tuple         ; kwargs...) = plot(result, [names]        ; kwargs...)
 plot(result, names::AbstractVector; kwargs...) = plot(result, reshape(names, length(names), 1); kwargs...)
 
 
@@ -173,7 +173,7 @@ function showFigure end
 
 """
     saveFigure(figure, file; kwargs...)
-    
+
 Save figure on file. The file extension defines the image format
 (for example `*.png`).
 
@@ -188,10 +188,10 @@ Save figure on file. The file extension defines the image format
 
 # Keyword arguments
 
-- resolution: (width::Int, height::Int) of the scene in dimensionless 
+- resolution: (width::Int, height::Int) of the scene in dimensionless
   units (equivalent to px for GLMakie and WGLMakie).
-        
-        
+
+
 # Example
 
 ```julia
