@@ -72,34 +72,37 @@ attributes                                 Par  info="This is a test signal tabl
 The commands
 
 ```julia
+using SignalTable
 usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
-...
-@usingPlotPackage                                     # = using SignalTablesInterface_PyPlot
-plot(sigTable, [("sigA", "sigB", "sigC"), "r[2:3]"])  # generate line plots
+
+include("$(SignalTable.path)/test/SignalTable3.jl")
+
+@usingPlotPackage                           # = using SignalTablesInterface_PyPlot
+plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])  # generate line plots
 ```
 
 generate the following line plot:
 
 ![Line plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
 
-*Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
-
 - [`SignalTable`](@ref) (included in SignalTables.jl).
 
-Planned implementations (basically adapting from SignalTables.jl):
+  Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
 
-- [Modia.jl](https://github.com/ModiaSim/Modia.jl) (a modeling and simulation environment)
-- [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl)
-  (tabular data; first column is independent variable; *only scalar variables*))
-- [Tables.jl](https://github.com/JuliaData/Tables.jl)
-  (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
-  first column is independent variable; *only scalar variables*).
+  - [Modia.jl](https://github.com/ModiaSim/Modia.jl) (a modeling and simulation environment)
+  - [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl)
+    (tabular data; first column is independent variable; *only scalar variables*))
+  - [Tables.jl](https://github.com/JuliaData/Tables.jl)
+    (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
+    first column is independent variable; *only scalar variables*).
 
 *Concrete implementations* of the [Abstract Line Plot Interface](@ref) are provided for:
 
-Planned implementations (basically adapting from SignalTables.jl):
+- [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python;
+  via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),
 
-- [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python),
+Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
+
 - [GLMakie](https://github.com/JuliaPlots/GLMakie.jl) (interactive plots in an OpenGL window),
 - [WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) (interactive plots in a browser window),
 - [CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) (static plots on file with publication quality).
