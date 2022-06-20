@@ -30,7 +30,6 @@ SignalTable
 showInfo
 independentSignalName
 signalNames
-signalInfo
 hasSignal
 getSignal
 getValues

@@ -5,7 +5,7 @@ CurrentModule = SignalTables
 ```
 
 This chapter documents the *Abstract Signal Table Interface* for which an implementation has to be provided,
-in order that the functions (see [Function Overview](@ref)) of the SignalTables package can be used.
+in order that the functions (see [Overview of Functions](@ref)) of the SignalTables package can be used.
 
 Functions that are marked as *required*, need to be defined for a new signal table type.
 Functions that are marked as *optional* have a default implementation, but can be defined for 

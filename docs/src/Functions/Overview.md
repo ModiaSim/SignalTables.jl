@@ -1,4 +1,4 @@
-# Function Overview
+# Overview of Functions
 
 ```@meta
 CurrentModule = SignalTables

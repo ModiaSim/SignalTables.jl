@@ -28,7 +28,7 @@ and `values` must be an `AbstractVector`. Further added signals with a `:values`
 same first dimension as the independent signal.
 
 Most dictionary operations can be applied on `sigTable`, as well as all functions
-of [Function Overview](@ref).
+of [Overview of Functions](@ref).
 
 # Examples
 
