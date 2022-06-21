@@ -184,9 +184,6 @@ function showInfo(io::IO, signalTable;
             independent = get(signal, :independent, false)
             valBaseType = get(signal, :_typeof, "")
             if valBaseType != ""
-                @show name
-                @show get(signal, :_typeof, "")
-                @show BaseType(valBaseType)
                 valBaseType = string( BaseType(valBaseType) )
             end
             valSize = string( get(signal, :_size, "") )
