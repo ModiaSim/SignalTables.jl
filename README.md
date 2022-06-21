@@ -3,17 +3,18 @@
 [![The MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/ModiaSim/SignalTables.jl/blob/master/LICENSE)
 
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl) (see [docu](https://modiasim.github.io/SignalTables.jl/stable/index.html))
-provides abstract and concrete types and functions for *signals* that are represented by an *ordered dictionary* 
-of *multi-dimensional* arrays with *zero, one or more independent signals.
+provides abstract and concrete types and functions for *signal tables*.
 Typically, simulation results, reference signals, table-based input signals, measurement data,
-look-up tables can be represented by a *signal table*. A *signal* is identified by its string *name* 
-and is a 
+look-up tables can be represented by a signal table.
 
-- [`Var`](@ref) dictionary with a signal array (key = :values) of any element type 
-  as function of the independent signal(s) or 
-- [`Par`](@ref) dictionary with an optional value (key = :value) of any type that represents a constant.
+A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+represent the k independent signals. A *signal* is either a
 
-A signal array has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+- [`Var`](@ref) dictionary that has a required :values key representing a *signal array* of any element type 
+  as function of the independent signal(s) (or is the k-th independent variable), or a
+- [`Par`](@ref) dictionary that has an optional :value key representing a constant of any type.
+
+A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
 for example units, description texts, variability (continuous, clocked, trigger, ...). 
@@ -68,7 +69,7 @@ ref.clock                   (6,)  Bool     Var  variability="clock"
 ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
 motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                  ()    String   Par
+motor.data                        String   Par
 attributes                                 Par  info="This is a test signal table"
 ```
 
