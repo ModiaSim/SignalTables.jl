@@ -38,8 +38,8 @@ BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) 
 
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
 function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
-    sig = OrderedDict{Symbol, Any}(kwargs)
-    sig[:_class] = kind
+    sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
+    #sig[:_class] = kind
 
     if kind == :Var && haskey(sig, :values)
         values = sig[:values]
