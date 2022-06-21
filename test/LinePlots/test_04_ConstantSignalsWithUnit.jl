@@ -10,7 +10,7 @@ inertia = [1.1  1.2  1.3;
            3.1  3.2  3.3] 
                               
 sigTable = SignalTable(
-    "time"    => Var(values = t, unit="s", variability="independent"),
+    "time"    => Var(values = t, unit="s", independent=true),
     "phi_max" => Par(value = 1.1f0, unit="rad"),
     "i_max"   => Par(value = 2),
     "open"    => Par(value = true),

@@ -7,24 +7,27 @@ CurrentModule = SignalTables
 This chapter documents the *Abstract Signal Table Interface* for which an implementation has to be provided,
 in order that the functions (see [Overview of Functions](@ref)) of the SignalTables package can be used.
 
+A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+represent the k independent signals. A *signal* is either a
+
+- [`Var`](@ref) dictionary that has a required :values key representing a *signal array* of any element type 
+  as function of the independent signal(s) (or is the k-th independent variable), or a
+- [`Par`](@ref) dictionary that has an optional :value key representing a constant of any type.
+
+A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
+it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
+for example units, description texts, variability (continuous, clocked, trigger, ...). 
+
 Functions that are marked as *required*, need to be defined for a new signal table type.
-Functions that are marked as *optional* have a default implementation, but can be defined for
-a new signal table type.
+Functions that are marked as *optional* have a default implementation.
 
-| Result functions                | Description                                                                           |
-|:--------------------------------|:--------------------------------------------------------------------------------------|
-| [`independentSignalName`](@ref) | Returns the name of the independent signal (*required*).                              |
-| [`signalNames`](@ref)           | Returns a string vector of the signal names from a signal table (*required*).         |
-| [`getSignal`](@ref)             | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*). |
-| [`hasSignal`](@ref)             | Returns `true` if a signal is present in a signal table (*optional*).                 |
+| Abstract functions               | Description                                                                             |
+|:---------------------------------|:----------------------------------------------------------------------------------------|
+| [`independentSignalNames`](@ref) | Returns a string vector of the names of the independent signals (*required*).           |
+| [`signalNames`](@ref)            | Returns a string vector of the signal names from a signal table (*required*).           |
+| [`getSignal`](@ref)              | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*).   |
+| [`getSignalInfo`](@ref)          | Returns signal with :\_typeof, :\_size keys instead of :values/:value key (*optional*). |
+| [`hasSignal`](@ref)              | Returns `true` if a signal is present in a signal table (*optional*).                   |
+| [`getDefaultHeading`](@ref)      | Returns the default heading for a plot. (*optional*).                                   |
 
-
-*Concrete implementations* of theses functions are provided for:
-
-- [`SignalTable`](@ref) (included in SignalTables.jl).
-- [Modia.jl](https://github.com/ModiaSim/Modia.jl) (a modeling and simulation environment)
-- [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl)
-  (tabular data; first column is independent variable; *only scalar variables*))
-- [Tables.jl](https://github.com/JuliaData/Tables.jl)
-  (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
-  first column is independent variable; *only scalar variables*).

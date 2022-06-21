@@ -22,7 +22,7 @@ function sigD()
 end
 
 sigTable = SignalTable(
-    "time"   => Var(values=t, unit="s"),
+    "time"   => Var(values=t, unit="s", independent=true),
     "load.r" => Var(values=0.4*[sin.(t) cos.(t) sin.(t)], unit="m"),  
     "sigA"   => Var(values=0.5*sin.(t), unit="m"),
     "sigB"   => Var(values=1.1*sin.(t), unit="m/s"),

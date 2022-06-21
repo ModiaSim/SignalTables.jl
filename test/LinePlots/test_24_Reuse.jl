@@ -6,14 +6,14 @@ using SignalTables
 t = range(0.0, stop=10.0, length=100)
 
 sigTable1 = SignalTable(
-    "time" => Var(values=t, unit="s"),
+    "time" => Var(values=t, unit="s", independent=true),
     "phi"  => Var(values=sin.(t), unit="rad"),
     "w"    => Var(values=cos.(t), unit="rad/s")
 )
 
 sigTable2 = SignalTable(
     "time" => Var(values=t, unit="s"),
-    "phi"  => Var(values=1.2*sin.(t), unit="rad"),
+    "phi"  => Var(values=1.2*sin.(t), unit="rad", independent=true),
     "w"    => Var(values=0.8*cos.(t), unit="rad/s")
 )
 

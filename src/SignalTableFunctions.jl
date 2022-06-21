@@ -79,7 +79,7 @@ getValueWithUnit(signalTable, name::String) = begin
 end
 
 
-const doNotShowAttributes = [:_class, :basetype, :size, :unit, :values, :value]
+const doNotShowAttributes = [:_class, :_typeof, :_size, :unit]
 
 
 """
@@ -87,11 +87,8 @@ const doNotShowAttributes = [:_class, :basetype, :size, :unit, :values, :value]
              sorted=false, Var=true, Par=true, attributes=true)
 
 Writes info about a signal table to the output stream.
-
-The independent signal is always printed first.
-Otherwise, ordering is according to `sorted`.
-
-The other keyword arguments define what information shall be printed.
+The keyword arguments define what information shall be printed
+or whether the names shall be sorted or presented in definition order.
 
 # Example
 
@@ -101,7 +98,7 @@ using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", variability="independent"),
+  "time"         => Var(values= t, unit="s", independent=true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
   "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
@@ -127,7 +124,7 @@ results in the following output
 ```julia
 name          unit          size  basetype kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  variability="independent"
+time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
 motor.angle   "rad"         (6,)  Float64  Var  state=true
 motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
@@ -164,7 +161,7 @@ function showInfo(io::IO, signalTable;
     end
 
     for name in sigNames
-        signal = getSignal(signalTable, name, require_values=false)
+        signal = getSignalInfo(signalTable, name)
         kind   = isVar(signal) ? "Var" : "Par"
         if Var && kind == "Var" || Par && kind == "Par"
             if attributes
@@ -184,10 +181,16 @@ function showInfo(io::IO, signalTable;
                 end
                 attr = String(take!(iostr))
             end
-            independent = get(signal, :variability, "continuous") == "independent"
-            valBaseType = string( get(signal, :basetype, "") )
-            valSize     = string( get(signal, :size, "") )
-            valUnit     = get(signal, :unit, "")
+            independent = get(signal, :independent, false)
+            valBaseType = get(signal, :_typeof, "")
+            if valBaseType != ""
+                @show name
+                @show get(signal, :_typeof, "")
+                @show BaseType(valBaseType)
+                valBaseType = string( BaseType(valBaseType) )
+            end
+            valSize = string( get(signal, :_size, "") )
+            valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString
                 if valUnit != ""
                     valUnit = "\"$valUnit\""
@@ -308,7 +311,12 @@ If the required transformation is not possible, a warning message is printed and
 function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
                                          targetInt    = Int,
-                                         targetFloat  = Float64)                              
+                                         targetFloat  = Float64)                                         
+    if length(signalTable.independentSignalsFirstDimension) != 1  
+        ni = length(signalTable.independentSignalsFirstDimension)
+        error("getFlattenedSignal(..) currently only supported for one independent signal,\nbut number of independent signals = $ni!")
+    end    
+    lenx = signalTable.independentSignalsFirstDimension[1]
     sigPresent = false
     if hasSignal(signalTable,name)
         # name is a signal name without range
@@ -316,7 +324,7 @@ function getFlattenedSignal(signalTable, name::String;
         if isVar(signal) && haskey(signal, :values)
             sigValues = signal[:values]
         elseif isPar(signal) && haskey(signal, :value)
-            sigValues = getValuesFromPar(signal, size(signalTable,1))
+            sigValues = getValuesFromPar(signal, lenx)
             if isnothing(sigValues)
                 @goto ERROR
             end
@@ -356,7 +364,7 @@ function getFlattenedSignal(signalTable, name::String;
                     if isVar(signal) && haskey(signal, :values)
                         sigValues = signal[:values]
                     elseif isPar(signal) && haskey(signal, :value)
-                        sigValues = getValuesFromPar(signal, size(signalTable,1))
+                        sigValues = getValuesFromPar(signal, lenx)
                         if isnothing(sigValues)
                             @goto ERROR
                         end
@@ -515,8 +523,15 @@ function getPlotSignal(sigTable, ysigName::AbstractString; xsigName=nothing)
     if isnothing(ysig)
         @goto ERROR
     end
-    
-    xsigName2 = isnothing(xsigName) ? independentSignalName(sigTable) : xsigName
+    if isnothing(xsigName)
+        xNames = independentSignalNames(sigTable)
+        if length(xNames) != 1
+            error("Plotting requires currently exactly one independent signal. However, independentSignalNames = $independentSignalNames")
+        end
+        xsigName2 = xNames[1]
+    else
+        xsigName2 = xsigName
+    end
     (xsig, xsigLegend, xsigKind) = signalValuesForLinePlots(sigTable, xsigName2)
     if isnothing(xsig)
         @goto ERROR
@@ -546,4 +561,4 @@ end
 
 Return `heading` if no empty string. Otherwise, return `defaultHeading(signalTable)`.
 """
-getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : defaultHeading(signalTable)
+getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : getDefaultHeading(signalTable)

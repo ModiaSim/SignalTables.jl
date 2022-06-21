@@ -14,7 +14,7 @@ import Pkg
 export Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsParseableString
 
 # Abstract Signal Table Interface
-export independentSignalName, signalNames, getSignal, hasSignal
+export independentSignalNames, signalNames, getSignal, hasSignal
 
 # Signal table functions
 export getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
@@ -27,7 +27,7 @@ export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPac
 
 include("Signals.jl")
 include("AbstractSignalTableInterface.jl")
-include("AbstractLinePlotInterface.jl")
+include("AbstractPlotInterface.jl")
 include("SignalTable.jl")
 include("SignalTableFunctions.jl")
 include("PlotPackageDefinition.jl")

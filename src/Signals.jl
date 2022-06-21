@@ -34,9 +34,7 @@ Returns eltype(obj), if obj is an array (but without Missing) and otherwise retu
 basetype(array::AbstractArray) = elementBaseType(eltype(array))
 basetype(obj) = typeof(obj)
 
-# If size is not defined, it is a scalar
-Base.size(obj) = ()
-
+BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) ) : T
 
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
 function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
@@ -57,8 +55,6 @@ function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
                 error("Var(values=..., unit=...): size(unit) = $(size(sigUnit)) and size(values)[2:end] = $(size(values)[2:end]) do not agree")
             end
         end
-        sig[:basetype] = basetype(values)
-        sig[:size]     = size(values)
     elseif kind == :Par && haskey(sig, :value)
         value = sig[:value]
         if haskey(sig, :unit)
@@ -67,8 +63,6 @@ function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
                 error("Par(value=..., unit=...): size(unit) = $(size(sigUnit)) and size(value) = $(size(values)) do not agree")
             end
         end
-        sig[:basetype] = basetype(value)
-        sig[:size]     = size(value)
     end
     return sig
 end
@@ -80,21 +74,22 @@ end
 Returns a *variable* signal definition in form of a dictionary.
 `kwargs...` are key/value pairs of variable attributes.
 
-The values of a variable ``v(t)`` are stored as `signal[:values]`
-and are represented by an array where `signal[:values][i,j,k,...]` is value `v[j,k,...]`
-of variable ``v(t)`` at ``t_i``. If an element of ``v`` is not defined at ``t_ì``​, it has a value of *missing*.
+The :values key represents a *signal array* of any element type 
+as function of the independent signal(s) (or is the k-th independent variable).
+A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
+it has a value of *missing*. Furthermore, additional attributes can be stored. 
 
-The following keys are recognized (all are *optional*, but usually at least either `:values` or `:eltype` and `:size` are provided):
+The following keys are recognized (all are *optional*, but usually :values is present):
 
 |key             | value (of type String, if not obvious from context)                                                   |
 |:---------------|:------------------------------------------------------------------------------------------------------|
-|`:values`       | `Array{T,N}` such that `signal[:values][i,j,k,...]` is value `v[j,k,...]` of ``v(t_i)``.              |
-|`:basetype`     | `= `[`basetype`](@ref)`( signal[:values] )`. *Automatically included*, if `:values` is provided.      |
-|`:size`         | `= size( signal[:values] )`. *Automatically included*, if `:values` is provided (`size(scalar)=()`).  |
+|`:values`       | `Array{T,N}` such that `signal[:values][i1,i2,...j1,j2,...]` is value `[j1,j2,...]` at `[i1,i2,...]`, |
+|                | or such that `signal[:values][i_k]` is the value `[i_k]` of the k-th independent variable.            |
 |`:unit`         | Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`.                    |
-|                | `Vector{String}`: `signal[:unit][j,k,...]` is unit of variable element `v[j,k,...]`.                  |
+|                | `Vector{String}`: `signal[:unit][j1,j2,...]` is unit of variable element `[j1,j2,...]`.               |
 |`:info`         | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
-|`:causality`    | Causality of signal (`"independent", "input", "output", "local"`).                                    |
+|`:independent`  | = true, if independent variable (the k-th independent variable is the k-th Var in a signal table)     |
 |`:variability`  | Time dependency of signal (`"tunable", "discrete", "clocked", "clock", "trigger", "continuous"`).     |
 |`:state`        | = true, if signal is a (discrete, clocked or continuous) state.                                       |
 |`:integral`     | [`getSignal`](@ref)`(signalTable, signal[:integral])[:values]` is the *integral* of `signal[:values]`.          |
@@ -106,7 +101,7 @@ The following keys are recognized (all are *optional*, but usually at least eith
 
 - `:alias` takes effect when adding the Var-signal to a signal table.
 
-- Line plots are constructed with `:interpolation`, if provided, and otherwise from `:variability` if provided, and otherwise
+- Plots are constructed with `:interpolation`, if provided, and otherwise from `:variability` if provided, and otherwise
   the `signal[:values]` points are linearly interpolated.
 
 Additionally, any other signal attributes can be stored in `signal` with a desired key, especially
@@ -118,7 +113,7 @@ the *Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-
 using SignalTables
 
 t = (0.0:0.1:0.5)
-t_sig = Var(values = t, unit=u"s",  variability="independent")
+t_sig = Var(values = t, unit=u"s",  independent=true)
 w_sig = Var(values = sin.(t), unit="rad/s", info="Motor angular velocity")
 c_sig = Var(values = [1.0, missing, missing, 4.0, missing, missing],
             variability="clocked", interpolation="none")
@@ -133,21 +128,19 @@ Var(;kwargs...) = newSignal(kwargs, :Var)
 
 Returns a *parameter* signal definition in form of a dictionary.
 A parameter is a variable that is constant and is not a function
-of the independent variable.
+of the independent variables.
 `kwargs...` are key/value pairs of parameter attributes.
 
-The value of a parameter variable ``v(t) = v_{const}`` is stored with key `:value` in `signal`
-and is an instance of a Julia type (number, string, array, tuple, dictionary, ...).
+The value of a parameter variable is stored with key `:value` in `signal`
+and is an instance of any Julia type (number, string, array, tuple, dictionary, ...).
 
-The following keys are recognized (all are *optional*, but usually at least either `:value` or `:type` are provided):
+The following keys are recognized (all are *optional*):
 
 | key         | value (of type String, if not obvious from context)                                                   |
 |:------------|:------------------------------------------------------------------------------------------------------|
-| `:value`    | `signal[:value]::Any` is constant value ``v(t)=v_{const}`` at all values ``t_i``.                     |
-| `:basetype` | `= `[`basetype`](@ref)`( signal[:values] )`. *Automatically included*, if `:value` is provided.       |
-| `:size`     | `= size( signal[:values] )`, if size(..) is defined. *Automatically included* (`size(scalar)=()`).    |
+| `:value`    | `signal[:value]::Any` is a constant value that holds for all values of the independent signals.       |
 | `:unit`     | Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`.                    |
-|             | `Vector{String}`: `signal[:unit][j,k,...]` is unit of variable element `v[j,k,...]`.                  |
+|             | `Vector{String}`: `signal[:unit][j1,j2,...]` is unit of variable element `v[j1,j2,...]`.                  |
 | `:info`     | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
 | `:alias`    | `signal[:value]` is a reference to [`getSignal`](@ref)`(signalTable, signal[:alias])[:value]` (and attributes are merged) |
 

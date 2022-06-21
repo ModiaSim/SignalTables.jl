@@ -9,10 +9,6 @@ using SignalTables.Test
 @test basetype("abc")             == String
 @test basetype((1,1.0,"abc"))     == Tuple{Int64, Float64, String}
 
-@test size([1.0,2.0,3.0]) == (3,)
-@test size("abc")         == ()
-@test size((1,1.0,"abc")) == ()
-
 s = 2.1u"m/s"
 v = [1.0, 2.0, 3.0]u"m/s"
 

@@ -6,7 +6,7 @@ using SignalTables
 t = range(0.0, stop=10.0, length=100)
 
 sigTable = SignalTable(
-    "time" => Var(values = t, variability="independent"),
+    "time" => Var(values = t, independent=true),
     "phi"  => Var(values = sin.(t))
 )
 

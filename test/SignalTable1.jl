@@ -3,7 +3,7 @@ using SignalTables
 println("\n... Constructing signalTable1")
 t = 0.0:0.1:0.5
 signalTable1 = SignalTable(
-  "time"         => Var(values= t, unit="s", variability="independent"),
+  "time"         => Var(values= t, unit="s", independent=true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
   "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),

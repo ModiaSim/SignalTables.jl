@@ -1,4 +1,4 @@
-# Line Plots
+# Plots
 
 ```@meta
 CurrentModule = SignalTablesInterface_PyPlot
@@ -26,7 +26,7 @@ have been executed. The documentation has been generated with [SignalTablesInter
     [SignalTables.jl](https://github.com/ModiaSim/SignalTables.jl) exports all symbols of the table.\
     [Modia.jl](https://github.com/ModiaSim/Modia.jl) reexports all symbols and uses as *signalTable* argument `instantiatedModel`.
 
-| Line plot functions       | Description                                                    |
+| Plot functions       | Description                                                    |
 |:--------------------------|:---------------------------------------------------------------|
 | [`plot`](@ref)            | Plot signals from a signal table in multiple diagrams/figures. |
 | [`saveFigure`](@ref)      | Save figure in different formats on file.                      |

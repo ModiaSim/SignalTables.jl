@@ -3,17 +3,20 @@
 [![The MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/ModiaSim/SignalTables.jl/blob/master/LICENSE)
 
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl) (see [docu](https://modiasim.github.io/SignalTables.jl/stable/index.html))
-provides types and functions for *signals* that are represented by
-*multi-dimensional* arrays with identical first dimensions and are collected in *tables*.
-Typically, simulation results, reference signals, and table-based input signals
-can be represented by a *signal table*. More specifically:
+provides abstract and concrete types and functions for *signals* that are represented by an *ordered dictionary* 
+of *multi-dimensional* arrays with *zero, one or more independent signals.
+Typically, simulation results, reference signals, table-based input signals, measurement data,
+look-up tables can be represented by a *signal table*. A *signal* is identified by its string *name* 
+and is a 
 
-A *signal table* is a (dictionary-like) type that supports the [Abstract Signal Table Interface](@ref)
-for example [`SignalTable`](@ref). A *signal* is identified by its string *name* and is either
-a [`Var`](@ref) dictionary with a signal array or a [`Par`](@ref) dictionary with a constant value of
-any type. In both dictionaries, additional attributes can be stored, e.g., units, description text,
-signal variability (continuous, clocked, trigger, ...). A signal array has indices `[i,j,k,...]`
-to hold variable elements `[j,k,...]` at the i-th value of the independent signal.
+- [`Var`](@ref) dictionary with a signal array (key = :values) of any element type 
+  as function of the independent signal(s) or 
+- [`Par`](@ref) dictionary with an optional value (key = :value) of any type that represents a constant.
+
+A signal array has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
+it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
+for example units, description texts, variability (continuous, clocked, trigger, ...). 
 
 Example:
 
@@ -22,7 +25,7 @@ using SignalTables
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", variability="independent"),
+  "time"         => Var(values= t, unit="s", independent=true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
   "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
@@ -55,7 +58,7 @@ The last command generates the following output:
 ```julia
 name          unit          size  basetype kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  variability="independent"
+time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
 motor.angle   "rad"         (6,)  Float64  Var  state=true
 motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
@@ -78,12 +81,12 @@ usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
 include("$(SignalTable.path)/test/SignalTable3.jl")
 
 @usingPlotPackage                           # = using SignalTablesInterface_PyPlot
-plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])  # generate line plots
+plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])  # generate plots
 ```
 
-generate the following line plot:
+generate the following plot:
 
-![Line plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
+![Plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
 
 - [`SignalTable`](@ref) (included in SignalTables.jl).
 
@@ -96,7 +99,7 @@ generate the following line plot:
     (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
     first column is independent variable; *only scalar variables*).
 
-*Concrete implementations* of the [Abstract Line Plot Interface](@ref) are provided for:
+*Concrete implementations* of the [Abstract Plot Interface](@ref) are provided for:
 
 - [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python;
   via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),

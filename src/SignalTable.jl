@@ -13,7 +13,7 @@ using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", variability = "independent"),
+  "time"         => Var(values= t, unit="s", independent = true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)]),
   "motor.angle"  => Var(values= sin.(t), unit="rad"),
   "motor.w_ref"  => Var(values= cos.(t), unit="rad/s", info="Reference"),
@@ -23,7 +23,7 @@ sigTable = SignalTable(
 )
 ```
 
-The *first* argument must define the *independent* signal, that is, `Var(values=..., variability="independent"), ...`
+The *first* argument must define the *independent* signal, that is, `Var(values=..., independent=true), ...`
 and `values` must be an `AbstractVector`. Further added signals with a `:values` key, must have the
 same first dimension as the independent signal.
 
@@ -38,7 +38,7 @@ using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", variability="independent"),
+  "time"         => Var(values= t, unit="s", independent=true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
   "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
   "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
@@ -64,7 +64,7 @@ This results in the following output:
 ```julia
 name          unit          size  basetype kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  variability="independent"
+time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
 motor.angle   "rad"         (6,)  Float64  Var  state=true
 motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
@@ -82,7 +82,7 @@ The command `show(IOContext(stdout, :compact => true), sigTable)` results in the
 
 ```julia
 SignalTable(
-  "time" => Var(values=0.0:0.1:0.5, unit="s", variability="independent"),
+  "time" => Var(values=0.0:0.1:0.5, unit="s", independent=true),
   "load.r" => Var(values=[0.0 1.0 0.0; 0.0998334 0.995004 0.0998334; 0.198669 0.980067 0.198669; 0.29552 0.955336 0.29552; 0.389418 0.921061 0.389418; 0.479426 0.877583 0.479426], unit="m"),
   "motor.angle" => Var(values=[0.0, 0.0998334, 0.198669, 0.29552, 0.389418, 0.479426], unit="rad", state=true),
   "motor.w" => Var(values=[1.0, 0.995004, 0.980067, 0.955336, 0.921061, 0.877583], unit="rad/s", integral="motor.angle"),
@@ -99,79 +99,76 @@ SignalTable(
 """
 struct SignalTable <: AbstractDict{String,Any}
     dict::StringDictType
-    len::Int              # = length(<values> of independent signal>)
+    independendentSignalNames::Vector{String}
+    independentSignalsFirstDimension::Vector{Int}
 
     function SignalTable(args...)
         dict = StringDictType()
-        first = true
-        len = 0
+        independendentSignalNames = String[]
+        independentSignalsFirstDimension = Int[]
+        k = 0
         for (key, sig) in args
             if !isSignal(sig)
                 error("SignalTable(\"$key\" => signal, ...): The added signal is neither a Var(..) nor a Par(..)\ntypeof(signal) = $(typeof(sig))!")
             end
-            if first
-                first = false
-                if haskey(sig, :variability)
-                    variability = sig[:variability]
-                    if variability != "independent"
-                        error("SignalTable(\"$key\" => signal, ...): The first added signal has variability = \"$variability\"\nbut must have variability=\"independent\"!")
-                    end
+            if isVar(sig)
+                if haskey(sig, :values)
+                    sig_values = sig[:values]
+                    if !(typeof(sig_values) <: AbstractArray)
+                        error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values)) but must be an `<: AbstractArray`!")
+                    end                 
+                    if get(sig, :independent, false)
+                        k += 1
+                        push!(independendentSignalNames, key)
+                        push!(independentSignalsFirstDimension, size(sig_values, 1))
+                    else
+                        for (i,val) in enumerate(independentSignalsFirstDimension)
+                            if size(sig_values, i) != val
+                                error("SignalTable(\"$key\" => signal, ...): size(signal[:values],$i) = $(size(sig_values,i)) but must be $val (= length of independent signal)!")
+                            end
+                        end
+                    end 
                 else
-                    sig[:variability] = "independent"
-                    @info "SignalTable(\"$key\" => signal, ...): The first added signal had no variability defined.\nSetting it to variability=\"independent\"!"
+                    # Needs not have :values, e.g. alias
+                    # error("SignalTable(\"$key\" => signal, ...) is a Var(..) and has no key :values which is required!")
                 end
-                if !haskey(sig, :values)
-                    error("SignalTable(\"$key\" => signal, ...): The first added signal has no `values=...` defined, which is required!")
-                elseif !haskey(sig, :values)
-                    error("SignalTable(\"$key\" => signal, ...): The first added signal has no `signal[:values]=...` defined, which is required!")
+                if haskey(sig, :integral)
+                    sigIntegral = sig[:integral]
+                    if !haskey(dict, sigIntegral)
+                        error("SignalTable(\"$key\" => Var(integral=\"$sigIntegral\"...): referenced signal does not exist")
+                    end
                 end
-                sig_values = sig[:values]
-                if !(typeof(sig_values) <: AbstractVector)
-                     error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values))\nbut must be `AbstractVector` since first added signal must be independent variable!")
+                if haskey(sig, :clock)
+                    sigClock = sig[:clock]
+                    if !haskey(dict, sigClock)
+                        error("SignalTable(\"$key\" => Var(clock=\"$sigClock\"...): referenced signal does not exist")
+                    end
+                end                
+                if haskey(sig, :alias)
+                    aliasName = sig[:alias]
+                    if haskey(sig,:values)
+                        error("SignalTable(\"$key\" => Var(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
+                    elseif !haskey(dict, aliasName)
+                        error("SignalTable(\"$key\" => Var(alias=\"$aliasName\"...): referenced signal does not exist.")
+                    end
+                    sigAlias = dict[aliasName]
+                    sig = merge(sigAlias,sig)
                 end
-                len = length(sig_values)
             else
-                if isVar(sig)
-                    if haskey(sig, :values)
-                        sig_values = sig[:values]
-                        if !(typeof(sig_values) <: AbstractArray)
-                            error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values)) but must be an `AbstractArray`!")
-                        elseif size(sig_values,1) != len
-                            error("SignalTable(\"$key\" => signal, ...): size(signal[:values],1) = $(size(sig_values,1)) but must be $len (= length of independent signal values)!")
-                        end
+                if haskey(sig, :alias)
+                    aliasName = sig[:alias]
+                    if haskey(sig,:value)
+                        error("SignalTable(\"$key\" => Par(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
+                    elseif !haskey(dict, aliasName)
+                        error("SignalTable(\"$key\" => Par(alias=\"$aliasName\"...): referenced signal does not exist.")
                     end
-                    if haskey(sig, :integral)
-                        sigIntegral = sig[:integral]
-                        if !haskey(dict, sigIntegral)
-                            error("SignalTable(\"$key\" => Var(integral=\"$sigIntegral\"...): referenced signal does not exist")
-                        end
-                    end
-                    if haskey(sig, :alias)
-                        aliasName = sig[:alias]
-                        if haskey(sig,:values)
-                            error("SignalTable(\"$key\" => Var(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
-                        elseif !haskey(dict, aliasName)
-                            error("SignalTable(\"$key\" => Var(alias=\"$aliasName\"...): referenced signal does not exist.")
-                        end
-                        sigAlias = dict[aliasName]
-                        sig = merge(sigAlias,sig)
-                    end
-                else
-                    if haskey(sig, :alias)
-                        aliasName = sig[:alias]
-                        if haskey(sig,:value)
-                            error("SignalTable(\"$key\" => Par(values=.., alias=\"$aliasName\"...): not allowed to define values and alias together.")
-                        elseif !haskey(dict, aliasName)
-                            error("SignalTable(\"$key\" => Par(alias=\"$aliasName\"...): referenced signal does not exist.")
-                        end
-                        sigAlias = dict[:aliasName]
-                        sig = merge(sigAlias,sig)
-                    end
+                    sigAlias = dict[:aliasName]
+                    sig = merge(sigAlias,sig)
                 end
             end
             dict[key] = sig
         end
-        new(dict,len)
+        new(dict, independendentSignalNames, independentSignalsFirstDimension)
     end
 end
 Base.convert(::Type{StringDictType}, sig::SignalTable) = sig.dict
@@ -215,14 +212,12 @@ end
 
 # Implementation of AbstractSignalTableInterface
 
-independentSignalName(sigTable::SignalTable) = first(sigTable).first
+independentSignalNames(sigTable::SignalTable) = sigTable.independendentSignalNames
 signalNames(sigTable::SignalTable) = String.(keys(sigTable))
-getSignal(sigTable::SignalTable, name::String; require_values=true) = sigTable[name]
+getSignal(sigTable::SignalTable, name::String) = sigTable[name]
 hasSignal(sigTable::SignalTable, name::String) = haskey(sigTable, name)
-Base.size(sigTable::SignalTable)   = (sigTable.len, length(sigTable))
-Base.size(sigTable::SignalTable,i) = i==1 ? sigTable.len : (i == 2 ? length(sigTable) : error("size(sigTable,i): i=$i, but must be 1 or 2."))
 
-function defaultHeading(sigTable::SignalTable)::String 
+function getDefaultHeading(sigTable::SignalTable)::String 
     attr = get(sigTable, "attributes", "")        
     if attr == ""
         return ""

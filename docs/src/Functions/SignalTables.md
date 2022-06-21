@@ -14,27 +14,30 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 |:--------------------------------|:-----------------------------------------------------------------------------------------------|
 | [`SignalTable`](@ref)           | Returns a new SignalTable dictionary.                                                          |
 | [`showInfo`](@ref)              | Writes info about a signal table to the output stream.                                         |
-| [`independentSignalName`](@ref) | Returns the name of the independent signal.                                                    |
+| [`independentSignalNames`](@ref | Returns the names of the independent signals.                                                  |
 | [`signalNames`](@ref)           | Returns a string vector of the signal names that are present in a signal table.                |
 | [`hasSignal`](@ref)             | Returns `true` if a signal is present in a signal table.                                       |
 | [`getSignal`](@ref)             | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
+| [`getSignalInfo`](@ref)         | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
 | [`getValues`](@ref)             | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
 | [`getValuesWithUnit`](@ref)     | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)              | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
 | [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
-| [`getFlattenedSignal`](@ref)    | Returns a copy of a signal where the values or the value are *flattened* and converted for use in line plots or traditional tables. |
-
+| [`getFlattenedSignal`](@ref)    | Returns a copy of a signal where the values or the value are *flattened* and converted for use in plots or traditional tables. |
+| [`getDefaultHeading`](@ref)     | Returns the default heading for a plot.                                                        |
 
 ```@docs
 SignalTable
 showInfo
-independentSignalName
+independentSignalNames
 signalNames
 hasSignal
 getSignal
+getSignalInfo
 getValues
 getValuesWithUnit
 getValue
 getValueWithUnit
 getFlattenedSignal
+getDefaultHeading
 ```

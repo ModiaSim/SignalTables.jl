@@ -5,49 +5,46 @@ CurrentModule = SignalTables
 ```
 
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl)
-provides types and functions for *signals* that are represented by
-*multi-dimensional* arrays with identical first dimensions and are collected in *tables*.
-Typically, simulation results, reference signals, and table-based input signals
-can be represented by a *signal table*. More specifically:
+provides abstract and concrete types and functions for *signal tables*.
+Typically, simulation results, reference signals, table-based input signals, measurement data,
+look-up tables can be represented by a signal table.
 
-A *signal table* is a (dictionary-like) type that supports the [Abstract Signal Table Interface](@ref)
-for example [`SignalTable`](@ref). It defines a set of *signals* in tabular format. A *signal* is identified
-by its String *name* and is a representation of the values of a variable ``v`` as a (partial) function ``v(t)``
-of the independent variable ``t = v_{independent}``.
+A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+represent the k independent signals. A *signal* is either a
 
-The values of ``v(t)`` are stored with key `:values` in dictionary [`Var`](@ref) (= abbreviation for *Variable*)
-and are represented by an array where `v.values[i,j,k,...]` is element `v[j,k,...]` of
-variable ``v`` at ``t_i``. If an element of ``v`` is *not defined* at
-``t_ì``, it has a value of *missing*.\
-If ``v(t) = v_{const}`` is constant, it is stored in element `:value` in dictionary [`Par`](@ref)
-(= abbreviation for *Parameter*) and is represented by any Julia type where
-`v.value` is the value of ``v_{const}`` at all elements ``t_i``.
+- [`Var`](@ref) dictionary that has a required :values key representing a *signal array* of any element type 
+  as function of the independent signal(s) (or is the k-th independent variable), or a
+- [`Par`](@ref) dictionary that has an optional :value key representing a constant of any type.
+
+A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
+it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
+for example units, description texts, variability (continuous, clocked, trigger, ...). 
 
 Example:
 
 ```julia
 using SignalTables
-using Unitful
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", variability="independent"),
-  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
-  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
-  "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
-  "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
-                                info="Reference angle and speed"),
-  "wm"           => Var(alias = "motor.w"),
-  "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
-                                 variability="clock"),
-  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
-                                 variability="trigger"),
-  "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
-                                variability="clocked", clock="ref.clock"),
+  "time"        => Var(values= t, unit="s", independent=true),
+  "load.r"      => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
+  "motor.angle" => Var(values= sin.(t), unit="rad", state=true),
+  "motor.w"     => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
+  "motor.w_ref" => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
+                               info="Reference angle and speed"),
+  "wm"          => Var(alias = "motor.w"),
+  "ref.clock"   => Var(values= [true, missing, missing, true, missing, missing],
+                                variability="clock"),
+  "ref.trigger" => Var(values= [missing, missing, true, missing, true, true],
+                                variability="trigger"),
+  "motor.w_c"   => Var(values= [0.8, missing, missing, 1.5, missing, missing],
+                               variability="clocked", clock="ref.clock"),
 
-  "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
-  "motor.data"   => Par(value = "resources/motorMap.json"),
-  "attributes"   => Par(info  = "This is a test signal table")
+  "motor.inertia" => Par(value = 0.02f0, unit="kg*m/s^2"),
+  "motor.data"    => Par(value = "resources/motorMap.json"),
+  "attributes"    => Par(info  = "This is a test signal table")
 )
 
 phi_m_sig = getSignal(        sigTable, "motor.angle")   # = Var(values=..., unit=..., ...)
@@ -64,7 +61,7 @@ The last command generates the following output:
 ```julia
 name          unit          size  basetype kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  variability="independent"
+time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
 motor.angle   "rad"         (6,)  Float64  Var  state=true
 motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
@@ -74,7 +71,7 @@ ref.clock                   (6,)  Bool     Var  variability="clock"
 ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
 motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                  ()    String   Par
+motor.data                        String   Par
 attributes                                 Par  info="This is a test signal table"
 ```
 
@@ -86,13 +83,13 @@ usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
 
 include("$(SignalTable.path)/test/SignalTable3.jl")
 
-@usingPlotPackage                           # = using SignalTablesInterface_PyPlot
-plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])  # generate line plots
+@usingPlotPackage           # = using SignalTablesInterface_PyPlot
+plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
 ```
 
-generate the following line plot:
+generate the following plot:
 
-![Line plots of SigTable](../resources/images/sigTable-line-plots.png)
+![Plots of SigTable](../resources/images/sigTable-line-plots.png)
 
 *Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
 
@@ -107,7 +104,7 @@ generate the following line plot:
     (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
     first column is independent variable; *only scalar variables*).
 
-*Concrete implementations* of the [Abstract Line Plot Interface](@ref) are provided for:
+*Concrete implementations* of the [Abstract Plot Interface](@ref) are provided for:
 
 - [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python;
   via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),
@@ -183,20 +180,21 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
-### Version 0.1.0
+### Version 0.2.0-dev
 
-Initial version, based on [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl).
+Version, based on [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl).
 Changes with respect to ModiaResult.jl:
 
-Underlying data format made much simpler and more useful:
+Underlying data format made much simpler, more general and more useful:
 
-- Dictionary of * multi-dimensional arrays* that have the *same first dimension* and can have *missing values.
+- Dictionary of * multi-dimensional arrays* as function of zero, one or more independent variables
+  with potentially *missing values.
 - Also parameters can be stored in the dictionary and are supported, e.g., for plotting.
 - Variables and parameters are dictionaries that store the actual values (e.g. arrays), and additional attributes.
 - Values are stored without units and the units are provided via the additional string attribute `:unit`. A unit can be 
   either hold for all elements of an array, or an array of units can be provided defining the units for all variable elements.
-- A new function to *flatten* and convert a signal array for use in line plots or traditional tables.
-- Since signals are arrays with the same first dimension, all the Julia array operations can be directly used,
+- A new function to *flatten* and convert a signal array for use in plots or traditional tables.
+- Since signals are arrays, all the Julia array operations can be directly used,
   e.g. for post-processing of simulation results.
 
 Furthermore
@@ -205,7 +203,9 @@ Furthermore
 - The Abstract Interfaces defined more clearly.
 - Several annoying bugs of ModiaResult.jl are no longer present.
 
+### Version 0.1.0
 
+Initial version.
 
 
 ## Main developer

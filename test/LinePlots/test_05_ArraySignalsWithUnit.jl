@@ -14,7 +14,7 @@ for i = 1:length(t), j = 1:3, k=1:3
 end
      
 sigTable = SignalTable(   
-    "time"    => Var(values=t, unit="s", variability="independent"),
+    "time"    => Var(values=t, unit="s", independent=true),
     "Inertia" => Var(values=Iarray, unit="kg*m^2")
 )
 

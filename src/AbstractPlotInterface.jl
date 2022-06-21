@@ -23,8 +23,8 @@ end
          minXaxisTickLabels = false,
          MonteCarloAsArea = true)
 
-Generate **line plots** of selected signals of a signal table using the plot package defined with
-[`@usePlotPackag`]@ref`(xxx)`. Possible values for `xxx`:
+Generate **plots** of selected signals of a signal table using the plot package defined with
+[`@usePlotPackage`]@ref`(xxx)`. Possible values for `xxx`:
 `"GLMakie", "WGLMakie", "CairoMakie", "PyPlot", "SilentNoPlot"`).
 
 `signalTable` is an instance of a type that supports the [Abstract Signal Table Interface](@ref).
