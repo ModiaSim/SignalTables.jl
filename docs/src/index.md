@@ -78,9 +78,6 @@ motor.data                        String   Par
 attributes                                 Par  info="This is a test signal table"
 ```
 
-The command
-
-```julia
 The commands
 
 ```julia
