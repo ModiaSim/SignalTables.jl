@@ -51,10 +51,13 @@ w_c       = getValues(        sigTable, "motor.w_c"  )   # = [0.8, missing, miss
 inertia   = getValueWithUnit( sigTable, "motor.inertia") # = 0.02u"kg*m/s^2"
 getValues(sigTable, "motor.w") === getValues(sigTable, "wm")
 
+str = signalTableToJSON(sigTable)    # returns sigTable as JSON string
+writeSignalTable("test_json_signalTable1.json", sigTable)
 showInfo(sigTable)
 ```
 
-The last command generates the following output:
+Command `writeSignalTable` writes the signal table in json format on file (see [JSON file](docs/resources/json/test_json_signalTable1.json)).\
+Command `showInfo` generates the following output:
 
 ```julia
 name          unit          size  basetype kind attributes
