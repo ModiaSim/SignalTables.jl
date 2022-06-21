@@ -4,6 +4,8 @@
 CurrentModule = SignalTables
 ```
 
+## Overview
+
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl)
 provides abstract and concrete types and functions for *signal tables*.
 Typically, simulation results, reference signals, table-based input signals, measurement data,
@@ -21,7 +23,7 @@ at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
 for example units, description texts, variability (continuous, clocked, trigger, ...). 
 
-Example:
+## Examples
 
 ```julia
 using SignalTables
@@ -93,6 +95,9 @@ plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
 generate the following plot:
 
 ![Plots of SigTable](../resources/images/sigTable-line-plots.png)
+
+
+## Abstract Interfaces
 
 *Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
 
