@@ -92,6 +92,8 @@ generate the following plot:
 
 ![Plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
 
+*Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
+
 - [`SignalTable`](@ref) (included in SignalTables.jl).
 
   Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
