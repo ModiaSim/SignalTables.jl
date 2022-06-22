@@ -120,25 +120,13 @@
     ],
     "variability": "clock"
   },
-  "ref.trigger": {
-    "_class": "Var",
-    "values": [
-      null,
-      null,
-      true,
-      null,
-      true,
-      true
-    ],
-    "variability": "trigger"
-  },
   "motor.w_c": {
     "_class": "Var",
     "values": [
+      0.6,
+      null,
+      null,
       0.8,
-      null,
-      null,
-      1.5,
       null,
       null
     ],
