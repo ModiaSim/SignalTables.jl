@@ -72,7 +72,8 @@ attributes                                 Par  info="This is a test signal tabl
 ```
 
 The various Julia FileIO functions can be directly used to save a signal table
-in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file of sigTable above](docs/resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
+in various formats, e.g. JSON or HDF5 (see [FileIO Examples](https://modiasim.github.io/SignalTables.jl/stable/Examples/FileIO.html), 
+[json file of sigTable above](docs/resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
 
 
 ```julia
