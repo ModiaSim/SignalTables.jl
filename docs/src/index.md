@@ -85,7 +85,7 @@ The commands
 using SignalTable
 usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
 
-include("$(SignalTable.path)/test/SignalTable3.jl")
+sigTable = getSignalTableExample("MissingValues")
 
 @usingPlotPackage           # = using SignalTablesInterface_PyPlot
 plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
