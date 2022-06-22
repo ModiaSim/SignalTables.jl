@@ -7,7 +7,8 @@ provides abstract and concrete types and functions for *signal tables*.
 Typically, simulation results, reference signals, table-based input signals, measurement data,
 look-up tables can be represented by a signal table.
 
-A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+A *signal table* is an *ordered dictionary* of *signals* with string keys that supports the
+[Abstract Signal Table Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractSignalTableInterface.html). The first k entries
 represent the k independent signals. A *signal* is either a
 
 - [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) dictionary that has a required *:values* key representing a *signal array* of any element type 

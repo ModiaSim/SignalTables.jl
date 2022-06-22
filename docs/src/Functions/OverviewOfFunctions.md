@@ -6,7 +6,8 @@ CurrentModule = SignalTables
 
 This chapter documents functions that operate on signals and on signal tables
 
-A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+A *signal table* is an *ordered dictionary* of *signals* with string keys that supports the
+[Abstract Signal Table Interface](@ref). The first k entries
 represent the k independent signals. A *signal* is either a
 
 - [`Var`](@ref) dictionary that has a required *:values* key representing a *signal array* of any element type 
