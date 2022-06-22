@@ -36,8 +36,6 @@ sigTable = SignalTable(
   "wm"           => Var(alias = "motor.w"),
   "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
                                  variability="clock"),
-  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
-                                 variability="trigger"),
   "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
                                 variability="clocked", clock="ref.clock"),
 
@@ -52,12 +50,9 @@ w_c       = getValues(        sigTable, "motor.w_c"  )   # = [0.8, missing, miss
 inertia   = getValueWithUnit( sigTable, "motor.inertia") # = 0.02u"kg*m/s^2"
 getValues(sigTable, "motor.w") === getValues(sigTable, "wm")
 
-str = signalTableToJSON(sigTable)    # returns sigTable as JSON string
-writeSignalTable("test_json_signalTable1.json", sigTable)
 showInfo(sigTable)
 ```
 
-Command `writeSignalTable` writes the signal table in json format on file (see [JSON file](docs/resources/json/test_json_signalTable1.json)).\
 Command `showInfo` generates the following output:
 
 ```julia
@@ -70,14 +65,15 @@ motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
 motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
 wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
 ref.clock                   (6,)  Bool     Var  variability="clock"
-ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
 motor.inertia "kg*m/s^2"    ()    Float32  Par
 motor.data                        String   Par
 attributes                                 Par  info="This is a test signal table"
 ```
 
-The commands
+The various Julia FileIO functions can be directly used to save a signal table
+in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file of sigTable above](docs/resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
+
 
 ```julia
 using SignalTable

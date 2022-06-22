@@ -195,6 +195,7 @@ function showInfo(io::IO, signalTable;
             else
                 show(iostr, valUnit)
                 valUnit = String(take!(iostr))
+                #valUnit = replace(valUnit, "; " => ";\n")
             end
 
             if independent
@@ -235,6 +236,18 @@ showInfo(signalTable; kwargs...) = showInfo(stdout, signalTable; kwargs...)
 const TypesForPlotting = [Float64, Float32, Int]
 
 nameWithUnit(name::String, unit::String) = unit == "" ? name : string(name, " [", unit, "]")
+
+function nameWithArrayUnit(unit, indicesAsVector::Vector{Int})::String
+    if unit == ""
+        return "]"
+    elseif typeof(unit) == String
+        return string( "] [", unit, "]")
+    else
+        elementIndicesAsTuple = Tuple(i for i in indicesAsVector)
+        elementUnit = unit[elementIndicesAsTuple...]
+        return string("] [", elementUnit, "]")
+    end
+end
 
 
 #TargetElType(::Type{T})                                           where {T}     = T
@@ -452,6 +465,10 @@ function getFlattenedSignal(signalTable, name::String;
     else
         # sig is an array variable
         legend = [arrayName * "[" for i = 1:nScalarSignals]
+        legendIndices = Vector{Vector{Int}}(undef, nScalarSignals)
+        for i = 1:nScalarSignals
+            legendIndices[i] = Int[]
+        end
         i = 1
         sizeLength = Int[]
         for j1 in eachindex(arrayIndices)
@@ -461,6 +478,8 @@ function getFlattenedSignal(signalTable, name::String;
                 for j2 in 1:div(nScalarSignals, sizeLength[1])
                     for j3 in arrayIndices[1]
                         legend[i] *= string(j3)
+                        push!(legendIndices[i], j3)                         
+                        # println("i = $i, j2 = $j2, j3 = $j3, legend[$i] = ", legend[i], ", legendIndices[$i] = ", legendIndices[i])
                         i += 1
                     end
                 end
@@ -469,6 +488,8 @@ function getFlattenedSignal(signalTable, name::String;
                 for j2 in arrayIndices[j1]
                     for j3 = 1:ncum
                         legend[i] *= "," * string(j2)
+                        push!(legendIndices[i], j2)
+                        # println("i = $i, j2 = $j2, j3 = $j3, legend[$i] = ", legend[i], ", legendIndices[$i] = ", legendIndices[i])
                         i += 1
                     end
                 end
@@ -476,7 +497,7 @@ function getFlattenedSignal(signalTable, name::String;
         end
 
         for i = 1:nScalarSignals
-            legend[i] *= nameWithUnit("]", sigUnit)
+            legend[i] *= nameWithArrayUnit(sigUnit, legendIndices[i])
         end
     end
 

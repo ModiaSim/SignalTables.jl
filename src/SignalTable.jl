@@ -47,8 +47,6 @@ sigTable = SignalTable(
   "wm"           => Var(alias = "motor.w"),
   "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
                                  variability="clock"),
-  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
-                                 variability="trigger"),
   "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
                                 variability="clocked", clock="ref.clock"),
   "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
@@ -71,7 +69,6 @@ motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
 motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
 wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
 ref.clock                   (6,)  Bool     Var  variability="clock"
-ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
 motor.inertia "kg*m/s^2"    ()    Float32  Par
 motor.data                        String   Par
@@ -162,7 +159,7 @@ struct SignalTable <: AbstractDict{String,Any}
                     elseif !haskey(dict, aliasName)
                         error("SignalTable(\"$key\" => Par(alias=\"$aliasName\"...): referenced signal does not exist.")
                     end
-                    sigAlias = dict[:aliasName]
+                    sigAlias = dict[aliasName]
                     sig = merge(sigAlias,sig)
                 end
             end

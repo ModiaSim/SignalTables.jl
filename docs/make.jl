@@ -7,6 +7,10 @@ makedocs(
   pages    = [
      "Home"              => "index.md",
      #"Getting Started"  => "GettingStarted.md",
+ 	 "Examples"  => [
+       "Examples/Plots.md",
+       "Examples/FileIO.md",
+     ],
 	 "Functions"  => [
        "Functions/OverviewOfFunctions.md",
        "Functions/Signals.md",

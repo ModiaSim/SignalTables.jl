@@ -25,8 +25,6 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`getValueWithUnit`](@ref)      | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
 | [`getFlattenedSignal`](@ref)    | Returns a copy of a signal where the values or the value are *flattened* and converted for use in plots or traditional tables. |
 | [`getDefaultHeading`](@ref)     | Returns the default heading for a plot.                                                        |
-| [`signalTableToJSON`](@ref)     | Returns a signal table as JSON string.                                                         |
-| [`writeSignalTable`](@ref)      | Writes a signal Table in JSON format on file.                                                  |
 
 ```@docs
 SignalTable
@@ -42,6 +40,4 @@ getValue
 getValueWithUnit
 getFlattenedSignal
 getDefaultHeading
-signalTableToJSON
-writeSignalTable
 ```

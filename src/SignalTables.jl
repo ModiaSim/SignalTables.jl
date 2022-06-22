@@ -25,13 +25,16 @@ export SignalTable
 # Plot Package
 export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPackage
 
+# Examples
+export getSignalTableExample
+
 include("Signals.jl")
 include("AbstractSignalTableInterface.jl")
 include("AbstractPlotInterface.jl")
 include("SignalTable.jl")
 include("SignalTableFunctions.jl")
 include("PlotPackageDefinition.jl")
-include("SignalTableJSON.jl")
+include("ExampleSignalTables.jl")
 
 #include("SilentNoPlot.jl")
 #include("UserFunctions.jl")
