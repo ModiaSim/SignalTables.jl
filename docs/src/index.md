@@ -22,7 +22,7 @@ represent the k independent signals. A *signal* is either a
 A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example units, into texts, variability (continuous, clocked, ...), alias. 
+for example units, info texts, variability (continuous, clocked, ...), alias. 
 
 ## Examples
 
