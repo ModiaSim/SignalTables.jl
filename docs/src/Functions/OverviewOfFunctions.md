@@ -6,18 +6,19 @@ CurrentModule = SignalTables
 
 This chapter documents functions that operate on signals and on signal tables
 
-A signal table is an *ordered dictionary* of *multi-dimensional* arrays with 
-*zero, one or more independent signals*. A *signal* is identified by its string *name* 
-and is a 
+A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
+represent the k independent signals. A *signal* is either a
 
-- [`Var`](@ref) dictionary with a signal array (key = :values) of any element type 
-  as function of the independent signal(s) or 
-- [`Par`](@ref) dictionary with an optional value (key = :value) of any type that represents a constant.
+- [`Var`](@ref) dictionary that has a required *:values* key representing a *signal array* of any element type 
+  as function of the independent signal(s) (or is the k-th independent variable), or a
+- [`Par`](@ref) dictionary that has an optional *:value* key representing a constant of any type.
 
-A signal array has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
+A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example units, description texts, variability (continuous, clocked, trigger, ...). 
+for example units, into texts, variability (continuous, clocked, ...), alias. 
+
+
 
 | Signal functions                | Description                                                                                |
 |:--------------------------------|:-------------------------------------------------------------------------------------------|

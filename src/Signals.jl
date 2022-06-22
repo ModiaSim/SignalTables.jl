@@ -74,38 +74,30 @@ end
 Returns a *variable* signal definition in form of a dictionary.
 `kwargs...` are key/value pairs of variable attributes.
 
-The :values key represents a *signal array* of any element type 
+The *:values* key represents a *signal array* of any element type 
 as function of the independent signal(s) (or is the k-th independent variable).
 A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. Furthermore, additional attributes can be stored. 
 
-The following keys are recognized (all are *optional*, but usually :values is present):
+The following keys are recognized (all are *optional*, but usually *:values* is present):
 
 |key             | value (of type String, if not obvious from context)                                                   |
 |:---------------|:------------------------------------------------------------------------------------------------------|
-|`:values`       | `Array{T,N}` such that `signal[:values][i1,i2,...j1,j2,...]` is value `[j1,j2,...]` at `[i1,i2,...]`, |
-|                | or such that `signal[:values][i_k]` is the value `[i_k]` of the k-th independent variable.            |
-|`:unit`         | Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`.                    |
-|                | `Vector{String}`: `signal[:unit][j1,j2,...]` is unit of variable element `[j1,j2,...]`.               |
+|`:values`       | Array{T,N}: `signal[:values][i1,i2,...j1,j2,...]` is value `[j1,j2,...]` at the `[i1,i2,...]` independent signal(s), or `signal[:values][i_k]` is value `[i_k]` of the k-th independent variable.            |
+|`:unit`         | String: Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`. Array{String,N}: `signal[:unit][j1,j2,...]` is unit of variable element `[j1,j2,...]`.              |
 |`:info`         | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
-|`:independent`  | = true, if independent variable (the k-th independent variable is the k-th Var in a signal table)     |
-|`:variability`  | Time dependency of signal (`"tunable", "discrete", "clocked", "clock", "trigger", "continuous"`).     |
-|`:state`        | = true, if signal is a (discrete, clocked or continuous) state.                                       |
-|`:integral`     | [`getSignal`](@ref)`(signalTable, signal[:integral])[:values]` is the *integral* of `signal[:values]`.          |
-|`:clock`        | [`getSignal`](@ref)`(signalTable, signal[:clock])[:values]` is the *clock* associated with `signal[:values]` (is only defined at clock ticks and otherwise is *missing*). |
-|                | If `Vector{String}`, a set of clocks is associated with the signal.                                   |
-|`:alias`        | `signal[:values]` is a reference to [`getSignal`](@ref)`(signalTable, signal[:alias])[:values]` (and attributes are merged) |
-|`:interpolation`| Interpolation of signal points (`"linear", "none"`)                                                   |
+|`:independent`  | = true, if independent variable (k-th independent variable is k-th Var insignal table)                |
+|`:variability`  | `"continuous", "clocked", "clock", "discrete",` or `"tunable"` (parameter).                           |
+|`:state`        | = true, if signal is a (*continuous*, *clocked*, or *discrete*) state.                                |
+|`:integral`     | String: [`getSignal`](@ref)`(signalTable, signal[:integral])[:values]` is the *integral* of `signal[:values]`.|
+|`:clock`        | String: [`getSignal`](@ref)`(signalTable, signal[:clock])[:values]` is the *clock* associated with `signal[:values]` (is only defined at clock ticks and otherwise is *missing*). If `Vector{String}`, a set of clocks is associated with the signal.                                   |
+|`:alias`        | String: `signal[:values]` is a *reference* to [`getSignal`](@ref)`(signalTable, signal[:alias])[:values]`. The *reference* is set and attributes are merged when the Var-signal is added to the signal table. |
+|`:interpolation`| Interpolation of signal points (`"linear", "none"`). If not provided, `interpolation` is deduced from `:variability` and otherwise interpolation is `"linear". |
 |`:extrapolation`| Extrapolation outside the values of the independent signal (`"none"`).                                |
 
-- `:alias` takes effect when adding the Var-signal to a signal table.
-
-- Plots are constructed with `:interpolation`, if provided, and otherwise from `:variability` if provided, and otherwise
-  the `signal[:values]` points are linearly interpolated.
-
-Additionally, any other signal attributes can be stored in `signal` with a desired key, especially
-the *Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-of-types).
+Additionally, any other signal attributes can be stored in `signal` with a desired key, such as
+*Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-of-types).
 
 # Example
 
@@ -116,8 +108,9 @@ t = (0.0:0.1:0.5)
 t_sig = Var(values = t, unit=u"s",  independent=true)
 w_sig = Var(values = sin.(t), unit="rad/s", info="Motor angular velocity")
 c_sig = Var(values = [1.0, missing, missing, 4.0, missing, missing],
-            variability="clocked", interpolation="none")
+            variability="clocked")
 b_sig = Var(values = [false, true, true, false, false, true])
+a_sig = Var(alias = "w_sig")
 ```
 """
 Var(;kwargs...) = newSignal(kwargs, :Var)
@@ -131,23 +124,20 @@ A parameter is a variable that is constant and is not a function
 of the independent variables.
 `kwargs...` are key/value pairs of parameter attributes.
 
-The value of a parameter variable is stored with key `:value` in `signal`
+The value of a parameter variable is stored with key *:value* in `signal`
 and is an instance of any Julia type (number, string, array, tuple, dictionary, ...).
 
 The following keys are recognized (all are *optional*):
 
-| key         | value (of type String, if not obvious from context)                                                   |
-|:------------|:------------------------------------------------------------------------------------------------------|
-| `:value`    | `signal[:value]::Any` is a constant value that holds for all values of the independent signals.       |
-| `:unit`     | Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`.                    |
-|             | `Vector{String}`: `signal[:unit][j1,j2,...]` is unit of variable element `v[j1,j2,...]`.                  |
-| `:info`     | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
-| `:alias`    | `signal[:value]` is a reference to [`getSignal`](@ref)`(signalTable, signal[:alias])[:value]` (and attributes are merged) |
+| key      | value (of type String, if not obvious from context)                                                   |
+|:---------|:------------------------------------------------------------------------------------------------------|
+| `:value` | `signal[:value]` is a constant value that holds for all values of the independent signals.            |
+| `:unit`  | String: Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`. Array{String,N}: `signal[:unit][j1,j2,...]` is unit of variable element `[j1,j2,...]`.              |
+| `:info`  | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
+|`:alias`  | String: `signal[:value]` is a *reference* to [`getSignal`](@ref)`(signalTable, signal[:alias])[:value]`. The *reference* is set and attributes are merged when the Par-signal is added to the signal table. |
 
-- `:alias` takes effect when adding the Var-signal to a signal table.
-
-Additionally, any other signal attributes can be stored in `signal` with a desired key, especially
-the *Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-of-types).
+Additionally, any other signal attributes can be stored in `signal` with a desired key, such as
+*Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-of-types).
 
 
 # Example
@@ -157,6 +147,7 @@ using SignalTables
 
 J         = Par(value = 0.02, unit=u"kg*m/s^2", info="Motor inertia")
 fileNames = Par(value = ["data1.json", "data2.json"])
+J_alias   = Par(alias = "J")
 ```
 """
 Par(; kwargs...) = newSignal(kwargs, :Par)

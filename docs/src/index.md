@@ -14,14 +14,14 @@ look-up tables can be represented by a signal table.
 A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
 represent the k independent signals. A *signal* is either a
 
-- [`Var`](@ref) dictionary that has a required :values key representing a *signal array* of any element type 
+- [`Var`](@ref) dictionary that has a required *:values* key representing a *signal array* of any element type 
   as function of the independent signal(s) (or is the k-th independent variable), or a
-- [`Par`](@ref) dictionary that has an optional :value key representing a constant of any type.
+- [`Par`](@ref) dictionary that has an optional *:value* key representing a constant of any type.
 
 A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example units, description texts, variability (continuous, clocked, trigger, ...). 
+for example units, into texts, variability (continuous, clocked, ...), alias. 
 
 ## Examples
 
@@ -195,8 +195,8 @@ Changes with respect to ModiaResult.jl:
 
 Underlying data format made much simpler, more general and more useful:
 
-- Dictionary of * multi-dimensional arrays* as function of zero, one or more independent variables
-  with potentially *missing values.
+- Dictionary of *multi-dimensional arrays* as function of one or more independent variables
+  with potentially *missing values*.
 - Also parameters can be stored in the dictionary and are supported, e.g., for plotting.
 - Variables and parameters are dictionaries that store the actual values (e.g. arrays), and additional attributes.
 - Values are stored without units and the units are provided via the additional string attribute `:unit`. A unit can be 

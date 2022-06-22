@@ -10,14 +10,14 @@ look-up tables can be represented by a signal table.
 A *signal table* is an *ordered dictionary* of *signals* with string keys. The first k entries
 represent the k independent signals. A *signal* is either a
 
-- [`Var`](@ref) dictionary that has a required :values key representing a *signal array* of any element type 
+- [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) dictionary that has a required *:values* key representing a *signal array* of any element type 
   as function of the independent signal(s) (or is the k-th independent variable), or a
-- [`Par`](@ref) dictionary that has an optional :value key representing a constant of any type.
+- [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) dictionary that has an optional *:value* key representing a constant of any type.
 
 A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example units, description texts, variability (continuous, clocked, trigger, ...). 
+for example units, into texts, variability (continuous, clocked, ...), alias. 
 
 Example:
 
@@ -92,9 +92,9 @@ generate the following plot:
 
 ![Plots of SigTable](https://modiasim.github.io/SignalTables.jl/resources/images/sigTable-line-plots.png)
 
-*Concrete implementations* of the [Abstract Signal Table Interface](@ref) are provided for:
+*Concrete implementations* of the [Abstract Signal Table Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractSignalTableInterface.html) are provided for:
 
-- [`SignalTable`](@ref) (included in SignalTables.jl).
+- [`SignalTable`](https://modiasim.github.io/SignalTables.jl/stable/Functions/SignalTables.html#SignalTables.SignalTable) (included in SignalTables.jl).
 
   Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
 
@@ -105,7 +105,7 @@ generate the following plot:
     (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
     first column is independent variable; *only scalar variables*).
 
-*Concrete implementations* of the [Abstract Plot Interface](@ref) are provided for:
+*Concrete implementations* of the [Abstract Plot Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractPlotInterface.html) are provided for:
 
 - [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python;
   via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),
