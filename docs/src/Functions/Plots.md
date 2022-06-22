@@ -9,15 +9,19 @@ within one or more *windows* (figures), and *save* a window (figure) in various 
 (e.g. png, pdf). The functions below are available after
 
 ```julia
-using SignalTables   # Make Symbols available
-@usingPlotPackage    # Define used Plot package (expands e.g., into: using PlotPackage_PyPlot)
+using SignalTables       # Make Symbols available
+usePlotPackage("PyPlot") # or ENV["SignalTablesPlotPackage"] = "PyPlot"
+                         # Other options: "GLMakie", "WGLMakie, "CairoMakie", "SilentNoPlot"
+@usingPlotPackage        # expands into: using SignalTablesInterface_PyPlot
 ```
 
 or
 
 ```
-using Modia
-@usingPlotPackage
+using Modia              # Make Symbols available
+usePlotPackage("PyPlot") # or ENV["SignalTablesPlotPackage"] = "PyPlot"
+                         # Other options: "GLMakie", "WGLMakie, "CairoMakie", "SilentNoPlot"
+@usingPlotPackage        # expands into: using SignalTablesInterface_PyPlot
 ```
 
 have been executed. The documentation has been generated with [SignalTablesInterface_PyPlot](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl).
