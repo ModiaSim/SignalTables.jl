@@ -187,7 +187,7 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
-### Version 0.2.0-dev
+### Version 0.2.0
 
 Version, based on [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl).
 Changes with respect to ModiaResult.jl:
@@ -203,6 +203,7 @@ Underlying data format made much simpler, more general and more useful:
 - A new function to *flatten* and convert a signal array for use in plots or traditional tables.
 - Since signals are arrays, all the Julia array operations can be directly used,
   e.g. for post-processing of simulation results.
+- write/save on JSON and JDL (HDF5) files.
 
 Furthermore
 
@@ -212,7 +213,7 @@ Furthermore
 
 ### Version 0.1.0
 
-Initial version.
+Initial version used for registration.
 
 
 ## Main developer

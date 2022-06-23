@@ -1,15 +1,8 @@
 
 include("SignalTableFunctions/test_SignalTypes.jl")
 include("SignalTableFunctions/test_SignalTable.jl")
-include("SignalTable1.jl")
-include("SignalTable2.jl")
-include("SignalTable3.jl")
 
-include("LinePlots/test_01_OneScalarSignal.jl")
-include("LinePlots/test_02_OneScalarSignalWithUnit.jl")
-include("LinePlots/test_03_OneVectorSignalWithUnit.jl")
-include("LinePlots/test_04_ConstantSignalsWithUnit.jl")
-include("LinePlots/test_05_ArraySignalsWithUnit.jl")
+include("../examples/plots/_include_all.jl")
 
 #=
 include("LinePlots/test_06_OneScalarMeasurementSignal.jl")
@@ -23,7 +16,6 @@ include("LinePlots/test_23_MatrixOfPlotsWithTimeLabelsInLastRow.jl")
 include("LinePlots/test_24_Reuse.jl")
 include("LinePlots/test_25_SeveralFigures.jl")
 include("LinePlots/test_26_TooManyLegends.jl") 
-include("LinePlots/test_70_MissingValues.jl")
 
 #=
 include("LinePlots/test_51_OneScalarMonteCarloMeasurementsSignal.jl")
