@@ -3,7 +3,7 @@
 
 module NoPlot
 
-include("AbstractLinePlotInterface.jl")
+include("AbstractPlotInterface.jl")
 
 plot(signalTable, names::AbstractMatrix; heading::AbstractString="", grid::Bool=true, xAxis="time",
      figure::Int=1, prefix::AbstractString="", reuse::Bool=false, maxLegend::Integer=10,

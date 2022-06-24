@@ -35,6 +35,8 @@ include("SignalTable.jl")
 include("SignalTableFunctions.jl")
 include("PlotPackageDefinition.jl")
 include("ExampleSignalTables.jl")
+include("NoPlot.jl")
+include("SilentNoPlot.jl")
 
 #include("SilentNoPlot.jl")
 #include("UserFunctions.jl")

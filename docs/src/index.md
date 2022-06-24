@@ -187,6 +187,14 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.2.1
+
+- Bug with PlotPackage "SilentNoPlot" fixed.
+
+- `SignalTables/test/runtests.jl` runs the tests with plot package *"SilentNoPlot"* (instead of the activated plot package).
+
+- New file `SignalTables/test/runtests_with_plot.jl` runs the tests with the activated plot package.
+
 ### Version 0.2.0
 
 Version, based on [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl).

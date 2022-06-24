@@ -19,7 +19,7 @@ macro usingPlotPackage()
         elseif PlotPackage == "NoPlot"
             @goto USE_NO_PLOT
         elseif PlotPackage == "SilentNoPlot"
-            expr = :( using SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
+            expr = :( import SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
             return esc( expr )
         else
             PlotPackage = Symbol("SignalTablesInterface_" * PlotPackage)

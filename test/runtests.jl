@@ -1,9 +1,14 @@
 module Runtests
 
-using SignalTables
-using Test
+# Run all tests with SilentNoPlot (so not plots)
 
-@testset "Test SignalTables.jl" begin
+using SignalTables
+using SignalTables.Test
+
+@testset "Test SignalTables/test" begin
+    usePlotPackage("SilentNoPlot")
     include("include_all.jl")
+    usePreviousPlotPackage()
 end
+
 end
