@@ -128,13 +128,13 @@ elseif signalTableName == "VariousTypes"
     sigTable = SignalTable(
     "time"        => Var(values= t, unit="s", independent=true),
     "load.r"      => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
-    "motor.angle" => Var(values= sin.(t), unit="rad", state=true),
-    "motor.w"     => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
+    "motor.angle" => Var(values= sin.(t), unit="rad", state=true, der="motor.w"),
+    "motor.w"     => Var(values= cos.(t), unit="rad/s"),
     "motor.w_ref" => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
-                                info="Reference angle and speed"),
+                                 info="Reference angle and speed"),
     "wm"          => Var(alias = "motor.w"),
     "ref.clock"   => Var(values= [true, missing, missing, true, missing, missing],
-                                    variability="clock"),
+                                 variability="clock"),
                                     
     "motor.w_c"   => Var(values= [0.6, missing, missing, 0.8, missing, missing],
                                 variability="clocked", clock="ref.clock"),

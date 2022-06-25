@@ -4,6 +4,7 @@
 #
 # This file is part of module SignalTables
 
+
 """
     const SymbolDictType = OrderedDict{Symbol,Any}
 
@@ -36,11 +37,19 @@ basetype(obj) = typeof(obj)
 
 BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) ) : T
 
+
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
 function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
-    sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
-    #sig[:_class] = kind
-
+    if kind == :Var && haskey(kwargs, :values)
+        _basetype = string( basetype(get(kwargs, :values, missing)) )
+        sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
+    elseif kind == :Par && haskey(kwargs, :value)
+        _basetype = string( basetype(get(kwargs, :value, missing)) )
+        sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
+    else
+        sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
+    end
+    
     if kind == :Var && haskey(sig, :values)
         values = sig[:values]
         if !(typeof(values) <: AbstractArray)
@@ -90,7 +99,7 @@ The following keys are recognized (all are *optional*, but usually *:values* is 
 |`:independent`  | = true, if independent variable (k-th independent variable is k-th Var insignal table)                |
 |`:variability`  | `"continuous", "clocked", "clock", "discrete",` or `"tunable"` (parameter).                           |
 |`:state`        | = true, if signal is a (*continuous*, *clocked*, or *discrete*) state.                                |
-|`:integral`     | String: [`getSignal`](@ref)`(signalTable, signal[:integral])[:values]` is the *integral* of `signal[:values]`.|
+|`:der`          | String: [`getSignal`](@ref)`(signalTable, signal[:der])[:values]` is the *derivative* of `signal[:values]`.|
 |`:clock`        | String: [`getSignal`](@ref)`(signalTable, signal[:clock])[:values]` is the *clock* associated with `signal[:values]` (is only defined at clock ticks and otherwise is *missing*). If `Vector{String}`, a set of clocks is associated with the signal.                                   |
 |`:alias`        | String: `signal[:values]` is a *reference* to [`getSignal`](@ref)`(signalTable, signal[:alias])[:values]`. The *reference* is set and attributes are merged when the Var-signal is added to the signal table. |
 |`:interpolation`| Interpolation of signal points (`"linear", "none"`). If not provided, `interpolation` is deduced from `:variability` and otherwise interpolation is `"linear". |
@@ -112,6 +121,15 @@ c_sig = Var(values = [1.0, missing, missing, 4.0, missing, missing],
 b_sig = Var(values = [false, true, true, false, false, true])
 a_sig = Var(alias = "w_sig")
 ```
+
+# Hidden info
+
+The following keys are automatically added to Var(..):
+
+|key             | value                                            |
+|:---------------|:-------------------------------------------------|
+|`:_class`       | = `:Var` (to mark the ordered dictionary as Var. |
+|`:_basetype`    | = [`basetype`](@ref)`(:values)`.                 |
 """
 Var(;kwargs...) = newSignal(kwargs, :Var)
 
@@ -149,6 +167,15 @@ J         = Par(value = 0.02, unit=u"kg*m/s^2", info="Motor inertia")
 fileNames = Par(value = ["data1.json", "data2.json"])
 J_alias   = Par(alias = "J")
 ```
+
+# Hidden info
+
+The following keys are automatically added to Var(..):
+
+|key             | value                                            |
+|:---------------|:-------------------------------------------------|
+|`:_class`       | = `:Par` (to mark the ordered dictionary as Par. |
+|`:_basetype`    | = [`basetype`](@ref)`(:value)`.                  |
 """
 Par(; kwargs...) = newSignal(kwargs, :Par)
 

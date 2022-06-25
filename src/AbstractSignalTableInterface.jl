@@ -5,6 +5,14 @@
 # This file is part of module SignalTables
 
 """
+    isSignalTable(obj)::Bool
+
+Returns true, if `obj` is a signal table and supports the functions of the [Abstract Signal Table Interface](@ref).
+"""
+isSignalTable(obj) = false
+
+
+"""
     independentSignalNames(signalTable)::Vector{String}
 
 Returns the names of the independent signals (often: ["time"]) from signalTable.
@@ -51,14 +59,12 @@ end
 """
     getSignalInfo(signalTable, name::String)
 
-Returns signal with :_typeof, :_size keys instead of :values/:value keys
-in form of a [`Var`](@ref) or a [`Par`](@ref)):
-where keys :values/:value are replaced by:
+Returns signal in form of a [`Var`](@ref) or a [`Par`](@ref)) where
+ 
+- :values in Var() is replaced by :_size = size( signal[:values] )  or
+- :value in Par() is replaced by :_size = size( signal[:value] )  
 
-|key        | value                                                                           |
-|:----------|:--------------------------------------------------------------------------------|
-|`:_typeof` | `= typeof( signal[:values] )` or `typeof( signal[:value] )` (if :value defined) |
-|`:_size`   | `= size( signal[:values] )` or `size( signal[:value] )` (if :value defined).    |  
+provided size(..) on the value is defined.
 
 If `name` does not exist, an error is raised.
 
@@ -71,13 +77,11 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
     signal2 = copy(signal)
     delete!(signal2, :values)
     delete!(signal2, :value)
-    _type = nothing
     _size = nothing
     _available =false    
     if isVar(signal)
         try
             sig   = signal[:values]
-            _type = typeof(sig)
             _size = size(sig)
             available = true
         catch
@@ -86,15 +90,11 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
     else
         try
             sig   = signal[:value]
-            _type = typeof(sig)
             _size = size(sig)
             available = true
         catch
             available = false
         end    
-    end
-    if !isnothing(_type)
-        signal2[:_typeof] = _type
     end
     if !isnothing(_size)
         signal2[:_size] = _size        

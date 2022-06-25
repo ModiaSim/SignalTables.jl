@@ -79,7 +79,7 @@ getValueWithUnit(signalTable, name::String) = begin
 end
 
 
-const doNotShowAttributes = [:_class, :_typeof, :_size, :unit]
+const doNotShowAttributes = [:_class, :_basetype, :_size, :unit]
 
 
 """
@@ -100,8 +100,8 @@ t = 0.0:0.1:0.5
 sigTable = SignalTable(
   "time"         => Var(values= t, unit="s", independent=true),
   "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
-  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true),
-  "motor.w"      => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
+  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true, der="motor.w"),
+  "motor.w"      => Var(values= cos.(t), unit="rad/s"),
   "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
                                 info="Reference angle and speed"),
   "wm"           => Var(alias = "motor.w"),
@@ -126,10 +126,10 @@ name          unit          size  basetype kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
 time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
-motor.angle   "rad"         (6,)  Float64  Var  state=true
-motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
+motor.angle   "rad"         (6,)  Float64  Var  state=true, der="motor.w"
+motor.w       "rad/s"       (6,)  Float64  Var
 motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
-wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
+wm            "rad/s"       (6,)  Float64  Var  alias="motor.w"
 ref.clock                   (6,)  Bool     Var  variability="clock"
 ref.trigger                 (6,)  Bool     Var  variability="trigger"
 motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
@@ -182,10 +182,7 @@ function showInfo(io::IO, signalTable;
                 attr = String(take!(iostr))
             end
             independent = get(signal, :independent, false)
-            valBaseType = get(signal, :_typeof, "")
-            if valBaseType != ""
-                valBaseType = string( BaseType(valBaseType) )
-            end
+            valBaseType = get(signal, :_basetype, "")
             valSize = string( get(signal, :_size, "") )
             valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString

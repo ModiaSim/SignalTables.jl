@@ -11,10 +11,10 @@ import DataFrames
 import Pkg
 
 # Signals
-export Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsParseableString
+export SignalType, Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsParseableString
 
 # Abstract Signal Table Interface
-export independentSignalNames, signalNames, getSignal, hasSignal
+export isSignalTable, independentSignalNames, signalNames, getSignal, hasSignal
 
 # Signal table functions
 export getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
