@@ -14,7 +14,7 @@ import Pkg
 export SignalType, Var, Par, isVar, isPar, isSignal, showSignal, basetype, quantity, unitAsParseableString
 
 # Abstract Signal Table Interface
-export isSignalTable, independentSignalNames, signalNames, getSignal, hasSignal
+export isSignalTable, independentSignalNames, signalNames, hasSignal, getSignal, getSignalInfo, getIndependentSignalSizes, getDefaultHeading
 
 # Signal table functions
 export getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading

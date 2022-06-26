@@ -104,6 +104,14 @@ end
 
 
 """
+    getIndependentSignalSizes(signalTable)::Vector{Dims}
+
+Returns the sizes of the independent signals.
+"""
+getIndependentSignalSizes(signalTable)::Vector{Dims} = Dims[getSignalInfo(signalTable,name)[:_size] for name in independentSignalNames(signalTable)]
+
+
+"""
     getDefaultHeading(signalTable, name::String)::String
 
 Returns the default heading for a plot.

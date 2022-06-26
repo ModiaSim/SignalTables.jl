@@ -41,10 +41,10 @@ BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) 
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
 function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
     if kind == :Var && haskey(kwargs, :values)
-        _basetype = string( basetype(get(kwargs, :values, missing)) )
+        _basetype = basetype(get(kwargs, :values, Missing))
         sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
     elseif kind == :Par && haskey(kwargs, :value)
-        _basetype = string( basetype(get(kwargs, :value, missing)) )
+        _basetype = basetype(get(kwargs, :value, Missing))
         sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
     else
         sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
@@ -129,7 +129,7 @@ The following keys are automatically added to Var(..):
 |key             | value                                            |
 |:---------------|:-------------------------------------------------|
 |`:_class`       | = `:Var` (to mark the ordered dictionary as Var. |
-|`:_basetype`    | = [`basetype`](@ref)`(:values)`.                 |
+|`:_basetype`    | = [`basetype`](@ref)`(Var[:values])`.            |
 """
 Var(;kwargs...) = newSignal(kwargs, :Var)
 
@@ -170,12 +170,12 @@ J_alias   = Par(alias = "J")
 
 # Hidden info
 
-The following keys are automatically added to Var(..):
+The following keys are automatically added to Par(..):
 
 |key             | value                                            |
 |:---------------|:-------------------------------------------------|
 |`:_class`       | = `:Par` (to mark the ordered dictionary as Par. |
-|`:_basetype`    | = [`basetype`](@ref)`(:value)`.                  |
+|`:_basetype`    | = [`basetype`](@ref)`(Par[:value])`.             |
 """
 Par(; kwargs...) = newSignal(kwargs, :Par)
 

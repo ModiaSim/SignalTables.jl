@@ -182,7 +182,7 @@ function showInfo(io::IO, signalTable;
                 attr = String(take!(iostr))
             end
             independent = get(signal, :independent, false)
-            valBaseType = get(signal, :_basetype, "")
+            valBaseType = string( get(signal, :_basetype, Missing) )
             valSize = string( get(signal, :_size, "") )
             valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString
@@ -318,12 +318,13 @@ If the required transformation is not possible, a warning message is printed and
 function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
                                          targetInt    = Int,
-                                         targetFloat  = Float64)                                         
-    if length(signalTable.independentSignalsFirstDimension) != 1  
-        ni = length(signalTable.independentSignalsFirstDimension)
+                                         targetFloat  = Float64)  
+    independentSignalSizes = getIndependentSignalSizes(signalTable)                                         
+    if length(independentSignalSizes) != 1  
+        ni = length(independentSignalSizes)
         error("getFlattenedSignal(..) currently only supported for one independent signal,\nbut number of independent signals = $ni!")
     end    
-    lenx = signalTable.independentSignalsFirstDimension[1]
+    lenx = independentSignalSizes[1]
     sigPresent = false
     if hasSignal(signalTable,name)
         # name is a signal name without range

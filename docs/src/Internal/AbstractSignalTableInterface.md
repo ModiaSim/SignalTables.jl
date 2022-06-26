@@ -22,12 +22,15 @@ for example units, into texts, variability (continuous, clocked, ...), alias.
 Functions that are marked as *required*, need to be defined for a new signal table type.
 Functions that are marked as *optional* have a default implementation.
 
-| Abstract functions               | Description                                                                             |
-|:---------------------------------|:----------------------------------------------------------------------------------------|
-| [`independentSignalNames`](@ref) | Returns a string vector of the names of the independent signals (*required*).           |
-| [`signalNames`](@ref)            | Returns a string vector of the signal names from a signal table (*required*).           |
-| [`getSignal`](@ref)              | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*).   |
-| [`getSignalInfo`](@ref)          | Returns signal with :\_typeof, :\_size keys instead of :values/:value key (*optional*). |
-| [`hasSignal`](@ref)              | Returns `true` if a signal is present in a signal table (*optional*).                   |
-| [`getDefaultHeading`](@ref)      | Returns the default heading for a plot. (*optional*).                                   |
+| Abstract functions                 | Description                                                                             |
+|:-----------------------------------|:----------------------------------------------------------------------------------------|
+| [`independentSignalNames`](@ref)   | Returns a string vector of the names of the independent signals (*required*).           |
+| [`signalNames`](@ref)              | Returns a string vector of the signal names from a signal table (*required*).           |
+| [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*).   |
+| [`getSignalInfo`](@ref)            | Returns signal with :\_typeof, :\_size keys instead of :values/:value key (*optional*). |
+| [`getIndependentSignalSizes`](@ref)| Returns the sizes of the independent signals. (*optional*).                             |
+| [`getDefaultHeading`](@ref)        | Returns the default heading for a plot. (*optional*).                                   |
+| [`hasSignal`](@ref)                | Returns true if signal name is present in signal table. (*optional*).                   |
+
+
 
