@@ -17,7 +17,7 @@ export SignalType, Var, Par, isVar, isPar, isSignal, showSignal, basetype, quant
 export isSignalTable, independentSignalNames, signalNames, hasSignal, getSignal, getSignalInfo, getIndependentSignalSizes, getDefaultHeading
 
 # Signal table functions
-export getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
+export new_signal_table, getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
 
 # SignalTable
 export SignalTable

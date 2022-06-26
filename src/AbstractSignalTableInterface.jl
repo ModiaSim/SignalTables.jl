@@ -24,7 +24,7 @@ function independentSignalNames end
     signalNames(signalTable)::Vector{String}
 
 Returns a string vector of the signal names that are present in signalTable
-(including independent signal names).
+(including independent signal names, but without "_class" => :SignalTable).
 """
 function signalNames end
 

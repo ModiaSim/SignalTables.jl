@@ -100,7 +100,7 @@ struct SignalTable <: AbstractDict{String,Any}
     independentSignalsFirstDimension::Vector{Int}
 
     function SignalTable(args...)
-        dict = StringDictType()
+        dict = new_signal_table()
         independendentSignalNames = String[]
         independentSignalsFirstDimension = Int[]
         k = 0
@@ -185,11 +185,13 @@ Base.delete!(signalTable::SignalTable, key::String) = Base.delete!(signalTable.d
 function Base.show(io::IO, sigTable::SignalTable)
     print(io, "SignalTable(\n")
     for (key,sig) in sigTable
-        Base.print(io, "  ")
-        Base.show(io, key)
-        Base.print(io, " => ")
-        showSignal(io, sig)
-        print(io, ",\n")
+        if key != "_class"
+            Base.print(io, "  ")
+            Base.show(io, key)
+            Base.print(io, " => ")
+            showSignal(io, sig)
+            print(io, ",\n")
+        end
     end
     println(io,"  )")
 end
@@ -198,9 +200,9 @@ end
 # Implementation of AbstractSignalTableInterface
 isSignalTable(sigTable::SignalTable) = true
 independentSignalNames(sigTable::SignalTable) = sigTable.independendentSignalNames
-signalNames(sigTable::SignalTable) = String.(keys(sigTable))
-getSignal(sigTable::SignalTable, name::String) = sigTable[name]
-hasSignal(sigTable::SignalTable, name::String) = haskey(sigTable, name)
+signalNames(  sigTable::SignalTable) = setdiff(String.(keys(sigTable)), ["_class"])
+getSignal(    sigTable::SignalTable, name::String) = sigTable[name]
+hasSignal(    sigTable::SignalTable, name::String) = haskey(sigTable, name)
 
 function getDefaultHeading(sigTable::SignalTable)::String 
     attr = get(sigTable, "attributes", "")        

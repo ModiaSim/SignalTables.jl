@@ -12,7 +12,8 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 
 | Signal table functions             | Description                                                                                    |
 |:-----------------------------------|:-----------------------------------------------------------------------------------------------|
-| [`SignalTable`](@ref)              | Returns a new SignalTable dictionary.                                                          |
+| [`new_signal_table`](@ref)         | Returns a new signal table dictionary (= OrderedDict{String,Any}("_class" => :SignalTable)).   |
+| [`SignalTable`](@ref)              | Returns a new instance of type SignalTable.                                                    |
 | [`showInfo`](@ref)                 | Writes info about a signal table to the output stream.                                         |
 | [`independentSignalNames`](@ref    | Returns the names of the independent signals.                                                  |
 | [`signalNames`](@ref)              | Returns a string vector of the signal names that are present in a signal table.                |
@@ -29,6 +30,7 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 
 
 ```@docs
+new_signal_table
 SignalTable
 showInfo
 independentSignalNames

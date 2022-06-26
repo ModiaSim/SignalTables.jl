@@ -31,6 +31,14 @@ end
 
 
 """
+    new_signal_table(args...)::OrderedDict{String,Any}
+    
+Returns a new signal table, that is `OrderedDict{String,Any}("_class" => :SignalTable, args...)`
+"""
+new_signal_table(args...) = OrderedDict{String,Any}("_class" => :SignalTable, args...)
+
+
+"""
     getValues(signalTable, name)
 
 Returns the *values* of a [`Var`](@ref) signal name from signalTable.
