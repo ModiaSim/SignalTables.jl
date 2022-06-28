@@ -18,13 +18,13 @@ A *signal* is either a
 A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example unit, info, variability (continuous, clocked, ...), alias, interpolation,
-extrapolation, and user-defined attributes.
+for example *unit*, *info*, *variability* (continuous, clocked, clock, ...), *alias*, *interpolation*,
+*extrapolation*, and user-defined attributes.
 
 This logical view is directly mapped to Julia data structures, but can be also mapped to data structures in other
-programming languages. It is then possible to use existing textual or binary persistent serialization formats, for example 
-JSON, HDF5, BSON, MessagePack, to store a signal table in these formats. Furthermore, a subset of a signal table
-can also be stored in traditional tables (CSV, Excel) by *flattening* the multi-dimensional arrays and 
+programming languages. It is then possible to use existing textual or binary persistent serialization formats
+(JSON, HDF5, BSON, MessagePack, ...) to store a signal table in these formats on file. Furthermore, a subset of a signal table
+can also be stored in traditional tables (Excel, CSV, pandas, DataFrames.jl, ...) by *flattening* the multi-dimensional arrays and 
 not storing constants and attributes.
 
 
