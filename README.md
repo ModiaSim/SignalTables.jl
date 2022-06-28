@@ -9,16 +9,12 @@ look-up tables can be represented by a signal table.
 
 A *signal table* is an *ordered dictionary* of *signals* with string keys that supports the
 [Abstract Signal Table Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractSignalTableInterface.html). 
-A *signal* is either a
+A *signal* can be defined in two forms:
 
-- [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *:values* key representing a *signal array* of any element type 
-  as function of the independent signal(s) (or is the k-th independent signal), or a
-- [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has an optional *:value* key representing a constant of any type.
+- As [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *values* key representing a *signal array* of any element type as function of the independent signal(s) (or is the k-th independent signal). A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined*, it has a value of *missing*.
+- As [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has an optional *value* key representing a constant of any type.
 
-A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
-at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
-it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example *unit*, *info*, *variability* (continuous, clocked, clock, ...), *alias*, *interpolation*,
+In both dictionaries, additional attributes can be stored, for example *unit*, *info*, *variability* (continuous, clocked, clock, ...), *alias*, *interpolation*,
 *extrapolation*, and user-defined attributes.
 
 This logical view is directly mapped to Julia data structures, but can be also mapped to data structures in other
