@@ -12,7 +12,7 @@ A *signal table* is an *ordered dictionary* of *signals* with string keys that s
 A *signal* is either a
 
 - [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *:values* key representing a *signal array* of any element type 
-  as function of the independent signal(s) (or is the k-th independent variable), or a
+  as function of the independent signal(s) (or is the k-th independent signal), or a
 - [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has an optional *:value* key representing a constant of any type.
 
 A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
