@@ -97,12 +97,12 @@ SignalTable(
 struct SignalTable <: AbstractDict{String,Any}
     dict::StringDictType
     independendentSignalNames::Vector{String}
-    independentSignalsFirstDimension::Vector{Int}
+    independentSignalsSize::NTuple
 
     function SignalTable(args...)
         dict = new_signal_table()
         independendentSignalNames = String[]
-        independentSignalsFirstDimension = Int[]
+        independentSignalLengths = Int[]
         k = 0
         for (key, sig) in args
             if !isSignal(sig)
@@ -116,10 +116,14 @@ struct SignalTable <: AbstractDict{String,Any}
                     end                 
                     if get(sig, :independent, false)
                         k += 1
+                        ndims_sig = ndims(sig_values)
+                        if ndims_sig != 1
+                            error("SignalTable(.., $key => ..): Independent signal $key must have one dimension, but has $ndims_sig dimensions.")
+                        end
                         push!(independendentSignalNames, key)
-                        push!(independentSignalsFirstDimension, size(sig_values, 1))
+                        push!(independentSignalLengths, length(sig_values))
                     else
-                        for (i,val) in enumerate(independentSignalsFirstDimension)
+                        for (i,val) in enumerate(independentSignalLengths)
                             if size(sig_values, i) != val
                                 error("SignalTable(\"$key\" => signal, ...): size(signal[:values],$i) = $(size(sig_values,i)) but must be $val (= length of independent signal)!")
                             end
@@ -153,7 +157,7 @@ struct SignalTable <: AbstractDict{String,Any}
             end
             dict[key] = sig
         end
-        new(dict, independendentSignalNames, independentSignalsFirstDimension)
+        new(dict, independendentSignalNames, ntuple(i -> independentSignalLengths[i], length(independentSignalLengths)))
     end
 end
 Base.convert(::Type{StringDictType}, sig::SignalTable) = sig.dict
@@ -199,10 +203,12 @@ end
 
 # Implementation of AbstractSignalTableInterface
 isSignalTable(sigTable::SignalTable) = true
-independentSignalNames(sigTable::SignalTable) = sigTable.independendentSignalNames
+independentSignalNames(   sigTable::SignalTable) = sigTable.independendentSignalNames
+getIndependentSignalsSize(sigTable::SignalTable) = sigTable.independentSignalsSize
 signalNames(  sigTable::SignalTable) = setdiff(String.(keys(sigTable)), ["_class"])
 getSignal(    sigTable::SignalTable, name::String) = sigTable[name]
 hasSignal(    sigTable::SignalTable, name::String) = haskey(sigTable, name)
+
 
 function getDefaultHeading(sigTable::SignalTable)::String 
     attr = get(sigTable, "attributes", "")        

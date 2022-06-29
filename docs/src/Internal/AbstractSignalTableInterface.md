@@ -28,7 +28,7 @@ Functions that are marked as *optional* have a default implementation.
 | [`signalNames`](@ref)              | Returns a string vector of the signal names from a signal table (*required*).           |
 | [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*).   |
 | [`getSignalInfo`](@ref)            | Returns signal with :\_typeof, :\_size keys instead of :values/:value key (*optional*). |
-| [`getIndependentSignalSizes`](@ref)| Returns the sizes of the independent signals. (*optional*).                             |
+| [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims. (*optional*).                   |
 | [`getDefaultHeading`](@ref)        | Returns the default heading for a plot. (*optional*).                                   |
 | [`hasSignal`](@ref)                | Returns true if signal name is present in signal table. (*optional*).                   |
 

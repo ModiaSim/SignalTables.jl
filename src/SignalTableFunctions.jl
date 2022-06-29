@@ -328,12 +328,12 @@ function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
                                          targetInt    = Int,
                                          targetFloat  = Float64)  
-    independentSignalSizes = getIndependentSignalSizes(signalTable)                                         
-    if length(independentSignalSizes) != 1  
-        ni = length(independentSignalSizes)
-        error("getFlattenedSignal(..) currently only supported for one independent signal,\nbut number of independent signals = $ni!")
+    independentSignalsSize = getIndependentSignalsSize(signalTable)                                         
+    if length(independentSignalsSize) != 1  
+        ni = length(independentSignalsSize)
+        error("getFlattenedSignal(.., $name) currently only supported for one independent signal,\nbut number of independent signals = $ni!")
     end    
-    lenx = independentSignalSizes[1]
+    lenx = independentSignalsSize[1]
     sigPresent = false
     if hasSignal(signalTable,name)
         # name is a signal name without range

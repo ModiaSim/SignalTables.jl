@@ -20,7 +20,7 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`hasSignal`](@ref)                | Returns `true` if a signal is present in a signal table.                                       |
 | [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
 | [`getSignalInfo`](@ref)            | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
-| [`getIndependentSignalSizes`](@ref)| Returns the sizes of the independent signals.                                                  |
+| [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims.                                        |
 | [`getValues`](@ref)                | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
 | [`getValuesWithUnit`](@ref)        | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)                 | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
@@ -38,7 +38,7 @@ signalNames
 hasSignal
 getSignal
 getSignalInfo
-getIndependentSignalSizes
+getIndependentSignalsSize
 getValues
 getValuesWithUnit
 getValue

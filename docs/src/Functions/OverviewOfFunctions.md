@@ -44,6 +44,7 @@ Note, *FileIO* functions (e.g. JSON, HDF5) can be directly used, see [FileIO Exa
 | [`hasSignal`](@ref)              | Returns `true` if a signal is present in a signal table.                                       |
 | [`getSignal`](@ref)              | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
 | [`getSignalInfo`](@ref)          | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
+| [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims.                                      |
 | [`getValues`](@ref)              | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
 | [`getValuesWithUnit`](@ref)      | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
 | [`getValue`](@ref)               | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |

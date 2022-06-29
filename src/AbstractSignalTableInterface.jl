@@ -117,11 +117,23 @@ end
 
 
 """
-    getIndependentSignalSizes(signalTable)::Vector{Dims}
+    getIndependentSignalsSize(signalTable)::Dims
 
-Returns the sizes of the independent signals.
+Returns the lengths of the independent signals as Dims. 
+E.g. for one independent signal of length 5 return (5,),
+or for two independent signals of length 5 and 7 return (5,7).
 """
-getIndependentSignalSizes(signalTable)::Vector{Dims} = Dims[getSignalInfo(signalTable,name)[:_size] for name in independentSignalNames(signalTable)]
+function getIndependentSignalsSize(signalTable)::Dims
+    sigLength = Int[]
+    for name in independentSignalNames(signalTable)
+        sigSize = getSignalInfo(signalTable,name)[:_size]
+        if length(sigSize) != 1
+            error("Independent signal $name has not one dimension but has size = $sigSize")
+        end
+        push!(sigLength, sigSize[1])
+    end
+    return ntuple(i -> sigLength[i], length(sigLength))
+end
 
 
 """
