@@ -260,22 +260,63 @@ end
 #TargetElType(::Type{Measurements.Measurement{T}})                 where {T}     = T
 #TargetElType(::Type{MonteCarloMeasurements.Particles{T,N}})       where {T,N}   = T
 #TargetElType(::Type{MonteCarloMeasurements.StaticParticles{T,N}}) where {T,N}   = T
-
+#=
 function basetypeWithMeasurements(obj)
-    btype = basetype(obj)
-    #if typeof(obj) <: AbstractArray
-    #    obj1 = obj[1]
-    #    if eltype(obj1) <: Real
-    #        if hasfield(obj1, :particles)    # MonteCarloMeasurements
-    #            btype = eltype(obj1.particles)
-    #        elseif hasfield(obj1, :val) && hasfield(obj1, :err) # Measurements
-    #            btype = typeof(obj1.val)
-    #        end
-    #    end
+    if typeof(obj) <: AbstractArray
+        obj1 = obj[1]
+        if eltype(obj1) <: Real
+        println("... is Real")
+            Tobj1 = typeof(obj1)
+            if hasfield(Tobj1, :particles)    # MonteCarloMeasurements
+                btype = eltype(obj1.particles)
+            elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
+                btype = typeof(obj1.val)
+            else
+                btype = basetype(obj)
+            end                  
+        end
+    else
+        btype = basetype(obj)
+    end
+    #catch
+    #    btype = basetype(obj)
     #end
     return btype
 end
 
+function basetypeWithMeasurements(obj)
+    obj_eltype = eltype(obj)
+    if obj_eltype <: Real
+        if hasfield(obj_eltype, :particles)    # MonteCarloMeasurements
+            btype = eltype(obj1.particles)
+        elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
+            btype = typeof(obj1.val)
+        else
+            btype = basetype(obj)
+        end                  
+    end
+    else
+        btype = basetype(obj)
+    end
+    #catch
+    #    btype = basetype(obj)
+    #end
+    return btype
+end
+=#
+
+function basetypeWithMeasurements(obj)
+    obj1  = typeof(obj) <: AbstractArray ? obj[1] : obj
+    Tobj1 = typeof(obj1)
+    if hasfield(Tobj1, :particles)    # MonteCarloMeasurements
+        btype = eltype(obj1.particles)
+    elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
+        btype = typeof(obj1.val)
+    else
+        btype = basetype(obj)
+    end                  
+    return btype
+end
 
 function getValuesFromPar(signal, len::Int)
     sigValue = signal[:value]
@@ -323,6 +364,11 @@ Legend is a vector of strings that provides a description for every array column
 (e.g. if `"name=a.b.c[2,3:5]", unit="m/s"`, then `legend = ["a.b.c[2,3] [m/s]", "a.b.c[2,3] [m/s]", "a.b.c[2,5] [m/s]"]`.
 
 If the required transformation is not possible, a warning message is printed and `nothing` is returned.
+
+As a special case, if signal[:values] is a vector or signal[:value] is a scalar and
+an element of values or value is of type `Measurements{targetFloat}` or
+`MonteCarloMeasurements{targetFloat}`, then the signal is not transformed and
+flattenedSignal = getValues(signalTable,name) or getValue(signalTable,name).
 """
 function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
