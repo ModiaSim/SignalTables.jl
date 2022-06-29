@@ -40,15 +40,7 @@ BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) 
 
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
 function newSignal(kwargs, kind)::OrderedDict{Symbol,Any}
-    if kind == :Var && haskey(kwargs, :values)
-        _basetype = basetype(get(kwargs, :values, Missing))
-        sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
-    elseif kind == :Par && haskey(kwargs, :value)
-        _basetype = basetype(get(kwargs, :value, Missing))
-        sig = OrderedDict{Symbol, Any}(:_class => kind, :_basetype => _basetype, kwargs...)
-    else
-        sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
-    end
+    sig = OrderedDict{Symbol, Any}(:_class => kind, kwargs...)
     
     if kind == :Var && haskey(sig, :values)
         values = sig[:values]
@@ -121,15 +113,6 @@ c_sig = Var(values = [1.0, missing, missing, 4.0, missing, missing],
 b_sig = Var(values = [false, true, true, false, false, true])
 a_sig = Var(alias = "w_sig")
 ```
-
-# Hidden info
-
-The following keys are automatically added to Var(..):
-
-|key             | value                                            |
-|:---------------|:-------------------------------------------------|
-|`:_class`       | = `:Var` (to mark the ordered dictionary as Var. |
-|`:_basetype`    | = [`basetype`](@ref)`(Var[:values])`.            |
 """
 Var(;kwargs...) = newSignal(kwargs, :Var)
 
@@ -167,15 +150,6 @@ J         = Par(value = 0.02, unit=u"kg*m/s^2", info="Motor inertia")
 fileNames = Par(value = ["data1.json", "data2.json"])
 J_alias   = Par(alias = "J")
 ```
-
-# Hidden info
-
-The following keys are automatically added to Par(..):
-
-|key             | value                                            |
-|:---------------|:-------------------------------------------------|
-|`:_class`       | = `:Par` (to mark the ordered dictionary as Par. |
-|`:_basetype`    | = [`basetype`](@ref)`(Par[:value])`.             |
 """
 Par(; kwargs...) = newSignal(kwargs, :Par)
 
@@ -204,7 +178,7 @@ Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).
 isSignal(signal) = isVar(signal) || isPar(signal)
 
 
-const doNotShow = [:_class, :basetype, :size]
+const doNotShow = [:_class]    # [:_class, :_type, :_size]
 
 """
     showSignal([io=stdout,] signal)
