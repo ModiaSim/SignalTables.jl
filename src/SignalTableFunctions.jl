@@ -87,7 +87,7 @@ getValueWithUnit(signalTable, name::String) = begin
 end
 
 
-const doNotShowAttributes = [:_class, :_type, :_size, :unit]
+const doNotShowAttributes = [:_class, :_basetype, :_size, :unit]
 
 
 """
@@ -190,8 +190,8 @@ function showInfo(io::IO, signalTable;
                 attr = String(take!(iostr))
             end
             independent = get(signal, :independent, false)
-            println("$name: _type = ", get(signal, :_type, "notDefined"))
-            valBaseType = haskey(signal, :_type) ? string( BaseType( get(signal, :_type, Missing) ) ) : ""
+            #println("$name: _type = ", get(signal, :_type, "notDefined"))
+            valBaseType = string( get(signal, :_basetype, "") )
             valSize = string( get(signal, :_size, "") )
             valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString

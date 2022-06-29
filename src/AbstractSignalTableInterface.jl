@@ -61,8 +61,8 @@ end
 
 Returns signal in form of a [`Var`](@ref) or a [`Par`](@ref)) where
  
-- :values in Var() is replaced by :_type = typeof(signal[:values]), :_size = size( signal[:values] )  or
-- :value in Par() is replaced by :_type = typeof(signal[:value]), :_size = size( signal[:value] )  
+- :values in Var() is replaced by :_basetype = basetype(signal[:values]), :_size = size( signal[:values] )  or
+- :value in Par() is replaced by :_basetype = basetype(signal[:value]), :_size = size( signal[:value] )  
 
 provided size(..) on the value is defined (otherwise :_size is not included)
 
@@ -77,17 +77,17 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
     signal2 = copy(signal)
     delete!(signal2, :values)
     delete!(signal2, :value)
-    _type = nothing    
-    _size = nothing
+    _basetype = nothing    
+    _size     = nothing
     type_available = false
     size_available = false    
     if isVar(signal)
         if haskey(signal, :values)
             type_available = true
             try
-                sig   = signal[:values]
-                _type = typeof(sig)
-                _size = size(sig)
+                sig       = signal[:values]
+                _basetype = basetype(sig)
+                _size     = size(sig)
                 size_available = true                
             catch
                 size_available = false
@@ -97,9 +97,9 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
         if haskey(signal, :value)
             type_available = true        
             try
-                sig   = signal[:value]
-                _type = typeof(sig)            
-                _size = size(sig)
+                sig       = signal[:value]
+                _basetype = basetype(sig)            
+                _size     = size(sig)
                 size_available = true                  
             catch
                 size_available = false
@@ -107,7 +107,7 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
         end
     end
     if type_available
-        signal2[:_type] = _type
+        signal2[:_basetype] = _basetype
     end        
     if size_available
         signal2[:_size] = _size

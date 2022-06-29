@@ -124,7 +124,7 @@ struct SignalTable <: AbstractDict{String,Any}
                                 error("SignalTable(\"$key\" => signal, ...): size(signal[:values],$i) = $(size(sig_values,i)) but must be $val (= length of independent signal)!")
                             end
                         end
-                    end 
+                    end   
                 else
                     # Needs not have :values, e.g. alias
                     # error("SignalTable(\"$key\" => signal, ...) is a Var(..) and has no key :values which is required!")
@@ -137,7 +137,7 @@ struct SignalTable <: AbstractDict{String,Any}
                         error("SignalTable(\"$key\" => Var(alias=\"$aliasName\"...): referenced signal does not exist.")
                     end
                     sigAlias = dict[aliasName]
-                    sig = merge(sigAlias,sig)
+                    sig = merge(sigAlias,sig)    
                 end
             else
                 if haskey(sig, :alias)
