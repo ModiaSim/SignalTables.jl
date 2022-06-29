@@ -438,7 +438,7 @@ function getFlattenedSignal(signalTable, name::String;
             end
         catch
             # Cannot be converted
-            @warn "\"$name\" is ignored, because its element type = $sigElType\nwhich cannot be converted to targetFloat = $targetFloat."
+            @info "\"$name\" is ignored, because its element type = $sigElType\nwhich cannot be converted to targetFloat = $targetFloat."
             return nothing
         end
         sigValues = sigValues2
@@ -513,7 +513,7 @@ function getFlattenedSignal(signalTable, name::String;
     return signal
 
     @label ERROR
-    @warn "\"$name\" is ignored, because it is not defined or is not correct or has no values."
+    @info "\"$name\" is ignored, because it is not defined or is not correct or has no values."
     return nothing
 end
 
@@ -563,13 +563,13 @@ function getPlotSignal(sigTable, ysigName::AbstractString; xsigName=nothing)
 
     # Check x-axis signal
     if ndims(xsig) != 1
-        @warn "\"$xsigName\" does not characterize a scalar variable as needed for the x-axis."
+        @info "\"$xsigName\" does not characterize a scalar variable as needed for the x-axis."
         @goto ERROR
     #elseif !(typeof(xsigValue) <: Real                                   || 
     #         typeof(xsigValue) <: Measurements.Measurement               ||
     #         typeof(xsigValue) <: MonteCarloMeasurements.StaticParticles ||
     #         typeof(xsigValue) <: MonteCarloMeasurements.Particles       )
-    #    @warn "\"$xsigName\" is of type " * string(typeof(xsigValue)) * " which is not supported for the x-axis."
+    #    @info "\"$xsigName\" is of type " * string(typeof(xsigValue)) * " which is not supported for the x-axis."
     #    @goto ERROR        
     end
 

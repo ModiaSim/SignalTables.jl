@@ -73,31 +73,35 @@ This function is useful if only the attributes of a signal are needed, but not t
 required by the [Abstract Signal Table Interface](@ref) might be an *expensive* operation).
 """
 function getSignalInfo(signalTable, name::String)::SymbolDictType
-    signal = getSignal(signalTable,name)
+    signal  = getSignal(signalTable,name)
     signal2 = copy(signal)
     delete!(signal2, :values)
     delete!(signal2, :value)
-    _size = nothing
-    _available =false    
+    _basetype = nothing    
+    _size     = nothing
+    available = false    
     if isVar(signal)
         try
-            sig   = signal[:values]
-            _size = size(sig)
+            sig       = signal[:values]
+            _basetype = basetype(sig)
+            _size     = size(sig)
             available = true
         catch
             available = false
         end
     else
         try
-            sig   = signal[:value]
-            _size = size(sig)
+            sig       = signal[:value]
+            _basetype = basetype(sig)            
+            _size     = size(sig)
             available = true
         catch
             available = false
         end    
     end
-    if !isnothing(_size)
-        signal2[:_size] = _size        
+    if available
+        signal2[:_basetype] = _basetype
+        signal2[:_size]     = _size
     end
     return signal2
 end
