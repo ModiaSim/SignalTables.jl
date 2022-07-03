@@ -98,14 +98,14 @@ generate the following plot:
 
 - [`SignalTable`](https://modiasim.github.io/SignalTables.jl/stable/Functions/SignalTables.html#SignalTables.SignalTable) (included in SignalTables.jl).
 
-  Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
+- [Modia.jl](https://github.com/ModiaSim/Modia.jl) (a modeling and simulation environment; version >= 0.9.0)
 
-  - [Modia.jl](https://github.com/ModiaSim/Modia.jl) (a modeling and simulation environment)
-  - [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl)
-    (tabular data; first column is independent variable; *only scalar variables*))
-  - [Tables.jl](https://github.com/JuliaData/Tables.jl)
-    (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
-    first column is independent variable; *only scalar variables*).
+- [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl)
+  (tabular data; first column is independent variable; *only scalar variables*))
+
+- [Tables.jl](https://github.com/JuliaData/Tables.jl)
+  (abstract tables, e.g. [CSV](https://github.com/JuliaData/CSV.jl) tables;
+  first column is independent variable; *only scalar variables*).
 
 *Concrete implementations* of the [Abstract Plot Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractPlotInterface.html) are provided for:
 

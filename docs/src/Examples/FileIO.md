@@ -58,3 +58,43 @@ results in the following file:
 
 - [VariousTypes.jld](../../resources/examples/fileIO/VariousTypes.jld).
 
+
+
+
+
+## CSV - Read from File
+
+All Julia tables that are derived from [Tables.jl](https://github.com/JuliaData/Tables.jl) are seen as signal tables.
+For example, a CSV Files is read from file and treated as signal Table:
+
+```julia
+using  SignalTables
+import CSV
+
+file = joinpath(SignalTables.path, "examples", "fileIO", "Rotational_First.csv")
+
+println("\n... Read csv file \"$file\"")
+sigTable = CSV.File(file)
+
+println("\n... Show csv file as signal table")
+showInfo(sigTable)
+
+println("\ntime[1:10] = ", getSignal(sigTable, "time")[:values][1:10])
+```
+
+results in the following output:
+
+```julia
+... Read csv file "[...]\SignalTables\examples\fileIO\Rotational_First.csv"
+
+... Show csv file as signal table
+ name            unit  size     eltypeOrType  kind  attributes
+───────────────────────────────────────────────────────────────
+ time                  (2002,)  Float64       Var
+ damper.phi_rel        (2002,)  Float64       Var
+ damper.w_rel          (2002,)  Float64       Var
+ inertia3.phi          (2002,)  Float64       Var
+ inertia3.w            (2002,)  Float64       Var
+
+time[1:10] = [0.0, 0.0005, 0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045000000000000005]
+```

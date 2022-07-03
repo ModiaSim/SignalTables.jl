@@ -29,6 +29,8 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`getDefaultHeading`](@ref)        | Returns the default heading for a plot.                                                        |
 | [`signalTableToJSON`](@ref)        | Returns a JSON string representation of a [`SignalTable`](@ref) instance                       |
 | [`writeSignalTable`](@ref)         | Write a [`SignalTable`](@ref) instance in JSON format on file.                                 |
+| [`toSignalTable`](@ref)            | Returns a signalTable as instance of [`SignalTable`](@ref).                                    |
+| [`signalTableToDataFrame`](@ref)   | Returns a signal table as [DataFrame](https://github.com/JuliaData/DataFrames.jl) object.      |
 
 
 ```@docs
@@ -49,4 +51,6 @@ getFlattenedSignal
 getDefaultHeading
 signalTableToJSON
 writeSignalTable
+toSignalTable
+signalTableToDataFrame
 ```

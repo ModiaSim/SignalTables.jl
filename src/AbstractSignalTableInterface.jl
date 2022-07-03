@@ -4,12 +4,14 @@
 #
 # This file is part of module SignalTables
 
+import Tables
+
 """
     isSignalTable(obj)::Bool
 
 Returns true, if `obj` is a signal table and supports the functions of the [Abstract Signal Table Interface](@ref).
 """
-isSignalTable(obj) = false
+isSignalTable(obj) = Tables.istable(obj) && Tables.columnaccess(obj)
 
 
 """
@@ -17,7 +19,13 @@ isSignalTable(obj) = false
 
 Returns the names of the independent signals (often: ["time"]) from signalTable.
 """
-function independentSignalNames end
+function independentSignalNames(obj)
+    if Tables.istable(obj) && Tables.columnaccess(obj)
+        return [string(Tables.columnnames(obj)[1])]
+    else
+        @error "independentSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+    end
+end
 
 
 """
@@ -26,7 +34,13 @@ function independentSignalNames end
 Returns a string vector of the signal names that are present in signalTable
 (including independent signal names).
 """
-function signalNames end
+function signalNames(obj)
+    if Tables.istable(obj) && Tables.columnaccess(obj)
+        return string.(Tables.columnnames(obj))
+    else
+        @error "signalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+    end
+end
 
 
 """
@@ -35,7 +49,13 @@ function signalNames end
 Returns signal `name` from `signalTable` (that is a [`Var`](@ref) or a [`Par`](@ref)).
 If `name` does not exist, an error is raised.
 """
-function getSignal end
+function getSignal(obj, name::String)
+    if Tables.istable(obj) && Tables.columnaccess(obj)
+        return Var(values= Tables.getcolumn(obj, Symbol(name)))
+    else
+        @error "getSignal(obj, \"$name\") is not supported for typeof(obj) = " * string(typeof(obj))
+    end
+end
 
 
 # ----------- Functions that have a default implementation ----------------------------------------

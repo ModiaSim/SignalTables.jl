@@ -20,7 +20,7 @@ export isSignalTable, independentSignalNames, signalNames, hasSignal, getSignal,
 export new_signal_table, getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
 
 # SignalTable
-export SignalTable, signalTableToJSON, writeSignalTable
+export SignalTable, signalTableToJSON, writeSignalTable, toSignalTable, signalTableToDataFrame
 
 # Plot Package
 export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPackage
@@ -37,6 +37,7 @@ include("PlotPackageDefinition.jl")
 include("ExampleSignalTables.jl")
 include("NoPlot.jl")
 include("SilentNoPlot.jl")
+include("SignalTableInterface_DataFrames.jl")
 
 #include("SilentNoPlot.jl")
 #include("UserFunctions.jl")

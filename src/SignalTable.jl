@@ -319,3 +319,22 @@ function writeSignalTable(filename::String, signalTable::AbstractDict; indent=no
     end
     return nothing
 end
+
+
+
+"""
+    toSignalTable(signalTable)::SignalTable
+    
+Returns a signalTable as instance of [`SignalTable`](@ref).
+"""
+function toSignalTable(sigTable)::SignalTable
+    if !isSignalTable(sigTable)
+        error("toSignalTable(obj): obj::$(typeof(sigTable)) is no signal table.")
+    end
+    sigTable2 = SignalTable()
+    for name in signalNames(sigTable)
+        sigTable2[name] = getSignal(sigTable,name)
+    end        
+    return sigTable2
+end
+
