@@ -218,3 +218,104 @@ function getDefaultHeading(sigTable::SignalTable)::String
         return get(attr, :plotHeading, "")
     end
 end
+
+
+
+
+#
+# Encoding and decoding Modia signalTables as JSON.
+#
+# Based on Modia/src/JSONModel.jl developed by Hilding Elmqvist
+# License: MIT (expat)
+
+export signalTableToJSON, writeSignalTable
+
+import JSON
+
+const TypesWithoutEncoding = Set(["Float64", "Int64", "Bool", "String", "Symbol"])
+
+appendNames(name1, name2) = name1 == "" ? name2 : name1 * "." * string(name2)
+
+"""
+    jsigDict = encodeSignalTable(name, element)
+
+Encodes a SignalTable suitable to convert to a JSON string.
+"""
+function encodeSignalTable(name, element)
+    if typeof(element) <: SignalTable
+        jdict = OrderedDict{String,Any}("_class" => "SignalTable")
+        for (key,val) in element
+            jdict[key] = encodeSignalTable(appendNames(name,key),val)
+        end
+        return jdict
+
+    elseif isVar(element)
+        jdict = OrderedDict{String,Any}("_class" => "Var")
+        for (key,val) in element
+            if key != :Var
+                jdict[string(key)] = encodeSignalTable(appendNames(name,key),val)
+            end
+        end
+        return jdict
+
+    elseif isPar(element)
+        jdict = OrderedDict{String,Any}("_class" => "Par")
+        for (key,val) in element
+            if key != :Par
+                jdict[string(key)] = encodeSignalTable(appendNames(name,key),val)
+            end
+        end
+        return jdict
+        
+    elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
+        if ndims(element) == 1 && string(elementBaseType(eltype(element))) in TypesWithoutEncoding 
+            return element
+        end
+        jdict = OrderedDict{String,Any}("_class" => "Array", 
+                                        "eltype" => string(eltype(element)), 
+                                        "size"   => Int[i for i in size(element)],
+                                        "values" => reshape(element, length(element)))
+        return jdict
+
+    elseif string(typeof(element)) in TypesWithoutEncoding
+        return element
+
+    elseif typeof(element) <: Number
+        jdict = OrderedDict{String,Any}("_class" => "Number", 
+                                        "type"   => typeof(element), 
+                                        "value"  => element)
+                                        
+    else
+        @info "$name::$(typeof(element)) is ignored, because mapping to JSON not known"
+        return nothing
+    end
+end
+
+
+"""
+    json = signalTableToJSON(signalTable)
+
+Returns a JSON string representation of signalTable
+"""
+function signalTableToJSON(signalTable)::String
+    jsignalTable = encodeSignalTable("", signalTable)
+    return JSON.json(jsignalTable)
+end
+
+
+"""
+    writeSignalTable(filename::String, signalTable; indent=2, log=true)
+    
+Write signalTable in JSON format on file `filename`.
+"""
+function writeSignalTable(filename::String, signalTable::AbstractDict; indent=nothing, log=false)::Nothing
+    file = joinpath(pwd(), filename)
+    if log
+        println("  Write signalTable in JSON format on file \"$file\"")
+    end
+    jsignalTable = encodeSignalTable("", signalTable)
+    open(file, "w") do io
+        JSON.print(io, jsignalTable, indent)
+    end
+    return nothing
+end

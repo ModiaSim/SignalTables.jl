@@ -51,6 +51,8 @@ Note, *FileIO* functions (e.g. JSON, HDF5) can be directly used, see [FileIO Exa
 | [`getValueWithUnit`](@ref)       | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
 | [`getFlattenedSignal`](@ref)     | Returns a copy of a signal where the values or the value are *flattened* and converted for use in plots or traditional tables. |
 | [`getDefaultHeading`](@ref)      | Returns the default heading for a plot.                                                        |
+| [`signalTableToJSON`](@ref)      | Returns a JSON string representation of a [`SignalTable`](@ref) instance                       |
+| [`writeSignalTable`](@ref)       | Write a [`SignalTable`](@ref) instance in JSON format on file.                                 |
 
 
 | Plot package functions           | Description                                               |

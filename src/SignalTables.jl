@@ -20,7 +20,7 @@ export isSignalTable, independentSignalNames, signalNames, hasSignal, getSignal,
 export new_signal_table, getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
 
 # SignalTable
-export SignalTable
+export SignalTable, signalTableToJSON, writeSignalTable
 
 # Plot Package
 export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPackage
