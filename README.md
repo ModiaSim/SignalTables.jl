@@ -60,19 +60,19 @@ showInfo(sigTable)
 Command `showInfo` generates the following output:
 
 ```julia
-name          unit          size  basetype kind attributes
-─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  independent=true
-load.r        "m"           (6,3) Float64  Var
-motor.angle   "rad"         (6,)  Float64  Var  state=true
-motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
-motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
-wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
-ref.clock                   (6,)  Bool     Var  variability="clock"
-motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                        String   Par
-attributes                                 Par  info="This is a test signal table"
+name          unit           size  eltypeOrType           kind attributes
+───────────────────────────────────────────────────────────────────────────────────────────────────────
+time          "s"            (6,)  Float64                Var  independent=true
+load.r        "m"            (6,3) Float64                Var
+motor.angle   "rad"          (6,)  Float64                Var  state=true, der="motor.w"
+motor.w       "rad/s"        (6,)  Float64                Var
+motor.w_ref   ["rad", "1/s"] (6,2) Float64                Var  info="Reference angle and speed"
+wm            "rad/s"        (6,)  Float64                Var  alias="motor.w"
+ref.clock                    (6,)  Union{Missing,Bool}    Var  variability="clock"
+motor.w_c                    (6,)  Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"     ()    Float32                Par
+motor.data                         String                 Par
+attributes                                                Par  info="This is a test signal table"
 ```
 
 The various Julia FileIO functions can be directly used to save a signal table

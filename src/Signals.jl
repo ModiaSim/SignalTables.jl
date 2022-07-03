@@ -28,14 +28,13 @@ elementBaseType(::Type{T})                where {T} = T
 elementBaseType(::Type{Union{Missing,T}}) where {T} = T
 
 """
-    basetype(obj)
+    eltypeOrType(obj)
 
-Returns eltype(obj), if obj is an array (but without Missing) and otherwise returns typeof(obj).
+Returns eltype(obj), if obj is an AbstractArray and otherwise returns typeof(obj).
 """
-basetype(array::AbstractArray) = elementBaseType(eltype(array))
-basetype(obj) = typeof(obj)
-
-BaseType(::Type{T}) where {T} = T <: AbstractArray ? elementBaseType( eltype(T) ) : T
+eltypeOrType(array::AbstractArray) = eltype(array)
+eltypeOrType(obj) = typeof(obj)
+eltypeOrType(::Type{T}) where {T} = T <: AbstractArray ? eltype(T) : T
 
 
 # Copied from Modia/src/ModelCollections.jl (= newCollection) and adapted
@@ -278,4 +277,4 @@ v_unit2 = uparse(v_unit)  # :: Unitful.FreeUnits{(m, s^-1), ..., nothing}
 unitAsParseableString(sig)::String                        = ""
 unitAsParseableString(sigUnit::Unitful.FreeUnits)::String = replace(repr(sigUnit,context = Pair(:fancy_exponent,false)), " " => "*")
 unitAsParseableString(sigValue::Number)::String           = unitAsParseableString(unit(sigValue))
-unitAsParseableString(sigArray::AbstractArray)::String    = unitAsParseableString(unit(basetype(sigArray)))
+unitAsParseableString(sigArray::AbstractArray)::String    = unitAsParseableString(unit(eltypeOrType(sigArray)))

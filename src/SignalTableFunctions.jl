@@ -5,7 +5,17 @@ Returns a compacted string, where all paths with dots are reduced to their leaf 
 Example: compactPaths("MonteCarloMeasurements.Particles") is reduced to "Particles".
 """
 function compactPaths(str::String)
-    str
+    i1 = findfirst("{", str)
+    if isnothing(i1)
+        i2 = findlast(".", str)
+    else
+        i2 = findprev(".", str, i1[1])
+    end
+    if !isnothing(i2) && length(str) > i2[1]
+        str = str[i2[1]+1:end]
+    end
+    str = replace(str, " " => "")  # remove blanks
+    return str
 end
 
 
@@ -87,7 +97,7 @@ getValueWithUnit(signalTable, name::String) = begin
 end
 
 
-const doNotShowAttributes = [:_class, :_basetype, :_size, :unit]
+const doNotShowAttributes = [:_class, :_eltypeOrType, :_size, :unit]
 
 
 """
@@ -130,7 +140,7 @@ signalInfo(sigTable)
 results in the following output
 
 ```julia
-name          unit          size  basetype kind attributes
+name          unit          size  eltypeOrType kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
 time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var
@@ -156,7 +166,7 @@ function showInfo(io::IO, signalTable;
     name2     = String[]
     unit2     = String[]
     size2     = String[]
-    basetype2 = String[]
+    eltypeOrType2 = String[]
     kind2     = String[]
     attr2     = String[]
 
@@ -191,8 +201,10 @@ function showInfo(io::IO, signalTable;
             end
             independent = get(signal, :independent, false)
             #println("$name: _type = ", get(signal, :_type, "notDefined"))
-            valBaseType = string( get(signal, :_basetype, "") )
+            valBaseType = string( get(signal, :_eltypeOrType, "") )
+            valBaseType = compactPaths(valBaseType)
             valSize = string( get(signal, :_size, "") )
+            valSize = replace(valSize, " " => "")   # Remove blanks
             valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString
                 if valUnit != ""
@@ -208,7 +220,7 @@ function showInfo(io::IO, signalTable;
                 pushfirst!(name2    , name)
                 pushfirst!(unit2    , valUnit)
                 pushfirst!(size2    , valSize)
-                pushfirst!(basetype2, valBaseType)
+                pushfirst!(eltypeOrType2, valBaseType)
                 pushfirst!(kind2    , kind)
                 if attributes
                     pushfirst!(attr2, attr)
@@ -217,7 +229,7 @@ function showInfo(io::IO, signalTable;
                 push!(name2    , name)
                 push!(unit2    , valUnit)
                 push!(size2    , valSize)
-                push!(basetype2, valBaseType)
+                push!(eltypeOrType2, valBaseType)
                 push!(kind2    , kind)
                 if attributes
                     push!(attr2, attr)
@@ -227,9 +239,9 @@ function showInfo(io::IO, signalTable;
     end
 
     if attributes
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=basetype2, kind=kind2, attributes=attr2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltypeOrType=eltypeOrType2, kind=kind2, attributes=attr2)
     else
-        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, basetype=basetype2, kind=kind2)
+        infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltypeOrType=eltypeOrType2, kind=kind2)
     end
 
     show(io, infoTable, show_row_number=false, summary=false, allcols=true, eltypes=false, truncate=50) # rowlabel=Symbol("#")
@@ -261,7 +273,7 @@ end
 #TargetElType(::Type{MonteCarloMeasurements.Particles{T,N}})       where {T,N}   = T
 #TargetElType(::Type{MonteCarloMeasurements.StaticParticles{T,N}}) where {T,N}   = T
 #=
-function basetypeWithMeasurements(obj)
+function eltypeOrTypeWithMeasurements(obj)
     if typeof(obj) <: AbstractArray
         obj1 = obj[1]
         if eltype(obj1) <: Real
@@ -272,19 +284,19 @@ function basetypeWithMeasurements(obj)
             elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
                 btype = typeof(obj1.val)
             else
-                btype = basetype(obj)
+                btype = eltypeOrType(obj)
             end                  
         end
     else
-        btype = basetype(obj)
+        btype = eltypeOrType(obj)
     end
     #catch
-    #    btype = basetype(obj)
+    #    btype = eltypeOrType(obj)
     #end
     return btype
 end
 
-function basetypeWithMeasurements(obj)
+function eltypeOrTypeWithMeasurements(obj)
     obj_eltype = eltype(obj)
     if obj_eltype <: Real
         if hasfield(obj_eltype, :particles)    # MonteCarloMeasurements
@@ -292,20 +304,20 @@ function basetypeWithMeasurements(obj)
         elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
             btype = typeof(obj1.val)
         else
-            btype = basetype(obj)
+            btype = eltypeOrType(obj)
         end                  
     end
     else
-        btype = basetype(obj)
+        btype = eltypeOrType(obj)
     end
     #catch
-    #    btype = basetype(obj)
+    #    btype = eltypeOrType(obj)
     #end
     return btype
 end
 =#
 
-function basetypeWithMeasurements(obj)
+function eltypeOrTypeWithMeasurements(obj)
     obj1  = typeof(obj) <: AbstractArray ? obj[1] : obj
     Tobj1 = typeof(obj1)
     if hasfield(Tobj1, :particles)    # MonteCarloMeasurements
@@ -313,7 +325,7 @@ function basetypeWithMeasurements(obj)
     elseif hasfield(Tobj1, :val) && hasfield(Tobj1, :err) # Measurements
         btype = typeof(obj1.val)
     else
-        btype = basetype(obj)
+        btype = eltypeOrType(obj)
     end                  
     return btype
 end
@@ -467,11 +479,11 @@ function getFlattenedSignal(signalTable, name::String;
         
     # Transform sigValues
     sigElType = eltype(sigValues)
-    basetype2 = basetypeWithMeasurements(sigValues)
+    eltypeOrType2 = eltypeOrTypeWithMeasurements(sigValues)
     hasMissing = isa(missing, sigElType)
 
-    if  (!isnothing(targetInt)   && basetype2 == targetInt || 
-         !isnothing(targetFloat) && basetype2 == targetFloat) &&
+    if  (!isnothing(targetInt)   && eltypeOrType2 == targetInt || 
+         !isnothing(targetFloat) && eltypeOrType2 == targetFloat) &&
          !(missingToNaN && hasMissing)        
         # Signal need not be converted - do nothing
 

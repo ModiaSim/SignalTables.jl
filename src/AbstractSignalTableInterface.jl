@@ -24,7 +24,7 @@ function independentSignalNames end
     signalNames(signalTable)::Vector{String}
 
 Returns a string vector of the signal names that are present in signalTable
-(including independent signal names, but without "_class" => :SignalTable).
+(including independent signal names).
 """
 function signalNames end
 
@@ -48,7 +48,7 @@ Returns `true` if signal `name` is present in `signalTable`.
 function hasSignal(signalTable, name::String)::Bool
     hasName = true
     try
-        sig = getSignal(signalTable, name, with_values=false)
+        sig = getSignal(signalTable, name)
     catch
         hasName = false
     end
@@ -59,35 +59,32 @@ end
 """
     getSignalInfo(signalTable, name::String)
 
-Returns signal in form of a [`Var`](@ref) or a [`Par`](@ref)) where
+Returns signal in form of a [`Var`](@ref) or a [`Par`](@ref)) without :values or :value
+but instead with :_eltypeOrType (eltype of the values if AbstractArray, otherwise typeof the values) 
+and :_size (if defined on the values)
  
-- :values in Var() is replaced by :_basetype = basetype(signal[:values]), :_size = size( signal[:values] )  or
-- :value in Par() is replaced by :_basetype = basetype(signal[:value]), :_size = size( signal[:value] )  
-
-provided size(..) on the value is defined (otherwise :_size is not included)
-
 If `name` does not exist, an error is raised.
 
 This function is useful if only the attributes of a signal are needed, but not their values
-(returning the attributes might be a *cheap* operation, whereas returning the values in the form
-required by the [Abstract Signal Table Interface](@ref) might be an *expensive* operation).
+(returning the attributes might be a *cheap* operation, whereas returning the values 
+might be an *expensive* operation).
 """
 function getSignalInfo(signalTable, name::String)::SymbolDictType
     signal  = getSignal(signalTable,name)
     signal2 = copy(signal)
     delete!(signal2, :values)
     delete!(signal2, :value)
-    _basetype = nothing    
-    _size     = nothing
+    _eltypeOrType = nothing    
+    _size         = nothing
     type_available = false
     size_available = false    
     if isVar(signal)
         if haskey(signal, :values)
             type_available = true
             try
-                sig       = signal[:values]
-                _basetype = basetype(sig)
-                _size     = size(sig)
+                sig           = signal[:values]
+                _eltypeOrType = eltypeOrType(sig)
+                _size          = size(sig)
                 size_available = true                
             catch
                 size_available = false
@@ -97,9 +94,9 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
         if haskey(signal, :value)
             type_available = true        
             try
-                sig       = signal[:value]
-                _basetype = basetype(sig)            
-                _size     = size(sig)
+                sig           = signal[:value]
+                _eltypeOrType = eltypeOrType(sig)            
+                _size         = size(sig)
                 size_available = true                  
             catch
                 size_available = false
@@ -107,7 +104,7 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
         end
     end
     if type_available
-        signal2[:_basetype] = _basetype
+        signal2[:_eltypeOrType] = _eltypeOrType
     end        
     if size_available
         signal2[:_size] = _size

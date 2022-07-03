@@ -4,10 +4,10 @@ using SignalTables
 using SignalTables.Unitful
 using SignalTables.Test
 
-@test basetype([1.0,2.0,3.0])     == Float64
-@test basetype([1.0,missing,3.0]) == Float64
-@test basetype("abc")             == String
-@test basetype((1,1.0,"abc"))     == Tuple{Int64, Float64, String}
+@test eltypeOrType([1.0,2.0,3.0])     == Float64
+@test eltypeOrType([1.0,missing,3.0]) == Union{Missing,Float64}
+@test eltypeOrType("abc")             == String
+@test eltypeOrType((1,1.0,"abc"))     == Tuple{Int64, Float64, String}
 
 s = 2.1u"m/s"
 v = [1.0, 2.0, 3.0]u"m/s"

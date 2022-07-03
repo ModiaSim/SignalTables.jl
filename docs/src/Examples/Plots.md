@@ -25,10 +25,10 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name  unit  size    basetype  kind  attributes
-──────────────────────────────────────────────────────
- time        (100,)  Float64   Var   independent=true
- phi         (100,)  Float64   Var
+ name  unit  size    eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────
+ time        (100,)  Float64       Var   independent=true
+ phi         (100,)  Float64       Var
 ```
 
 ![OneScalarSignal](../../resources/examples/plots/OneScalarSignal.png)
@@ -55,10 +55,10 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name  unit   size    basetype  kind  attributes
-───────────────────────────────────────────────────────
- time  "s"    (100,)  Float64   Var   independent=true
- phi   "rad"  (100,)  Float64   Var
+ name  unit   size    eltypeOrType  kind  attributes
+───────────────────────────────────────────────────────────
+ time  "s"    (100,)  Float64       Var   independent=true
+ phi   "rad"  (100,)  Float64       Var
 ```
 
 ![OneScalarSignalWithUnit](../../resources/examples/plots/OneScalarSignalWithUnit.png)
@@ -84,10 +84,10 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name  unit  size      basetype  kind  attributes
-────────────────────────────────────────────────────────
- time  "s"   (100,)    Float64   Var   independent=true
- r     "m"   (100, 3)  Float64   Var
+ name  unit  size     eltypeOrType  kind  attributes
+───────────────────────────────────────────────────────────
+ time  "s"   (100,)   Float64       Var   independent=true
+ r     "m"   (100,3)  Float64       Var
 ```
 
 ![OneVectorSignalWithUnit](../../resources/examples/plots/OneVectorSignalWithUnit.png)
@@ -120,10 +120,10 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name    unit  size         basetype  kind  attributes
-─────────────────────────────────────────────────────────────
- time          (100,)       Float64   Var   independent=true
- matrix        (100, 2, 3)  Float64   Var
+ name    unit  size      eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────────
+ time          (10,)     Float64       Var   independent=true
+ matrix        (10,2,3)  Float64       Var
 ```
 
 ![OneMatrixSignal](../../resources/examples/plots/OneMatrixSignal.png)
@@ -157,10 +157,10 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name    unit                                          size        basetype  kind  attributes
-────────────────────────────────────────────────────────────────────────────────────────────────────
- time    "s"                                           (10,)       Float64   Var   independent=true
- matrix  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (10, 2, 3)  Float64   Var
+ name    unit                                          size      eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+ time    "s"                                           (10,)     Float64       Var   independent=true
+ matrix  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (10,2,3)  Float64       Var
 ```
 
 ![OneMatrixSignalWithMatrixUnits](../../resources/examples/plots/OneMatrixSignalWithMatrixUnits.png)
@@ -196,16 +196,16 @@ plot(sigTable, "phi", heading="sine(time)")
 results  in:
 
 ```julia
- name     unit                                          size    basetype  kind  attributes
-─────────────────────────────────────────────────────────────────────────────────────────────────
- time     "s"                                           (5,)    Float64   Var   independent=true
- phi_max  "rad"                                         ()      Float32   Par
- i_max                                                  ()      Int64     Par
- open                                                   ()      Bool      Par
- file                                                           String    Par
- matrix1                                                (2, 3)  Float64   Par
- matrix2  "m/s"                                         (2, 3)  Float64   Par   alias="matrix1"
- matrix3  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (2, 3)  Float64   Par   alias="matrix1"
+ name     unit                                          size   eltypeOrType  kind  attributes
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ time     "s"                                           (5,)   Float64       Var   independent=true
+ phi_max  "rad"                                         ()     Float32       Par
+ i_max                                                  ()     Int64         Par
+ open                                                   ()     Bool          Par
+ file                                                          String        Par
+ matrix1                                                (2,3)  Float64       Par
+ matrix2  "m/s"                                         (2,3)  Float64       Par   alias="matrix1"
+ matrix3  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (2,3)  Float64       Par   alias="matrix1"
 ```
 
 ![ConstantSignals](../../resources/examples/plots/ConstantSignals.png)
@@ -252,14 +252,14 @@ plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
 results  in:
 
 ```julia
- name    unit     size      basetype  kind  attributes
-────────────────────────────────────────────────────────────────────────────────────────────────
- time    "s"      (153,)    Float64   Var   independent=true
- load.r  "m"      (153, 3)  Float64   Var
- sigA    "m"      (153,)    Float64   Var
- sigB    "m/s"    (153,)    Float64   Var
- sigC    "N*m"    (153,)    Float64   Var
- sigD    "rad/s"  (153,)    Float64   Var   variability="clocked", info="Motor angular velocit…
+ name    unit     size     eltypeOrType            kind  attributes
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ time    "s"      (153,)   Float64                 Var   independent=true
+ load.r  "m"      (153,3)  Float64                 Var
+ sigA    "m"      (153,)   Float64                 Var
+ sigB    "m/s"    (153,)   Float64                 Var
+ sigC    "N*m"    (153,)   Union{Missing,Float64}  Var
+ sigD    "rad/s"  (153,)   Union{Missing,Float64}  Var   variability="clocked", info="Motor angular velocit…
 ```
 
 ![MissingValues](../../resources/examples/plots/MissingValues.png)
@@ -298,19 +298,19 @@ plot(sigTable, ["load.r", ("motor.w", "wm", "motor.w_c", "ref.clock")], heading=
 results  in:
 
 ```julia
- name           unit            size    basetype  kind  attributes
-─────────────────────────────────────────────────────────────────────────────────────────────────
- time           "s"             (6,)    Float64   Var   independent=true
- load.r         "m"             (6, 3)  Float64   Var
- motor.angle    "rad"           (6,)    Float64   Var   state=true
- motor.w        "rad/s"         (6,)    Float64   Var   integral="motor.angle"
- motor.w_ref    ["rad", "1/s"]  (6, 2)  Float64   Var   info="Reference angle and speed"
- wm             "rad/s"         (6,)    Float64   Var   integral="motor.angle", alias="motor.w"
- ref.clock                      (6,)    Bool      Var   variability="clock"
- motor.w_c                      (6,)    Float64   Var   variability="clocked", clock="ref.clock"
- motor.inertia  "kg*m/s^2"      ()      Float32   Par
- motor.data                             String    Par
- attributes                                       Par   info="This is a test signal table"
+ name           unit            size   eltypeOrType            kind  attributes
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ time           "s"             (6,)   Float64                 Var   independent=true
+ load.r         "m"             (6,3)  Float64                 Var
+ motor.angle    "rad"           (6,)   Float64                 Var   state=true, der="motor.w"
+ motor.w        "rad/s"         (6,)   Float64                 Var
+ motor.w_ref    ["rad", "1/s"]  (6,2)  Float64                 Var   info="Reference angle and speed"
+ wm             "rad/s"         (6,)   Float64                 Var   alias="motor.w"
+ ref.clock                      (6,)   Union{Missing,Bool}     Var   variability="clock"
+ motor.w_c                      (6,)   Union{Missing,Float64}  Var   variability="clocked", clock="ref.clock"
+ motor.inertia  "kg*m/s^2"      ()     Float32                 Par
+ motor.data                            String                  Par
+ attributes                                                    Par   info="This is a test signal table"
 ```
 
 ![VariousTypes](../../resources/examples/plots/VariousTypes.png)

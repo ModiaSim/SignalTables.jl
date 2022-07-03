@@ -60,7 +60,7 @@ signalInfo(sigTable)
 This results in the following output:
 
 ```julia
-name          unit          size  basetype kind attributes
+name          unit          size  eltypeOrType kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────
 time          "s"           (6,)  Float64  Var  independent=true
 load.r        "m"           (6,3) Float64  Var

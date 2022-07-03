@@ -12,17 +12,13 @@ Typically, simulation results, reference signals, table-based input signals, mea
 look-up tables can be represented by a signal table.
 
 A *signal table* is an *ordered dictionary* of *signals* with string keys that supports the
-[Abstract Signal Table Interface](@ref). The first k entries
-represent the k independent signals. A *signal* is either a
+[Abstract Signal Table Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractSignalTableInterface.html). 
+A *signal* can be defined in two forms:
 
-- [`Var`](@ref) dictionary that has a required *:values* key representing a *signal array* of any element type 
-  as function of the independent signal(s) (or is the k-th independent variable), or a
-- [`Par`](@ref) dictionary that has an optional *:value* key representing a constant of any type.
+- As [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *values* key representing a *signal array* of any element type as function of the independent signal(s) (or is the k-th independent signal). A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined*, it has a value of *missing*.
+- As [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has an optional *value* key representing a constant of any type.
 
-A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` 
-at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
-it has a value of *missing*. In both dictionaries, additional attributes can be stored, 
-for example units, info texts, variability (continuous, clocked, ...), alias. 
+In both dictionaries, additional attributes can be stored, for example *unit*, *info*, *variability* (continuous, clocked, ...), *alias*, *interpolation*, *extrapolation*, and user-defined attributes.
 
 ## Examples
 
@@ -61,19 +57,19 @@ showInfo(sigTable)
 Command `showInfo` generates the following output:
 
 ```julia
-name          unit          size  basetype kind attributes
-─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  independent=true
-load.r        "m"           (6,3) Float64  Var
-motor.angle   "rad"         (6,)  Float64  Var  state=true
-motor.w       "rad/s"       (6,)  Float64  Var  integral="motor.angle"
-motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
-wm            "rad/s"       (6,)  Float64  Var  integral="motor.angle", alias="motor.w"
-ref.clock                   (6,)  Bool     Var  variability="clock"
-motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                        String   Par
-attributes                                 Par  info="This is a test signal table"
+name          unit           size  eltypeOrType           kind attributes
+───────────────────────────────────────────────────────────────────────────────────────────────────────
+time          "s"            (6,)  Float64                Var  independent=true
+load.r        "m"            (6,3) Float64                Var
+motor.angle   "rad"          (6,)  Float64                Var  state=true, der="motor.w"
+motor.w       "rad/s"        (6,)  Float64                Var
+motor.w_ref   ["rad", "1/s"] (6,2) Float64                Var  info="Reference angle and speed"
+wm            "rad/s"        (6,)  Float64                Var  alias="motor.w"
+ref.clock                    (6,)  Union{Missing,Bool}    Var  variability="clock"
+motor.w_c                    (6,)  Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"     ()    Float32                Par
+motor.data                         String                 Par
+attributes                                                Par  info="This is a test signal table"
 ```
 
 The various Julia FileIO functions can be directly used to save a signal table
