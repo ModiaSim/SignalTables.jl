@@ -183,6 +183,13 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.3.1
+
+- writeSignalTable(..): Do not store elements, that cannot be mapped to JSON + add _classVersion to signal table on file.
+- For backwards compatibilty to ModiaResult, also accept ENV["MODIA_PLOT_PACKAGE"] instead of ENV["SignalTablesPlotPackage"]
+  to define plot package.
+
+
 ### Version 0.3.0
 
 - Slightly non-backwards compatiable to 0.2.0.
