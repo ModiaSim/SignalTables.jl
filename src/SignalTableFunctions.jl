@@ -764,7 +764,7 @@ signal table with the corresponding signals are stored on file.
 
 If indent=<number> is given, then <number> indentation is used (otherwise, compact representation)
 """
-function writeSignalTable(filename::String, signalTable::AbstractDict; signalNames = nothing, indent=nothing, log=false)::Nothing
+function writeSignalTable(filename::String, signalTable; signalNames = nothing, indent=nothing, log=false)::Nothing
     file = joinpath(pwd(), filename)
     if log
         println("  Write signalTable in JSON format on file \"$file\"")
