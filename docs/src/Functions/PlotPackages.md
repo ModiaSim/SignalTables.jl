@@ -4,24 +4,24 @@
 CurrentModule = SignalTables
 ```
 
-The plot package `XXX` to be used can be defined by:
+Example to define the plot package to be used:
 
-- `ENV["SignalTablesPlotPackage"] = XXX`\
-  (e.g. in .julia/config/startup.jl file: `ENV["SignalTablesPlotPackage"] = "PyPlot"`), or
-- by calling [`usePlotPackage`](@ref)(XXX) (e.g. `usePlotPackage("PyPlot")`).
+```julia
+using SignalTables
+usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
+```
 
-Supported values for `XXX`:
+The following plot packages are supported:
 
-- `"PyPlot"` ([PyPlot](https://github.com/JuliaPy/PyPlot.jl) plots with Matplotlib from Python),
-- `"GLMakie"` ([GLMakie](https://github.com/JuliaPlots/GLMakie.jl) provides interactive plots in an OpenGL window),
-- `"WGLMakie"` ([WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) provides interactive plots in a browser window),
-- `"CairoMakie"` ([CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) provides static plots on file with publication quality).
-
-Furthermore, there is a dummy implementation included in SignalTables that is useful when performing tests with runtests.jl,
-in order that no plot package needs to be loaded during the tests:
-
+- `"PyPlot"` ([PyPlot](https://github.com/JuliaPy/PyPlot.jl) plots with Matplotlib from Python;
+  via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),
+- `"GLMakie"` ([GLMakie](https://github.com/JuliaPlots/GLMakie.jl) provides interactive plots in an OpenGL window;
+  via [SignalTablesInterface_GLMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_GLMakie.jl)),
+- `"WGLMakie"` ([WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) provides interactive plots in a browser window;
+  via [SignalTablesInterface_WGLMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_WGLMakie.jl)),
+- `"CairoMakie"` ([CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) provides static plots on file with publication quality;
+  via [SignalTablesInterface_CairoMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_CairoMakie.jl)).
 - `"SilentNoPlot"` (= all plot calls are silently ignored).
-
 
 Typically, runtests.jl is defined as:
 

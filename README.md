@@ -112,11 +112,14 @@ generate the following plot:
 - [PyPlot](https://github.com/JuliaPy/PyPlot.jl) (plots with [Matplotlib](https://matplotlib.org/stable/) from Python;
   via [SignalTablesInterface_PyPlot.jl](https://github.com/ModiaSim/SignalTablesInterface_PyPlot.jl)),
 
-  Planned implementations (basically adapting from [ModiaResult.jl](https://github.com/ModiaSim/ModiaResult.jl)):
-  
-  - [GLMakie](https://github.com/JuliaPlots/GLMakie.jl) (interactive plots in an OpenGL window),
-  - [WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) (interactive plots in a browser window),
-  - [CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) (static plots on file with publication quality).
+- [GLMakie](https://github.com/JuliaPlots/GLMakie.jl) (interactive plots in an OpenGL window;
+  via [SignalTablesInterface_GLMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_GLMakie.jl)),
+
+- [WGLMakie](https://github.com/JuliaPlots/WGLMakie.jl) (interactive plots in a browser window;
+  via [SignalTablesInterface_WGLMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_WGLMakie.jl)),
+
+- [CairoMakie](https://github.com/JuliaPlots/CairoMakie.jl) (static plots on file with publication quality;
+  via [SignalTablesInterface_CairoMakie.jl](https://github.com/ModiaSim/SignalTablesInterface_CairoMakie.jl)).
 
 Furthermore, there is a dummy implementation included in SignalTables that is useful when performing tests with runtests.jl,
 in order that no plot package needs to be loaded during the tests:
@@ -130,7 +133,7 @@ in order that no plot package needs to be loaded during the tests:
 julia> ]add SignalTables
         add SignalTablesInterface_PyPlot        # if plotting with PyPlot desired
         
-        # once registered
+        # once registration processs finished
         add SignalTablesInterface_GLMakie       # if plotting with GLMakie desired
         add SignalTablesInterface_WGLMakie      # if plotting with WGLMakie desired
         add SignalTablesInterface_CairoMakie    # if plotting with CairoMakie desired
