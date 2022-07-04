@@ -1,7 +1,7 @@
 name = "SignalTables"
 uuid = "3201582d-3078-4276-ba5d-0a1254d79d7c"
 authors = ["Martin.Otter@dlr.de <Martin.Otter@dlr.de>"]
-version = "0.3.0-dev"
+version = "0.3.0"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"

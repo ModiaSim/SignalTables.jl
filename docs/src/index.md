@@ -187,7 +187,7 @@ are different to the Python 2.x version.
 
 - Slightly non-backwards compatiable to 0.2.0.
 - Various new functions (e.g. storing a signal table in JSON format on file).
-- DataFrames.jl, Tables.jl are treated as signal tables.
+- DataFrames.jl, Tables.jl are supported as signal tables.
 - Plotting/flattening: Support of Measurements.jl and MonteCarloMeasurements.jl
 - Docu improved.
 - Bug with PlotPackage "SilentNoPlot" fixed.
