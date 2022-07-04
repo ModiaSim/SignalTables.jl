@@ -681,7 +681,10 @@ function encodeSignalTable(signalTable; signalNames=nothing)
         end
         for name in signalNames
             signal = getSignal(signalTable, name)
-            jdict[name] = encodeSignalTableElement(name, signal)
+            encodedSignal = encodeSignalTableElement(name, signal)
+            if !isnothing(encodedSignal)
+                jdict[name] = encodedSignal
+            end
         end
         return jdict
     else
@@ -696,23 +699,28 @@ end
 Encodes a signal table element suitable to convert to JSON format.
 """
 function encodeSignalTableElement(path, element)
-    if isVar(element)
-        jdict = OrderedDict{String,Any}("_class" => "Var")
+    if isSignal(element)
+        if isVar(element)
+            jdict = OrderedDict{String,Any}("_class" => "Var")
+        else
+            jdict = OrderedDict{String,Any}("_class" => "Par")
+        end
+        available = true
         for (key,val) in element
-            if key != :Var
-                jdict[string(key)] = encodeSignalTableElement(appendNames(path,key),val)
+            if key != ":_class"
+                encodedSignal = encodeSignalTableElement(appendNames(path,key),val)
+                if isnothing(encodedSignal)
+                    available = false
+                else
+                    jdict[string(key)] = encodedSignal
+                end            
             end
         end
-        return jdict
-
-    elseif isPar(element)
-        jdict = OrderedDict{String,Any}("_class" => "Par")
-        for (key,val) in element
-            if key != :Par
-                jdict[string(key)] = encodeSignalTableElement(appendNames(path,key),val)
-            end
+        if available
+            return jdict
+        else
+            return nothing
         end
-        return jdict
         
     elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
         if ndims(element) == 1 && string(elementBaseType(eltype(element))) in TypesWithoutEncoding 
