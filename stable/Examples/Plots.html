@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Plot Examples · SignalTables</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/juliamono.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../index.html">SignalTables</a></span></div><form class="docs-search" action="../search.html"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Home</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href="Plots.html">Plot Examples</a><ul class="internal"><li><a class="tocitem" href="#OneScalarSignal"><span>OneScalarSignal</span></a></li><li><a class="tocitem" href="#OneScalarSignalWithUnit"><span>OneScalarSignalWithUnit</span></a></li><li><a class="tocitem" href="#OneVectorSignalWithUnit"><span>OneVectorSignalWithUnit</span></a></li><li><a class="tocitem" href="#OneMatrixSignal"><span>OneMatrixSignal</span></a></li><li><a class="tocitem" href="#OneMatrixSignalWithMatrixUnits"><span>OneMatrixSignalWithMatrixUnits</span></a></li><li><a class="tocitem" href="#ConstantSignals"><span>ConstantSignals</span></a></li><li class="toplevel"><a class="tocitem" href="#MissingValues"><span>MissingValues</span></a></li><li class="toplevel"><a class="tocitem" href="#VariousTypes"><span>VariousTypes</span></a></li></ul></li><li><a class="tocitem" href="FileIO.html">FileIO Examples</a></li></ul></li><li><span class="tocitem">Functions</span><ul><li><a class="tocitem" href="../Functions/OverviewOfFunctions.html">Overview of Functions</a></li><li><a class="tocitem" href="../Functions/Signals.html">Signals</a></li><li><a class="tocitem" href="../Functions/SignalTables.html">Signal Tables</a></li><li><a class="tocitem" href="../Functions/PlotPackages.html">Plot Packages</a></li><li><a class="tocitem" href="../Functions/Plots.html">Plots</a></li></ul></li><li><span class="tocitem">Internal</span><ul><li><a class="tocitem" href="../Internal/AbstractSignalTableInterface.html">Abstract Signal Table Interface</a></li><li><a class="tocitem" href="../Internal/AbstractPlotInterface.html">Abstract Plot Interface</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href="Plots.html">Plot Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="Plots.html">Plot Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ModiaSim/SignalTables.jl/blob/master/docs/src/Examples/Plots.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Plot-Examples"><a class="docs-heading-anchor" href="#Plot-Examples">Plot Examples</a><a id="Plot-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-Examples" title="Permalink"></a></h1><h2 id="OneScalarSignal"><a class="docs-heading-anchor" href="#OneScalarSignal">OneScalarSignal</a><a id="OneScalarSignal-1"></a><a class="docs-heading-anchor-permalink" href="#OneScalarSignal" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Plot Examples · SignalTables</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/juliamono.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../index.html">SignalTables</a></span></div><form class="docs-search" action="../search.html"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Home</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href="Plots.html">Plot Examples</a><ul class="internal"><li><a class="tocitem" href="#OneScalarSignal"><span>OneScalarSignal</span></a></li><li><a class="tocitem" href="#OneScalarSignalWithUnit"><span>OneScalarSignalWithUnit</span></a></li><li><a class="tocitem" href="#OneVectorSignalWithUnit"><span>OneVectorSignalWithUnit</span></a></li><li><a class="tocitem" href="#OneMatrixSignal"><span>OneMatrixSignal</span></a></li><li><a class="tocitem" href="#OneMatrixSignalWithMatrixUnits"><span>OneMatrixSignalWithMatrixUnits</span></a></li><li><a class="tocitem" href="#ConstantSignals"><span>ConstantSignals</span></a></li><li class="toplevel"><a class="tocitem" href="#MissingValues"><span>MissingValues</span></a></li><li class="toplevel"><a class="tocitem" href="#VariousTypes"><span>VariousTypes</span></a></li></ul></li><li><a class="tocitem" href="FileIO.html">FileIO Examples</a></li></ul></li><li><span class="tocitem">Functions</span><ul><li><a class="tocitem" href="../Functions/OverviewOfFunctions.html">Overview of Functions</a></li><li><a class="tocitem" href="../Functions/Signals.html">Signals</a></li><li><a class="tocitem" href="../Functions/SignalTables.html">Signal Tables</a></li><li><a class="tocitem" href="../Functions/PlotPackages.html">Plot Packages</a></li><li><a class="tocitem" href="../Functions/Plots.html">Plots</a></li></ul></li><li><span class="tocitem">Internal</span><ul><li><a class="tocitem" href="../Internal/AbstractSignalTableInterface.html">Abstract Signal Table Interface</a></li><li><a class="tocitem" href="../Internal/AbstractPlotInterface.html">Abstract Plot Interface</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href="Plots.html">Plot Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="Plots.html">Plot Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ModiaSim/SignalTables.jl/blob/main/docs/src/Examples/Plots.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Plot-Examples"><a class="docs-heading-anchor" href="#Plot-Examples">Plot Examples</a><a id="Plot-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-Examples" title="Permalink"></a></h1><h2 id="OneScalarSignal"><a class="docs-heading-anchor" href="#OneScalarSignal">OneScalarSignal</a><a id="OneScalarSignal-1"></a><a class="docs-heading-anchor-permalink" href="#OneScalarSignal" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=10.0, length=100)
@@ -10,10 +10,10 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit  size    basetype  kind  attributes
-──────────────────────────────────────────────────────
- time        (100,)  Float64   Var   independent=true
- phi         (100,)  Float64   Var</code></pre><p><img src="../../resources/examples/plots/OneScalarSignal.png" alt="OneScalarSignal"/></p><h2 id="OneScalarSignalWithUnit"><a class="docs-heading-anchor" href="#OneScalarSignalWithUnit">OneScalarSignalWithUnit</a><a id="OneScalarSignalWithUnit-1"></a><a class="docs-heading-anchor-permalink" href="#OneScalarSignalWithUnit" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit  size    eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────
+ time        (100,)  Float64       Var   independent=true
+ phi         (100,)  Float64       Var</code></pre><p><img src="../../resources/examples/plots/OneScalarSignal.png" alt="OneScalarSignal"/></p><h2 id="OneScalarSignalWithUnit"><a class="docs-heading-anchor" href="#OneScalarSignalWithUnit">OneScalarSignalWithUnit</a><a id="OneScalarSignalWithUnit-1"></a><a class="docs-heading-anchor-permalink" href="#OneScalarSignalWithUnit" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=10.0, length=100)
@@ -24,10 +24,10 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit   size    basetype  kind  attributes
-───────────────────────────────────────────────────────
- time  &quot;s&quot;    (100,)  Float64   Var   independent=true
- phi   &quot;rad&quot;  (100,)  Float64   Var</code></pre><p><img src="../../resources/examples/plots/OneScalarSignalWithUnit.png" alt="OneScalarSignalWithUnit"/></p><h2 id="OneVectorSignalWithUnit"><a class="docs-heading-anchor" href="#OneVectorSignalWithUnit">OneVectorSignalWithUnit</a><a id="OneVectorSignalWithUnit-1"></a><a class="docs-heading-anchor-permalink" href="#OneVectorSignalWithUnit" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit   size    eltypeOrType  kind  attributes
+───────────────────────────────────────────────────────────
+ time  &quot;s&quot;    (100,)  Float64       Var   independent=true
+ phi   &quot;rad&quot;  (100,)  Float64       Var</code></pre><p><img src="../../resources/examples/plots/OneScalarSignalWithUnit.png" alt="OneScalarSignalWithUnit"/></p><h2 id="OneVectorSignalWithUnit"><a class="docs-heading-anchor" href="#OneVectorSignalWithUnit">OneVectorSignalWithUnit</a><a id="OneVectorSignalWithUnit-1"></a><a class="docs-heading-anchor-permalink" href="#OneVectorSignalWithUnit" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=10.0, length=100)
@@ -38,10 +38,10 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit  size      basetype  kind  attributes
-────────────────────────────────────────────────────────
- time  &quot;s&quot;   (100,)    Float64   Var   independent=true
- r     &quot;m&quot;   (100, 3)  Float64   Var</code></pre><p><img src="../../resources/examples/plots/OneVectorSignalWithUnit.png" alt="OneVectorSignalWithUnit"/></p><h2 id="OneMatrixSignal"><a class="docs-heading-anchor" href="#OneMatrixSignal">OneMatrixSignal</a><a id="OneMatrixSignal-1"></a><a class="docs-heading-anchor-permalink" href="#OneMatrixSignal" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name  unit  size     eltypeOrType  kind  attributes
+───────────────────────────────────────────────────────────
+ time  &quot;s&quot;   (100,)   Float64       Var   independent=true
+ r     &quot;m&quot;   (100,3)  Float64       Var</code></pre><p><img src="../../resources/examples/plots/OneVectorSignalWithUnit.png" alt="OneVectorSignalWithUnit"/></p><h2 id="OneMatrixSignal"><a class="docs-heading-anchor" href="#OneMatrixSignal">OneMatrixSignal</a><a id="OneMatrixSignal-1"></a><a class="docs-heading-anchor-permalink" href="#OneMatrixSignal" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=1.0, length=10)
@@ -59,10 +59,10 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit  size         basetype  kind  attributes
-─────────────────────────────────────────────────────────────
- time          (100,)       Float64   Var   independent=true
- matrix        (100, 2, 3)  Float64   Var</code></pre><p><img src="../../resources/examples/plots/OneMatrixSignal.png" alt="OneMatrixSignal"/></p><h2 id="OneMatrixSignalWithMatrixUnits"><a class="docs-heading-anchor" href="#OneMatrixSignalWithMatrixUnits">OneMatrixSignalWithMatrixUnits</a><a id="OneMatrixSignalWithMatrixUnits-1"></a><a class="docs-heading-anchor-permalink" href="#OneMatrixSignalWithMatrixUnits" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit  size      eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────────
+ time          (10,)     Float64       Var   independent=true
+ matrix        (10,2,3)  Float64       Var</code></pre><p><img src="../../resources/examples/plots/OneMatrixSignal.png" alt="OneMatrixSignal"/></p><h2 id="OneMatrixSignalWithMatrixUnits"><a class="docs-heading-anchor" href="#OneMatrixSignalWithMatrixUnits">OneMatrixSignalWithMatrixUnits</a><a id="OneMatrixSignalWithMatrixUnits-1"></a><a class="docs-heading-anchor-permalink" href="#OneMatrixSignalWithMatrixUnits" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=1.0, length=10)
@@ -81,10 +81,10 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit                                          size        basetype  kind  attributes
-────────────────────────────────────────────────────────────────────────────────────────────────────
- time    &quot;s&quot;                                           (10,)       Float64   Var   independent=true
- matrix  [&quot;m&quot; &quot;m/s&quot; &quot;m/s^2&quot;; &quot;rad&quot; &quot;rad/s&quot; &quot;rad/s^2&quot;]  (10, 2, 3)  Float64   Var</code></pre><p><img src="../../resources/examples/plots/OneMatrixSignalWithMatrixUnits.png" alt="OneMatrixSignalWithMatrixUnits"/></p><h2 id="ConstantSignals"><a class="docs-heading-anchor" href="#ConstantSignals">ConstantSignals</a><a id="ConstantSignals-1"></a><a class="docs-heading-anchor-permalink" href="#ConstantSignals" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit                                          size      eltypeOrType  kind  attributes
+──────────────────────────────────────────────────────────────────────────────────────────────────────
+ time    &quot;s&quot;                                           (10,)     Float64       Var   independent=true
+ matrix  [&quot;m&quot; &quot;m/s&quot; &quot;m/s^2&quot;; &quot;rad&quot; &quot;rad/s&quot; &quot;rad/s^2&quot;]  (10,2,3)  Float64       Var</code></pre><p><img src="../../resources/examples/plots/OneMatrixSignalWithMatrixUnits.png" alt="OneMatrixSignalWithMatrixUnits"/></p><h2 id="ConstantSignals"><a class="docs-heading-anchor" href="#ConstantSignals">ConstantSignals</a><a id="ConstantSignals-1"></a><a class="docs-heading-anchor-permalink" href="#ConstantSignals" title="Permalink"></a></h2><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = range(0.0, stop=1.0, length=5)
@@ -105,16 +105,16 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name     unit                                          size    basetype  kind  attributes
-─────────────────────────────────────────────────────────────────────────────────────────────────
- time     &quot;s&quot;                                           (5,)    Float64   Var   independent=true
- phi_max  &quot;rad&quot;                                         ()      Float32   Par
- i_max                                                  ()      Int64     Par
- open                                                   ()      Bool      Par
- file                                                           String    Par
- matrix1                                                (2, 3)  Float64   Par
- matrix2  &quot;m/s&quot;                                         (2, 3)  Float64   Par   alias=&quot;matrix1&quot;
- matrix3  [&quot;m&quot; &quot;m/s&quot; &quot;m/s^2&quot;; &quot;rad&quot; &quot;rad/s&quot; &quot;rad/s^2&quot;]  (2, 3)  Float64   Par   alias=&quot;matrix1&quot;</code></pre><p><img src="../../resources/examples/plots/ConstantSignals.png" alt="ConstantSignals"/></p><h1 id="MissingValues"><a class="docs-heading-anchor" href="#MissingValues">MissingValues</a><a id="MissingValues-1"></a><a class="docs-heading-anchor-permalink" href="#MissingValues" title="Permalink"></a></h1><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, &quot;phi&quot;, heading=&quot;sine(time)&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name     unit                                          size   eltypeOrType  kind  attributes
+────────────────────────────────────────────────────────────────────────────────────────────────────
+ time     &quot;s&quot;                                           (5,)   Float64       Var   independent=true
+ phi_max  &quot;rad&quot;                                         ()     Float32       Par
+ i_max                                                  ()     Int64         Par
+ open                                                   ()     Bool          Par
+ file                                                          String        Par
+ matrix1                                                (2,3)  Float64       Par
+ matrix2  &quot;m/s&quot;                                         (2,3)  Float64       Par   alias=&quot;matrix1&quot;
+ matrix3  [&quot;m&quot; &quot;m/s&quot; &quot;m/s^2&quot;; &quot;rad&quot; &quot;rad/s&quot; &quot;rad/s^2&quot;]  (2,3)  Float64       Par   alias=&quot;matrix1&quot;</code></pre><p><img src="../../resources/examples/plots/ConstantSignals.png" alt="ConstantSignals"/></p><h1 id="MissingValues"><a class="docs-heading-anchor" href="#MissingValues">MissingValues</a><a id="MissingValues-1"></a><a class="docs-heading-anchor-permalink" href="#MissingValues" title="Permalink"></a></h1><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 time1 =  0.0 : 0.1 : 3.0
@@ -146,14 +146,14 @@ sigTable = SignalTable(
 ) 
 
 showInfo(sigTable)
-plot(sigTable, [(&quot;sigC&quot;, &quot;load.r[2:3]&quot;), (&quot;sigB&quot;, &quot;sigD&quot;)])</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit     size      basetype  kind  attributes
-────────────────────────────────────────────────────────────────────────────────────────────────
- time    &quot;s&quot;      (153,)    Float64   Var   independent=true
- load.r  &quot;m&quot;      (153, 3)  Float64   Var
- sigA    &quot;m&quot;      (153,)    Float64   Var
- sigB    &quot;m/s&quot;    (153,)    Float64   Var
- sigC    &quot;N*m&quot;    (153,)    Float64   Var
- sigD    &quot;rad/s&quot;  (153,)    Float64   Var   variability=&quot;clocked&quot;, info=&quot;Motor angular velocit…</code></pre><p><img src="../../resources/examples/plots/MissingValues.png" alt="MissingValues"/></p><h1 id="VariousTypes"><a class="docs-heading-anchor" href="#VariousTypes">VariousTypes</a><a id="VariousTypes-1"></a><a class="docs-heading-anchor-permalink" href="#VariousTypes" title="Permalink"></a></h1><pre><code class="language-julia hljs">using SignalTables
+plot(sigTable, [(&quot;sigC&quot;, &quot;load.r[2:3]&quot;), (&quot;sigB&quot;, &quot;sigD&quot;)])</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name    unit     size     eltypeOrType            kind  attributes
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ time    &quot;s&quot;      (153,)   Float64                 Var   independent=true
+ load.r  &quot;m&quot;      (153,3)  Float64                 Var
+ sigA    &quot;m&quot;      (153,)   Float64                 Var
+ sigB    &quot;m/s&quot;    (153,)   Float64                 Var
+ sigC    &quot;N*m&quot;    (153,)   Union{Missing,Float64}  Var
+ sigD    &quot;rad/s&quot;  (153,)   Union{Missing,Float64}  Var   variability=&quot;clocked&quot;, info=&quot;Motor angular velocit…</code></pre><p><img src="../../resources/examples/plots/MissingValues.png" alt="MissingValues"/></p><h1 id="VariousTypes"><a class="docs-heading-anchor" href="#VariousTypes">VariousTypes</a><a id="VariousTypes-1"></a><a class="docs-heading-anchor-permalink" href="#VariousTypes" title="Permalink"></a></h1><pre><code class="language-julia hljs">using SignalTables
 @usingPlotPackage 
    
 t = 0.0:0.1:0.5
@@ -177,16 +177,16 @@ sigTable = SignalTable(
 )
 
 showInfo(sigTable)
-plot(sigTable, [&quot;load.r&quot;, (&quot;motor.w&quot;, &quot;wm&quot;, &quot;motor.w_c&quot;, &quot;ref.clock&quot;)], heading=&quot;VariousTypes&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name           unit            size    basetype  kind  attributes
-─────────────────────────────────────────────────────────────────────────────────────────────────
- time           &quot;s&quot;             (6,)    Float64   Var   independent=true
- load.r         &quot;m&quot;             (6, 3)  Float64   Var
- motor.angle    &quot;rad&quot;           (6,)    Float64   Var   state=true
- motor.w        &quot;rad/s&quot;         (6,)    Float64   Var   integral=&quot;motor.angle&quot;
- motor.w_ref    [&quot;rad&quot;, &quot;1/s&quot;]  (6, 2)  Float64   Var   info=&quot;Reference angle and speed&quot;
- wm             &quot;rad/s&quot;         (6,)    Float64   Var   integral=&quot;motor.angle&quot;, alias=&quot;motor.w&quot;
- ref.clock                      (6,)    Bool      Var   variability=&quot;clock&quot;
- motor.w_c                      (6,)    Float64   Var   variability=&quot;clocked&quot;, clock=&quot;ref.clock&quot;
- motor.inertia  &quot;kg*m/s^2&quot;      ()      Float32   Par
- motor.data                             String    Par
- attributes                                       Par   info=&quot;This is a test signal table&quot;</code></pre><p><img src="../../resources/examples/plots/VariousTypes.png" alt="VariousTypes"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../index.html">« Home</a><a class="docs-footer-nextpage" href="FileIO.html">FileIO Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.16 on <span class="colophon-date" title="Wednesday 22 June 2022 23:05">Wednesday 22 June 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+plot(sigTable, [&quot;load.r&quot;, (&quot;motor.w&quot;, &quot;wm&quot;, &quot;motor.w_c&quot;, &quot;ref.clock&quot;)], heading=&quot;VariousTypes&quot;)</code></pre><p>results  in:</p><pre><code class="language-julia hljs"> name           unit            size   eltypeOrType            kind  attributes
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ time           &quot;s&quot;             (6,)   Float64                 Var   independent=true
+ load.r         &quot;m&quot;             (6,3)  Float64                 Var
+ motor.angle    &quot;rad&quot;           (6,)   Float64                 Var   state=true, der=&quot;motor.w&quot;
+ motor.w        &quot;rad/s&quot;         (6,)   Float64                 Var
+ motor.w_ref    [&quot;rad&quot;, &quot;1/s&quot;]  (6,2)  Float64                 Var   info=&quot;Reference angle and speed&quot;
+ wm             &quot;rad/s&quot;         (6,)   Float64                 Var   alias=&quot;motor.w&quot;
+ ref.clock                      (6,)   Union{Missing,Bool}     Var   variability=&quot;clock&quot;
+ motor.w_c                      (6,)   Union{Missing,Float64}  Var   variability=&quot;clocked&quot;, clock=&quot;ref.clock&quot;
+ motor.inertia  &quot;kg*m/s^2&quot;      ()     Float32                 Par
+ motor.data                            String                  Par
+ attributes                                                    Par   info=&quot;This is a test signal table&quot;</code></pre><p><img src="../../resources/examples/plots/VariousTypes.png" alt="VariousTypes"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../index.html">« Home</a><a class="docs-footer-nextpage" href="FileIO.html">FileIO Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.19 on <span class="colophon-date" title="Monday 4 July 2022 12:55">Monday 4 July 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
