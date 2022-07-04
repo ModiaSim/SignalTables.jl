@@ -14,7 +14,7 @@ macro usingPlotPackage()
     if haskey(ENV, "SignalTablesPlotPackage")
         PlotPackage = ENV["SignalTablesPlotPackage"]
         if !(PlotPackage in AvailablePlotPackages)
-            @warn "ENV[\"SignalTablesPlotPackage\"] = \"$PlotPackage\" is not supported!. Using \"SilentNoPlot\"."
+            @info "ENV[\"SignalTablesPlotPackage\"] = \"$PlotPackage\" is not supported!. Using \"SilentNoPlot\"."
             @goto USE_NO_PLOT
         elseif PlotPackage == "NoPlot"
             @goto USE_NO_PLOT
@@ -28,8 +28,25 @@ macro usingPlotPackage()
             return esc( :(using $PlotPackage) )
         end
 
+    elseif haskey(ENV, "MODIA_PLOT_PACKAGE")
+        PlotPackage = ENV["MODIA_PLOT_PACKAGE"]
+        if !(PlotPackage in AvailablePlotPackages)
+            @info "ENV[\"MODIA_PLOT_PACKAGE\"] = \"$PlotPackage\" is not supported!. Using \"SilentNoPlot\"."
+            @goto USE_NO_PLOT
+        elseif PlotPackage == "NoPlot"
+            @goto USE_NO_PLOT
+        elseif PlotPackage == "SilentNoPlot"
+            expr = :( import SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
+            return esc( expr )
+        else
+            PlotPackage = Symbol("SignalTablesInterface_" * PlotPackage)
+            expr = :(using $PlotPackage)
+            println("$expr")
+            return esc( :(using $PlotPackage) )
+        end
+        
     else
-        @warn "No plot package activated. Using \"SilentNoPlot\"."
+        @info "No plot package activated. Using \"SilentNoPlot\"."
         @goto USE_NO_PLOT
     end
 
