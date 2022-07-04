@@ -170,7 +170,7 @@ function showInfo(io::IO, signalTable;
     kind2     = String[]
     attr2     = String[]
 
-    sigNames = signalNames(signalTable)
+    sigNames = getSignalNames(signalTable)
     if sorted
         sigNames = sort(sigNames)
     end
@@ -607,9 +607,9 @@ function getPlotSignal(sigTable, ysigName::AbstractString; xsigName=nothing)
         @goto ERROR
     end
     if isnothing(xsigName)
-        xNames = independentSignalNames(sigTable)
+        xNames = getIndependentSignalNames(sigTable)
         if length(xNames) != 1
-            error("Plotting requires currently exactly one independent signal. However, independentSignalNames = $independentSignalNames")
+            error("Plotting requires currently exactly one independent signal. However, getIndependentSignalNames = $getIndependentSignalNames")
         end
         xsigName2 = xNames[1]
     else
@@ -645,3 +645,133 @@ end
 Return `heading` if no empty string. Otherwise, return `defaultHeading(signalTable)`.
 """
 getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : getDefaultHeading(signalTable)
+
+
+
+
+# ------------------------------- File IO ------------------------------------------------------
+
+#
+# Encoding and decoding Modia signal tables as JSON.
+#
+# Based on Modia/src/JSONModel.jl developed by Hilding Elmqvist
+# License: MIT (expat)
+
+
+import JSON
+
+const TypesWithoutEncoding = Set(["Float64", "Int64", "Bool", "String", "Symbol"])
+
+appendNames(name1, name2) = name1 == "" ? name2 : name1 * "." * string(name2)
+
+
+"""
+    jsigDict = encodeSignalTable(signalTable; signalNames = nothing)
+
+Encodes a SignalTable suitable to convert to JSON format.
+
+If a keyword signalNames with a vector of strings is provided, then only
+the corresponding signals are encoded.
+"""
+function encodeSignalTable(signalTable; signalNames=nothing)
+    if isSignalTable(signalTable)
+        jdict = OrderedDict{String,Any}("_class" => "SignalTable")
+        if isnothing(signalNames)
+            signalNames = getSignalNames(signalTable)
+        end
+        for name in signalNames
+            signal = getSignal(signalTable, name)
+            jdict[name] = encodeSignalTableElement(name, signal)
+        end
+        return jdict
+    else
+        error("encodeSignalTable(signalTable, ...): signalTable::$(typeof(signalTable)) is no signal table.")
+    end
+end
+
+
+"""
+    jsigDict = encodeSignalTableElement(path, signalTableElement)
+
+Encodes a signal table element suitable to convert to JSON format.
+"""
+function encodeSignalTableElement(path, element)
+    if isVar(element)
+        jdict = OrderedDict{String,Any}("_class" => "Var")
+        for (key,val) in element
+            if key != :Var
+                jdict[string(key)] = encodeSignalTableElement(appendNames(path,key),val)
+            end
+        end
+        return jdict
+
+    elseif isPar(element)
+        jdict = OrderedDict{String,Any}("_class" => "Par")
+        for (key,val) in element
+            if key != :Par
+                jdict[string(key)] = encodeSignalTableElement(appendNames(path,key),val)
+            end
+        end
+        return jdict
+        
+    elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
+        if ndims(element) == 1 && string(elementBaseType(eltype(element))) in TypesWithoutEncoding 
+            return element
+        end
+        jdict = OrderedDict{String,Any}("_class" => "Array", 
+                                        "eltype" => string(eltype(element)), 
+                                        "size"   => Int[i for i in size(element)],
+                                        "values" => reshape(element, length(element)))
+        return jdict
+
+    elseif string(typeof(element)) in TypesWithoutEncoding
+        return element
+
+    elseif typeof(element) <: Number
+        jdict = OrderedDict{String,Any}("_class" => "Number", 
+                                        "type"   => typeof(element), 
+                                        "value"  => element)
+        return jdict
+                                        
+    else
+        @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+        return nothing
+    end
+end
+
+
+"""
+    json = signalTableToJSON(signalTable; signalNames = nothing)
+
+Returns a JSON string representation of signalTable
+
+If keyword signalNames with a Vector of strings is provided, then a
+signal table with the corresponding signals are returned as JSON string.
+"""
+function signalTableToJSON(signalTable; signalNames = nothing)::String
+    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames)
+    return JSON.json(jsignalTable)
+end
+
+
+"""
+    writeSignalTable(filename::String, signalTable; signalNames=nothing, indent=nothing, log=false)
+    
+Write signalTable in JSON format on file `filename`.
+
+If keyword signalNames with a Vector of strings is provided, then a
+signal table with the corresponding signals are stored on file.
+
+If indent=<number> is given, then <number> indentation is used (otherwise, compact representation)
+"""
+function writeSignalTable(filename::String, signalTable::AbstractDict; signalNames = nothing, indent=nothing, log=false)::Nothing
+    file = joinpath(pwd(), filename)
+    if log
+        println("  Write signalTable in JSON format on file \"$file\"")
+    end
+    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames)
+    open(file, "w") do io
+        JSON.print(io, jsignalTable, indent)
+    end
+    return nothing
+end

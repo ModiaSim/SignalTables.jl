@@ -14,13 +14,14 @@ import Pkg
 export SignalType, Var, Par, isVar, isPar, isSignal, showSignal, eltypeOrType, quantity, unitAsParseableString
 
 # Abstract Signal Table Interface
-export isSignalTable, independentSignalNames, signalNames, hasSignal, getSignal, getSignalInfo, getIndependentSignalsSize, getDefaultHeading
+export isSignalTable, getIndependentSignalNames, getSignalNames, hasSignal, getSignal, getSignalInfo, getIndependentSignalsSize, getDefaultHeading
 
 # Signal table functions
 export new_signal_table, getValues, getValue, getValuesWithUnit, getValueWithUnit, getFlattenedSignal, showInfo, getHeading
+export signalTableToJSON, writeSignalTable
 
 # SignalTable
-export SignalTable, signalTableToJSON, writeSignalTable, toSignalTable, signalTableToDataFrame
+export SignalTable, toSignalTable, signalTableToDataFrame
 
 # Plot Package
 export @usingPlotPackage, usePlotPackage, usePreviousPlotPackage, currentPlotPackage

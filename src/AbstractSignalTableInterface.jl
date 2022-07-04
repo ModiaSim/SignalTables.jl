@@ -15,30 +15,30 @@ isSignalTable(obj) = Tables.istable(obj) && Tables.columnaccess(obj)
 
 
 """
-    independentSignalNames(signalTable)::Vector{String}
+    getIndependentSignalNames(signalTable)::Vector{String}
 
 Returns the names of the independent signals (often: ["time"]) from signalTable.
 """
-function independentSignalNames(obj)
+function getIndependentSignalNames(obj)
     if Tables.istable(obj) && Tables.columnaccess(obj)
         return [string(Tables.columnnames(obj)[1])]
     else
-        @error "independentSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+        @error "getIndependentSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
     end
 end
 
 
 """
-    signalNames(signalTable)::Vector{String}
+    getSignalNames(signalTable)::Vector{String}
 
 Returns a string vector of the signal names that are present in signalTable
 (including independent signal names).
 """
-function signalNames(obj)
+function getSignalNames(obj)
     if Tables.istable(obj) && Tables.columnaccess(obj)
         return string.(Tables.columnnames(obj))
     else
-        @error "signalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+        @error "getSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
     end
 end
 
@@ -142,7 +142,7 @@ or for two independent signals of length 5 and 7 return (5,7).
 """
 function getIndependentSignalsSize(signalTable)::Dims
     sigLength = Int[]
-    for name in independentSignalNames(signalTable)
+    for name in getIndependentSignalNames(signalTable)
         sigSize = getSignalInfo(signalTable,name)[:_size]
         if length(sigSize) != 1
             error("Independent signal $name has not one dimension but has size = $sigSize")

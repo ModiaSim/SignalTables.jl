@@ -1,9 +1,9 @@
 # Signal table interface for DataFrames
 
 isSignalTable(            obj::DataFrames.DataFrame) = true
-independentSignalNames(   obj::DataFrames.DataFrame) = DataFrames.names(obj, 1)[1]
+getIndependentSignalNames(   obj::DataFrames.DataFrame) = DataFrames.names(obj, 1)[1]
 getIndependentSignalsSize(obj::DataFrames.DataFrame) = [size(obj,1)]
-signalNames(obj::DataFrames.DataFrame)               = DataFrames.names(obj)
+getSignalNames(obj::DataFrames.DataFrame)               = DataFrames.names(obj)
 getSignal(  obj::DataFrames.DataFrame, name::String) = Var(values = obj[!,name])
 hasSignal(  obj::DataFrames.DataFrame, name::String) = haskey(obj, name)
 
@@ -14,7 +14,7 @@ hasSignal(  obj::DataFrames.DataFrame, name::String) = haskey(obj, name)
 Returns a signal table as [DataFrame](https://github.com/JuliaData/DataFrames.jl) object.     
 """
 function signalTableToDataFrame(sigTable)::DataFrames.DataFrame
-    names = signalNames(sigTable)
+    names = getSignalNames(sigTable)
     name = names[1]
     df = DataFrames.DataFrame(name = getSignal(sigTable,name)[:values])
     for i in 2:length(names)

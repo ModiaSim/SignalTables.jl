@@ -24,8 +24,8 @@ Functions that are marked as *optional* have a default implementation.
 
 | Abstract functions                 | Description                                                                             |
 |:-----------------------------------|:----------------------------------------------------------------------------------------|
-| [`independentSignalNames`](@ref)   | Returns a string vector of the names of the independent signals (*required*).           |
-| [`signalNames`](@ref)              | Returns a string vector of the signal names from a signal table (*required*).           |
+| [`getIndependentSignalNames`](@ref)   | Returns a string vector of the names of the independent signals (*required*).           |
+| [`getSignalNames`](@ref)              | Returns a string vector of the signal names from a signal table (*required*).           |
 | [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref) (*required*).   |
 | [`getSignalInfo`](@ref)            | Returns signal with :\_typeof, :\_size keys instead of :values/:value key (*optional*). |
 | [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims. (*optional*).                   |

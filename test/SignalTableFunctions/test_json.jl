@@ -2,6 +2,8 @@ module test_json
 
 using SignalTables
 
+println("\n... Write signal table in json format to file.")
+
 t = 0.0:0.1:0.5
 signalTable1 = SignalTable(
   "time"         => Var(values= t, unit="s", independent=true),
@@ -23,6 +25,6 @@ signalTable1 = SignalTable(
   "attributes"   => Par(info  = "This is a test signal table")
 )
 
-writeSignalTable("test_json_signalTable1.json", signalTable1)
+writeSignalTable("test_json_signalTable1.json", signalTable1, log=true, indent=2)
 
 end

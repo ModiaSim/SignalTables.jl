@@ -2,6 +2,7 @@
 include("SignalTableFunctions/test_SignalTypes.jl")
 include("SignalTableFunctions/test_SignalTable.jl")
 include("SignalTableFunctions/test_DataFrames.jl")
+include("SignalTableFunctions/test_json.jl")
 
 include("../examples/plots/_include_all.jl")
 

@@ -126,11 +126,11 @@ in order that no plot package needs to be loaded during the tests:
 
 ## Installation
 
-The packages are not yet registered. Once this is done, installation is performed with
-
 ```julia
 julia> ]add SignalTables
         add SignalTablesInterface_PyPlot        # if plotting with PyPlot desired
+        
+        # once registered
         add SignalTablesInterface_GLMakie       # if plotting with GLMakie desired
         add SignalTablesInterface_WGLMakie      # if plotting with WGLMakie desired
         add SignalTablesInterface_CairoMakie    # if plotting with CairoMakie desired

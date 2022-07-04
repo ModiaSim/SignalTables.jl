@@ -35,26 +35,26 @@ Note, *FileIO* functions (e.g. JSON, HDF5) can be directly used, see [FileIO Exa
 | [`unitAsParseableString`](@ref) | Returns the unit as a String that can be parsed with `Unitful.uparse`, e.g. "m*s^-1"       |
 
 
-| Signal table functions           | Description                                                                                    |
-|:---------------------------------|:-----------------------------------------------------------------------------------------------|
-| [`SignalTable`](@ref)            | Returns a new SignalTable dictionary.                                                          |
-| [`showInfo`](@ref)               | Writes info about a signal table to the output stream.                                         |
-| [`independentSignalNames`](@ref) | Returns the names of the independent signals.                                                  |
-| [`signalNames`](@ref)            | Returns a string vector of the signal names that are present in a signal table.                |
-| [`hasSignal`](@ref)              | Returns `true` if a signal is present in a signal table.                                       |
-| [`getSignal`](@ref)              | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
-| [`getSignalInfo`](@ref)          | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
-| [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims.                                      |
-| [`getValues`](@ref)              | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
-| [`getValuesWithUnit`](@ref)      | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
-| [`getValue`](@ref)               | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
-| [`getValueWithUnit`](@ref)       | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
-| [`getFlattenedSignal`](@ref)     | Returns a copy of a signal where the values or the value are *flattened* and converted for use in plots or traditional tables. |
-| [`getDefaultHeading`](@ref)      | Returns the default heading for a plot.                                                        |
-| [`signalTableToJSON`](@ref)      | Returns a JSON string representation of a [`SignalTable`](@ref) instance                       |
-| [`writeSignalTable`](@ref)       | Write a [`SignalTable`](@ref) instance in JSON format on file.                                 |
-| [`toSignalTable`](@ref)            | Returns a signalTable as instance of [`SignalTable`](@ref).                                    |
-| [`signalTableToDataFrame`](@ref)   | Returns a signal table as [DataFrame](https://github.com/JuliaData/DataFrames.jl) object.      |
+| Signal table functions              | Description                                                                                    |
+|:------------------------------------|:-----------------------------------------------------------------------------------------------|
+| [`SignalTable`](@ref)               | Returns a new SignalTable dictionary.                                                          |
+| [`showInfo`](@ref)                  | Writes info about a signal table to the output stream.                                         |
+| [`getIndependentSignalNames`](@ref) | Returns the names of the independent signals.                                                  |
+| [`getSignalNames`](@ref)            | Returns a string vector of the signal names that are present in a signal table.                |
+| [`hasSignal`](@ref)                 | Returns `true` if a signal is present in a signal table.                                       |
+| [`getSignal`](@ref)                 | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
+| [`getSignalInfo`](@ref)             | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
+| [`getIndependentSignalsSize`](@ref) | Returns the lengths of the independent signals as Dims.                                        |
+| [`getValues`](@ref)                 | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |
+| [`getValuesWithUnit`](@ref)         | Returns the *values* of a [`Var`](@ref) signal from a signal table including its unit.         |
+| [`getValue`](@ref)                  | Returns the *value* of a [`Par`](@ref) signal  from a signal table.                            |
+| [`getValueWithUnit`](@ref)          | Returns the *value* of a [`Par`](@ref) signal from a signal table including its unit.          |
+| [`getFlattenedSignal`](@ref)        | Returns a copy of a signal where the values or the value are *flattened* and converted for use in plots or traditional tables. |
+| [`getDefaultHeading`](@ref)         | Returns the default heading for a plot.                                                        |
+| [`signalTableToJSON`](@ref)         | Returns a JSON string representation of a signal table.                                        |
+| [`writeSignalTable`](@ref)          | Write a signal table in JSON format on file.                                                   |
+| [`toSignalTable`](@ref)             | Returns a signal table as [`SignalTable`](@ref) object.                                        |
+| [`signalTableToDataFrame`](@ref)    | Returns a signal table as [DataFrame](https://github.com/JuliaData/DataFrames.jl) object.      |
 
 
 | Plot package functions           | Description                                               |
