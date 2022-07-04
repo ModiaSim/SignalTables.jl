@@ -676,7 +676,7 @@ the corresponding signals are encoded.
 function encodeSignalTable(signalTable; signalNames=nothing)
     if isSignalTable(signalTable)
         jdict = OrderedDict{String,Any}("_class" => "SignalTable",
-                                        "_classVersion" => version)
+                                        "_classVersion" => version_SignalTable_JSON)
         if isnothing(signalNames)
             signalNames = getSignalNames(signalTable)
         end

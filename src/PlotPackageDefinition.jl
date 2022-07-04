@@ -44,7 +44,7 @@ macro usingPlotPackage()
             println("$expr")
             return esc( :(using $PlotPackage) )
         end
-        
+
     else
         @info "No plot package activated. Using \"SilentNoPlot\"."
         @goto USE_NO_PLOT
@@ -91,23 +91,47 @@ end
 function usePlotPackage(plotPackage::String; pushPreviousOnStack=true)::Bool
     success = true
     if plotPackage == "NoPlot" || plotPackage == "SilentNoPlot"
-        if  pushPreviousOnStack && haskey(ENV, "SignalTablesPlotPackage")
-            push!(PlotPackagesStack, ENV["SignalTablesPlotPackage"])
+        newPlot = true
+        if  pushPreviousOnStack
+            if haskey(ENV, "SignalTablesPlotPackage")
+                push!(PlotPackagesStack, ENV["SignalTablesPlotPackage"])
+            elseif haskey(ENV, "MODIA_PLOT_PACKAGE")
+                push!(PlotPackagesStack, ENV["MODIA_PLOT_PACKAGE"])
+                newPlot=false
+            end
         end
         if plotPackage == "NoPlot"
-            ENV["SignalTablesPlotPackage"] = "NoPlot"
+            if newPlot
+                ENV["SignalTablesPlotPackage"] = "NoPlot"
+            else
+                ENV["MODIA_PLOT_PACKAGE"] = "NoPlot"
+            end
         else
-            ENV["SignalTablesPlotPackage"] = "SilentNoPlot"
+            if newPlot
+                ENV["SignalTablesPlotPackage"] = "SilentNoPlot"
+            else
+                ENV["MODIA_PLOT_PACKAGE"] = "SilentNoPlot"
+            end
         end
     else
         plotPackageName = "SignalTablesInterface_" * plotPackage
         if plotPackage in AvailablePlotPackages
             # Check that plotPackage is defined in current environment
             if isinstalled(plotPackageName)
-                if pushPreviousOnStack && haskey(ENV, "SignalTablesPlotPackage")
-                    push!(PlotPackagesStack, ENV["SignalTablesPlotPackage"])
+                newPlot = true
+                if  pushPreviousOnStack
+                    if haskey(ENV, "SignalTablesPlotPackage")
+                        push!(PlotPackagesStack, ENV["SignalTablesPlotPackage"])
+                    elseif haskey(ENV, "MODIA_PLOT_PACKAGE")
+                        push!(PlotPackagesStack, ENV["MODIA_PLOT_PACKAGE"])
+                        newPlot=false
+                    end
                 end
-                ENV["SignalTablesPlotPackage"] = plotPackage
+                if newPlot
+                    ENV["SignalTablesPlotPackage"] = plotPackage
+                else
+                    ENV["MODIA_PLOT_PACKAGE"] = plotPackage
+                end
             else
                 @warn "... usePlotPackage(\"$plotPackage\"): Call ignored, since package $plotPackageName is not in your current environment"
                 success = false
@@ -132,9 +156,9 @@ function usePreviousPlotPackage()::Bool
     if length(PlotPackagesStack) > 0
         plotPackage = pop!(PlotPackagesStack)
         success = usePlotPackage(plotPackage, pushPreviousOnStack=false)
-    else
-        @warn "usePreviousPlotPackage(): Call ignored, because nothing saved."
-        success = false
+    #else
+    #    @warn "usePreviousPlotPackage(): Call ignored, because nothing saved."
+    #    success = false
     end
     return success
 end
@@ -148,7 +172,5 @@ defined with [`usePlotPackage`](@ref).
 For example, the function may return "GLMakie", "PyPlot" or "NoPlot" or
 or "", if no PlotPackage is defined.
 """
-currentPlotPackage() = haskey(ENV, "SignalTablesPlotPackage") ? ENV["SignalTablesPlotPackage"] : ""
-
-
-
+currentPlotPackage() = haskey(ENV, "SignalTablesPlotPackage") ? ENV["SignalTablesPlotPackage"] : 
+                      (haskey(ENV, "MODIA_PLOT_PACKAGE")      ? ENV["MODIA_PLOT_PACKAGE"]      : "" )

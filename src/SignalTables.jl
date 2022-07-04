@@ -1,7 +1,8 @@
 module SignalTables
 
 const path = dirname(dirname(@__FILE__))
-const version = "0.3.1"   # version tag of SignalTables release without "v"
+const version = "0.3.2" 
+const version_SignalTable_JSON = "0.3.1"   # version tag to be stored in JSON files
 
 using  OrderedCollections
 using  Unitful
