@@ -187,7 +187,12 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
-### version 0.3.2
+### Version 0.3.3
+
+- Bug fix: getValuesWithUnit(..) is now correctly returning the values vector, if no unit is defined.
+
+
+### Version 0.3.2
 
 - Add makie.jl to be used by Makie backends.
 - For backwards compatibilty to ModiaResult, also accept ENV["MODIA_PLOT_PACKAGE"] instead of ENV["SignalTablesPlotPackage"]
