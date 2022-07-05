@@ -155,12 +155,9 @@ and call `usePlotPackage(<popped PlotPackage package>)`.
 function usePreviousPlotPackage()::Bool
     if length(PlotPackagesStack) > 0
         plotPackage = pop!(PlotPackagesStack)
-        success = usePlotPackage(plotPackage, pushPreviousOnStack=false)
-    #else
-    #    @warn "usePreviousPlotPackage(): Call ignored, because nothing saved."
-    #    success = false
+        usePlotPackage(plotPackage, pushPreviousOnStack=false)
     end
-    return success
+    return true
 end
 
 
