@@ -1,11 +1,8 @@
 module JSON_WriteToString
 
-using  SignalTables
-import JSON
+using SignalTables
 
-sigTable = getSignalTableExample("VariousTypes")
-str = JSON.json(sigTable)
-
-println("VariousType string = \n", str)
+str = signalTableToJSON( getSignalTableExample("VariousTypes") )
+println(str)
 
 end

@@ -19,7 +19,7 @@ macro usingPlotPackage()
         elseif PlotPackage == "NoPlot"
             @goto USE_NO_PLOT
         elseif PlotPackage == "SilentNoPlot"
-            expr = :( import SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
+            expr = :( using SignalTables.SilentNoPlot )
             return esc( expr )
         else
             PlotPackage = Symbol("SignalTablesInterface_" * PlotPackage)
@@ -36,7 +36,7 @@ macro usingPlotPackage()
         elseif PlotPackage == "NoPlot"
             @goto USE_NO_PLOT
         elseif PlotPackage == "SilentNoPlot"
-            expr = :( import SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
+            expr = :( using SignalTables.SilentNoPlot  )
             return esc( expr )
         else
             PlotPackage = Symbol("SignalTablesInterface_" * PlotPackage)
@@ -51,7 +51,7 @@ macro usingPlotPackage()
     end
 
     @label USE_NO_PLOT
-    expr = :( using SignalTables.SilentNoPlot: plot, showFigure, saveFigure, closeFigure, closeAllFigures )
+    expr = :( using SignalTables.SilentNoPlot )
     println("$expr")
     return esc( expr )
 end
