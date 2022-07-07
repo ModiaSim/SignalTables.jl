@@ -1,5 +1,6 @@
 {
   "_class": "SignalTable",
+  "_classVersion": "0.3.5",
   "time": {
     "_class": "Var",
     "values": [
@@ -22,6 +23,7 @@
         6,
         3
       ],
+      "layout": "column-major",
       "values": [
         0.0,
         0.09983341664682815,
@@ -69,7 +71,14 @@
       0.9210609940028851,
       0.8775825618903728
     ],
-    "unit": "rad/s"
+    "unit": "rad/s",
+    "state": true,
+    "start": {
+      "_class": "Number",
+      "unit": "rad*s^-1",
+      "type": "Float64",
+      "value": 1.0
+    }
   },
   "motor.w_ref": {
     "_class": "Var",
@@ -80,6 +89,7 @@
         6,
         2
       ],
+      "layout": "column-major",
       "values": [
         0.0,
         0.08985007498214534,
@@ -103,39 +113,54 @@
   },
   "wm": {
     "_class": "Var",
-    "values": [
-      1.0,
-      0.9950041652780258,
-      0.9800665778412416,
-      0.955336489125606,
-      0.9210609940028851,
-      0.8775825618903728
-    ],
     "unit": "rad/s",
+    "state": true,
+    "start": {
+      "_class": "Number",
+      "unit": "rad*s^-1",
+      "type": "Float64",
+      "value": 1.0
+    },
     "alias": "motor.w"
   },
   "ref.clock": {
     "_class": "Var",
-    "values": [
-      true,
-      null,
-      null,
-      true,
-      null,
-      null
-    ],
+    "values": {
+      "_class": "Array",
+      "eltype": "Union{Missing, Bool}",
+      "size": [
+        6
+      ],
+      "layout": "column-major",
+      "values": [
+        true,
+        null,
+        null,
+        true,
+        null,
+        null
+      ]
+    },
     "variability": "clock"
   },
   "motor.w_c": {
     "_class": "Var",
-    "values": [
-      0.6,
-      null,
-      null,
-      0.8,
-      null,
-      null
-    ],
+    "values": {
+      "_class": "Array",
+      "eltype": "Union{Missing, Float64}",
+      "size": [
+        6
+      ],
+      "layout": "column-major",
+      "values": [
+        0.6,
+        null,
+        null,
+        0.8,
+        null,
+        null
+      ]
+    },
     "variability": "clocked",
     "clock": "ref.clock"
   },
