@@ -3,6 +3,8 @@
 
 module SilentNoPlot
 
+export plot, showFigure, saveFigure, closeFigure, closeAllFigures
+
 include("AbstractPlotInterface.jl")
 
 plot(signalTable, names::AbstractMatrix; heading::AbstractString="", grid::Bool=true, xAxis="time",

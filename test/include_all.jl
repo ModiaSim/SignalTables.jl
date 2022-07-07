@@ -5,6 +5,7 @@ include("SignalTableFunctions/test_DataFrames.jl")
 include("SignalTableFunctions/test_json.jl")
 
 include("../examples/plots/_include_all.jl")
+include("../examples/fileIO/_include_all.jl")
 
 #=
 include("LinePlots/test_06_OneScalarMeasurementSignal.jl")

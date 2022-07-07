@@ -684,6 +684,11 @@ function encodeSignalTable(signalTable; signalNames=nothing)
         end
         for name in signalNames
             signal = getSignal(signalTable, name)
+            if haskey(signal, :alias)
+                signal = copy(signal)
+                delete!(signal, :values)
+                delete!(signal, :value)
+            end
             encodedSignal = encodeSignalTableElement(name, signal)
             if !isnothing(encodedSignal)
                 jdict[name] = encodedSignal
@@ -726,22 +731,43 @@ function encodeSignalTableElement(path, element)
         end
         
     elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
-        if ndims(element) == 1 && string(elementBaseType(eltype(element))) in TypesWithoutEncoding 
+        if ndims(element) == 1 && string(eltype(element)) in TypesWithoutEncoding 
             return element
         end
-        jdict = OrderedDict{String,Any}("_class" => "Array", 
-                                        "eltype" => string(eltype(element)), 
-                                        "size"   => Int[i for i in size(element)],
-                                        "values" => reshape(element, length(element)))
+        elunit = unitAsParseableString(element)
+        if elunit == "" 
+            jdict = OrderedDict{String,Any}("_class" => "Array", 
+                                            "eltype" => string(eltype(element)), 
+                                            "size"   => Int[i for i in size(element)],
+                                            "layout" => "column-major",
+                                            "values" => reshape(element, length(element)))
+        else
+            element = ustrip.(element)
+            jdict = OrderedDict{String,Any}("_class" => "Array", 
+                                            "unit"   => elunit,
+                                            "eltype" => string(eltype(element)), 
+                                            "size"   => Int[i for i in size(element)],
+                                            "layout" => "column-major",
+                                            "values" => reshape(element, length(element)))        
+        end
         return jdict
 
     elseif string(typeof(element)) in TypesWithoutEncoding
         return element
 
     elseif typeof(element) <: Number
-        jdict = OrderedDict{String,Any}("_class" => "Number", 
-                                        "type"   => typeof(element), 
-                                        "value"  => element)
+        elunit = unitAsParseableString(element)    
+        if elunit == ""
+            jdict = OrderedDict{String,Any}("_class" => "Number", 
+                                            "type"   => typeof(element), 
+                                            "value"  => element)
+        else
+            element = ustrip.(element)
+            jdict = OrderedDict{String,Any}("_class" => "Number", 
+                                            "unit"   => elunit,
+                                            "type"   => typeof(element), 
+                                            "value"  => element)        
+        end
         return jdict
                                         
     else

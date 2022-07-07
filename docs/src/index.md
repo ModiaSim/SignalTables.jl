@@ -187,6 +187,16 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.3.5
+
+- @usingPlotPackage(): If SilentNoPlot selected, use "using SignalTables.SilentNoPlot" instead of "import SignalTables.SilentNoPlot: plot ..:".
+- writeSignalTable(..): Arrays get an additional key `layout = "column-major"` to clearly define that storage is in column-major order.
+  Furthermore, if a signal has an *alias* key, then the *values* or *value* array is not stored on file.
+
+**Bug fixes**
+
+- writeSignalTable(..): If arrays or numbers have Unitful units, these units are stripped off and provided via key `unit` as a string.
+
 ### Version 0.3.4
 
 - Bug fix in usePreviousPlotPackage()
