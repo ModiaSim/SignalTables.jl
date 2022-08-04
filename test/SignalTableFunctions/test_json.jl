@@ -22,7 +22,7 @@ signalTable1 = SignalTable(
 
   "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
   "motor.data"   => Par(value = "resources/motorMap.json"),
-  "attributes"   => Par(info  = "This is a test signal table")
+  "attributes"   => Map(info  = "This is a test signal table")
 )
 
 writeSignalTable("test_json_signalTable1.json", signalTable1, log=true, indent=2)

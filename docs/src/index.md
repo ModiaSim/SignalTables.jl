@@ -8,17 +8,19 @@ CurrentModule = SignalTables
 
 Package [SignalTables](https://github.com/ModiaSim/SignalTables.jl)
 provides abstract and concrete types and functions for *signal tables*.
+A *signal table* is basically a table where the table columns can be multi-dimensional arrays with attributes.
 Typically, simulation results, reference signals, table-based input signals, measurement data,
 look-up tables can be represented by a signal table.
 
-A *signal table* is an *ordered dictionary* of *signals* with string keys that supports the
-[Abstract Signal Table Interface](https://modiasim.github.io/SignalTables.jl/stable/Internal/AbstractSignalTableInterface.html). 
-A *signal* can be defined in two forms:
+A *signal table* is an *ordered dictionary* of *signals* with string keys. A *signal* can be defined in the following forms:
 
-- As [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *values* key representing a *signal array* of any element type as function of the independent signal(s) (or is the k-th independent signal). A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined*, it has a value of *missing*.
-- As [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has an optional *value* key representing a constant of any type.
+- As [Var](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Var) *dictionary* that has a required *values* key (or an *alias* key) representing a *signal array* of any element type as function of the independent signal(s), or is the k-th independent signal. A *signal array* is a *multi-dimensional array* with indices `[i1,i2,...,j1,j2,...]` to hold variable elements `[j1,j2,...]` at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined*, it has a value of *missing*.
+- As [Par](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Par) *dictionary* that has a required *value* key (or and *alias* key) representing a constant of any type.
+- As [Map](https://modiasim.github.io/SignalTables.jl/stable/Functions/Signals.html#SignalTables.Map) *dictionary* that has no required keys and collects attributes/meta-data that are associated with a Var, Par, Map, or signal table dictionary.
 
-In both dictionaries, additional attributes can be stored, for example *unit*, *info*, *variability* (continuous, clocked, ...), *alias*, *interpolation*, *extrapolation*, and user-defined attributes.
+In all these dictionaries, additional attributes can be stored, for example *unit*, *info*, *variability* (continuous, clocked, ...), *interpolation*,
+*extrapolation*, and user-defined attributes.
+
 
 ## Examples
 
@@ -27,22 +29,20 @@ using SignalTables
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
-  "time"        => Var(values= t, unit="s", independent=true),
-  "load.r"      => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
-  "motor.angle" => Var(values= sin.(t), unit="rad", state=true),
-  "motor.w"     => Var(values= cos.(t), unit="rad/s", integral="motor.angle"),
-  "motor.w_ref" => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
-                               info="Reference angle and speed"),
-  "wm"          => Var(alias = "motor.w"),
-  "ref.clock"   => Var(values= [true, missing, missing, true, missing, missing],
-                                variability="clock"),
-                                
-  "motor.w_c"   => Var(values= [0.8, missing, missing, 1.5, missing, missing],
-                               variability="clocked", clock="ref.clock"),
-
-  "motor.inertia" => Par(value = 0.02f0, unit="kg*m/s^2"),
-  "motor.data"    => Par(value = "resources/motorMap.json"),
-  "attributes"    => Par(info  = "This is a test signal table")
+  "time"         => Var(values= t, unit="s", independent=true),
+  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)], unit="m"),
+  "motor.angle"  => Var(values= sin.(t), unit="rad", state=true, der="motor.w"),
+  "motor.w"      => Var(values= cos.(t), unit="rad/s"),
+  "motor.w_ref"  => Var(values= 0.9*[sin.(t) cos.(t)], unit = ["rad", "1/s"],
+                                info="Reference angle and speed"),
+  "wm"           => Var(alias = "motor.w"),
+  "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
+                                 variability="clock"),
+  "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
+                                variability="clocked", clock="ref.clock"),
+  "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
+  "motor.data"   => Par(value = "resources/motorMap.json"),
+  "attributes"   => Map(experiment=Map(stoptime=0.5, interval=0.01))
 )
 
 phi_m_sig = getSignal(        sigTable, "motor.angle")   # = Var(values=..., unit=..., ...)
@@ -59,18 +59,19 @@ Command `showInfo` generates the following output:
 ```julia
 name          unit           size  eltypeOrType           kind attributes
 ───────────────────────────────────────────────────────────────────────────────────────────────────────
-time          "s"            (6,)  Float64                Var  independent=true
-load.r        "m"            (6,3) Float64                Var
-motor.angle   "rad"          (6,)  Float64                Var  state=true, der="motor.w"
-motor.w       "rad/s"        (6,)  Float64                Var
-motor.w_ref   ["rad", "1/s"] (6,2) Float64                Var  info="Reference angle and speed"
-wm            "rad/s"        (6,)  Float64                Var  alias="motor.w"
-ref.clock                    (6,)  Union{Missing,Bool}    Var  variability="clock"
-motor.w_c                    (6,)  Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"     ()    Float32                Par
-motor.data                         String                 Par
-attributes                                                Par  info="This is a test signal table"
+time          "s"            [6]   Float64                Var  independent=true
+load.r        "m"            [6,3] Float64                Var  
+motor.angle   "rad"          [6]   Float64                Var  state=true, der="motor.w"
+motor.w       "rad/s"        [6]   Float64                Var  
+motor.w_ref   ["rad", "1/s"] [6,2] Float64                Var  info="Reference angle and speed"
+wm            "rad/s"        [6]   Float64                Var  alias="motor.w"
+ref.clock                    [6]   Union{Missing,Bool}    Var  variability="clock"
+motor.w_c                    [6]   Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"           Float32                Par  
+motor.data                         String                 Par  
+attributes                                                Map  experiment=Map(stoptime=0.5, interval=0.01)
 ```
+
 
 The various Julia FileIO functions can be directly used to save a signal table
 in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file of sigTable above](../resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
@@ -187,6 +188,13 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.4.0
+
+- New signal-type Map added (additionally to Var und Par signals) with two new functions Map(..), isMap(..).
+- Output of showInfo(..) improved.
+- Non-backwards compatible changes: Function showInfo(..) has optional keywords arguments
+  showVar, showPar, showMap, showAttributes, instead of the previous Var, Par, attributes.
+
 ### Version 0.3.5
 
 - @usingPlotPackage(): If SilentNoPlot selected, use "using SignalTables.SilentNoPlot" instead of "import SignalTables.SilentNoPlot: plot ..:".
@@ -223,7 +231,7 @@ are different to the Python 2.x version.
 
 ### Version 0.3.0
 
-- Slightly non-backwards compatiable to 0.2.0.
+- Slightly non-backwards compatible to 0.2.0.
 - Various new functions (e.g. storing a signal table in JSON format on file).
 - DataFrames.jl, Tables.jl are supported as signal tables.
 - Plotting/flattening: Support of Measurements.jl and MonteCarloMeasurements.jl

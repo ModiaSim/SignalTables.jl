@@ -79,7 +79,7 @@ end
 """
     getSignalInfo(signalTable, name::String)
 
-Returns signal in form of a [`Var`](@ref) or a [`Par`](@ref)) without :values or :value
+Returns signal, but [`Var`](@ref) or [`Par`](@ref)) without :values or :value
 but instead with :_eltypeOrType (eltype of the values if AbstractArray, otherwise typeof the values) 
 and :_size (if defined on the values)
  

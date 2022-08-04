@@ -5,23 +5,8 @@
 
 Returns a new SignalTable dictionary.
 
-Arguments `args...` are dictionary pairs where `values` must be [`Var`](@ref)(...) or [`Par`](@ref)(...). Example:
-
-```julia
-using SignalTables
-using Unitful
-
-t = 0.0:0.1:0.5
-sigTable = SignalTable(
-  "time"         => Var(values= t, unit="s", independent = true),
-  "load.r"       => Var(values= [sin.(t) cos.(t) sin.(t)]),
-  "motor.angle"  => Var(values= sin.(t), unit="rad"),
-  "motor.w_ref"  => Var(values= cos.(t), unit="rad/s", info="Reference"),
-  "motor.w_m"    => Var(values= Clocked(0.9*cos.(t),factor=2), unit="rad/s", info="Measured"),
-  "motor.inertia"=> Par(value = 0.02, unit="kg*m/s^2"),
-  "attributes"   => Par(info  = "This is a test signal table")
-)
-```
+Arguments `args...` are dictionary pairs where `values` must be [`Var`](@ref)(...) and/or 
+[`Par`](@ref)(...) and/or [`Map`](@ref)(...). Example:
 
 The *first* argument must define the *independent* signal, that is, `Var(values=..., independent=true), ...`
 and `values` must be an `AbstractVector`. Further added signals with a `:values` key, must have the
@@ -51,7 +36,7 @@ sigTable = SignalTable(
                                 variability="clocked", clock="ref.clock"),
   "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
   "motor.data"   => Par(value = "resources/motorMap.json"),
-  "attributes"   => Par(info  = "This is a test signal table")
+  "attributes"   => Map(experiment=Map(stoptime=0.5, interval=0.01))
 )
 
 signalInfo(sigTable)
@@ -60,19 +45,19 @@ signalInfo(sigTable)
 This results in the following output:
 
 ```julia
-name          unit          size  eltypeOrType kind attributes
-─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  independent=true
-load.r        "m"           (6,3) Float64  Var
-motor.angle   "rad"         (6,)  Float64  Var  state=true, der="motor.w"
-motor.w       "rad/s"       (6,)  Float64  Var  
-motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
-wm            "rad/s"       (6,)  Float64  Var  alias="motor.w"
-ref.clock                   (6,)  Bool     Var  variability="clock"
-motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                        String   Par
-attributes                                 Par  info="This is a test signal table"
+name          unit          size  eltypeOrType            kind attributes
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+time          "s"            [6]   Float64                Var  independent=true
+load.r        "m"            [6,3] Float64                Var  
+motor.angle   "rad"          [6]   Float64                Var  state=true, der="motor.w"
+motor.w       "rad/s"        [6]   Float64                Var  
+motor.w_ref   ["rad", "1/s"] [6,2] Float64                Var  info="Reference angle and speed"
+wm            "rad/s"        [6]   Float64                Var  alias="motor.w"
+ref.clock                    [6]   Union{Missing,Bool}    Var  variability="clock"
+motor.w_c                    [6]   Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"           Float32                Par  
+motor.data                         String                 Par  
+attributes                                                Map  experiment=Map(stoptime=0.5, interval=0.01)
 ```
 
 The command `show(IOContext(stdout, :compact => true), sigTable)` results in the following output:
@@ -90,7 +75,7 @@ SignalTable(
   "motor.w_c" => Var(values=Union{Missing, Float64}[0.8, missing, missing, 1.5, missing, missing], variability="clocked", clock="ref.clock"),
   "motor.inertia" => Par(value=0.02, unit="kg*m/s^2"),
   "motor.data" => Par(value="resources/motorMap.json"),
-  "attributes" => Par(info="This is a test signal table"),
+  "attributes" => Map(experiment=Map(stoptime=0.5, interval=0.01)),
   )
 ```
 """
@@ -106,7 +91,7 @@ struct SignalTable <: AbstractDict{String,Any}
         k = 0
         for (key, sig) in args
             if !isSignal(sig)
-                error("SignalTable(\"$key\" => signal, ...): The added signal is neither a Var(..) nor a Par(..)\ntypeof(signal) = $(typeof(sig))!")
+                error("SignalTable(\"$key\" => signal, ...): The added signal is neither a Var(..) nor a Par(..) nor a Map(...)\ntypeof(signal) = $(typeof(sig))!")
             end
             if isVar(sig)
                 if haskey(sig, :values)
@@ -143,7 +128,7 @@ struct SignalTable <: AbstractDict{String,Any}
                     sigAlias = dict[aliasName]
                     sig = merge(sigAlias,sig)    
                 end
-            else
+            elseif isPar(sig)
                 if haskey(sig, :alias)
                     aliasName = sig[:alias]
                     if haskey(sig,:value)
@@ -202,12 +187,12 @@ end
 
 
 # Implementation of AbstractSignalTableInterface
-isSignalTable(sigTable::SignalTable) = true
-getIndependentSignalNames(   sigTable::SignalTable) = sigTable.independendentSignalNames
-getIndependentSignalsSize(sigTable::SignalTable) = sigTable.independentSignalsSize
-getSignalNames(  sigTable::SignalTable) = setdiff(String.(keys(sigTable)), ["_class"])
-getSignal(    sigTable::SignalTable, name::String) = sigTable[name]
-hasSignal(    sigTable::SignalTable, name::String) = haskey(sigTable, name)
+isSignalTable(            sigTable::SignalTable)    = true
+getIndependentSignalNames(sigTable::SignalTable)    = sigTable.independendentSignalNames
+getIndependentSignalsSize(sigTable::SignalTable)    = sigTable.independentSignalsSize
+getSignalNames(sigTable::SignalTable)               = setdiff(String.(keys(sigTable)), ["_class"])
+getSignal(     sigTable::SignalTable, name::String) = sigTable[name]
+hasSignal(     sigTable::SignalTable, name::String) = haskey(sigTable, name)
 
 
 function getDefaultHeading(sigTable::SignalTable)::String 
