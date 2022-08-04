@@ -1,8 +1,8 @@
 module SignalTables
 
 const path = dirname(dirname(@__FILE__))
-const version = "0.3.5" 
-const version_SignalTable_JSON = "0.3.5"   # version tag to be stored in JSON files
+const version = "0.4.0" 
+const version_SignalTable_JSON = "0.4.0"   # version tag to be stored in JSON files
 
 using  OrderedCollections
 using  Unitful
@@ -13,7 +13,7 @@ import DataFrames
 import Pkg
 
 # Signals
-export SignalType, Var, Par, isVar, isPar, isSignal, showSignal, eltypeOrType, quantity, unitAsParseableString
+export SignalType, Var, Par, Map, isVar, isPar, isMap, isSignal, showSignal, eltypeOrType, quantity, unitAsParseableString
 
 # Abstract Signal Table Interface
 export isSignalTable, getIndependentSignalNames, getSignalNames, hasSignal, getSignal, getSignalInfo, getIndependentSignalsSize, getDefaultHeading

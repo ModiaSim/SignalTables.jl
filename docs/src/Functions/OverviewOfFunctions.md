@@ -28,8 +28,9 @@ Note, *FileIO* functions (e.g. JSON, HDF5) can be directly used, see [FileIO Exa
 | [`Par`](@ref)                   | Returns a parameter signal definition in form of a dictionary.                             |
 | [`isVar`](@ref)                 | Returns true, if signal is a [`Var`](@ref).                                                |
 | [`isPar`](@ref)                 | Returns true, if signal is a [`Par`](@ref).                                                |
-| [`isSignal`](@ref)              | Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).                             |
-| [`showSignal`](@ref)            | Prints a [`Var`](@ref)(...) or [`Par`](@ref)(...) signal to io.                            |
+| [`isMap`](@ref)                 | Returns true, if signal is a [`Map`](@ref).                                                |
+| [`isSignal`](@ref)              | Returns true, if signal is a [`Var`](@ref), [`Par`](@ref) or [`Map`](@ref).                |
+| [`showSignal`](@ref)            | Prints a [`Var`](@ref), [`Par`](@ref) or [`Map`](@ref)  signal to io.                      |
 | [`eltypeOrType`](@ref)          | Returns eltype(..) of AbstractArray or otherwise typeof(..).                               |
 | [`quantity`](@ref)              | Returns `Unitful.Quantity` from numberType and numberUnit, e.g. `quantity(Float64,u"m/s")` |
 | [`unitAsParseableString`](@ref) | Returns the unit as a String that can be parsed with `Unitful.uparse`, e.g. "m*s^-1"       |
@@ -42,7 +43,7 @@ Note, *FileIO* functions (e.g. JSON, HDF5) can be directly used, see [FileIO Exa
 | [`getIndependentSignalNames`](@ref) | Returns the names of the independent signals.                                                  |
 | [`getSignalNames`](@ref)            | Returns a string vector of the signal names that are present in a signal table.                |
 | [`hasSignal`](@ref)                 | Returns `true` if a signal is present in a signal table.                                       |
-| [`getSignal`](@ref)                 | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
+| [`getSignal`](@ref)                 | Returns signal from a signal table as [`Var`](@ref), [`Par`](@ref) or [`Map`](@ref).           |
 | [`getSignalInfo`](@ref)             | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
 | [`getIndependentSignalsSize`](@ref) | Returns the lengths of the independent signals as Dims.                                        |
 | [`getValues`](@ref)                 | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |

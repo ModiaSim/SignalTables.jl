@@ -18,7 +18,7 @@ The functions below operate on a *signal table* that implements the [Abstract Si
 | [`getIndependentSignalNames`](@ref)| Returns the names of the independent signals.                                                  |
 | [`getSignalNames`](@ref)           | Returns a string vector of the signal names that are present in a signal table.                |
 | [`hasSignal`](@ref)                | Returns `true` if a signal is present in a signal table.                                       |
-| [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref) or as [`Par`](@ref).                       |
+| [`getSignal`](@ref)                | Returns signal from a signal table as [`Var`](@ref), [`Par`](@ref) or [`Map`](@ref).           |
 | [`getSignalInfo`](@ref)            | Returns signal with :\_typeof, :\_size keys instead of :values/:value keys.                    |
 | [`getIndependentSignalsSize`](@ref)| Returns the lengths of the independent signals as Dims.                                        |
 | [`getValues`](@ref)                | Returns the *values* of a [`Var`](@ref) signal from a signal table.                            |

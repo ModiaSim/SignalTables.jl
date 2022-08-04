@@ -141,7 +141,7 @@ elseif signalTableName == "VariousTypes"
     
     "motor.inertia" => Par(value = 0.02f0, unit="kg*m/s^2"),
     "motor.data"    => Par(value = "resources/motorMap.json"),
-    "attributes"    => Par(info  = "This is a test signal table")
+    "attributes"    => Map(experiment=Map(stoptime=0.5, interval=0.01))
     )
     
 else

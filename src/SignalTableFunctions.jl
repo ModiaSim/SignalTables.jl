@@ -100,10 +100,31 @@ end
 
 const doNotShowAttributes = [:_class, :_eltypeOrType, :_size, :unit]
 
+function showMapValue(iostr,mapValue)::Nothing
+    print(iostr, "Map(")
+    first = true
+    for (key,val) in mapValue
+        if key in doNotShowAttributes
+            continue
+        end    
+        if first
+            first = false
+        else
+            print(iostr, ", ")
+        end
+        print(iostr, key, "=")
+        if isMap(val)
+            showMap(iostr, val)
+        end
+        show(iostr,val)
+    end
+    print(iostr, ")")
+    return nothing
+end
 
 """
     showInfo([io::IO=stdout,] signalTable;
-             sorted=false, Var=true, Par=true, attributes=true)
+             sorted=false, showVar=true, showPar=true, showMap=true, showAttributes=true)
 
 Writes info about a signal table to the output stream.
 The keyword arguments define what information shall be printed
@@ -126,13 +147,11 @@ sigTable = SignalTable(
   "wm"           => Var(alias = "motor.w"),
   "ref.clock"    => Var(values= [true, missing, missing, true, missing, missing],
                                  variability="clock"),
-  "ref.trigger"  => Var(values= [missing, missing, true, missing, true, true],
-                                 variability="trigger"),
   "motor.w_c"    => Var(values= [0.8, missing, missing, 1.5, missing, missing],
                                 variability="clocked", clock="ref.clock"),
   "motor.inertia"=> Par(value = 0.02f0, unit="kg*m/s^2"),
   "motor.data"   => Par(value = "resources/motorMap.json"),
-  "attributes"   => Par(info  = "This is a test signal table")
+  "attributes"   => Map(experiment=Map(stoptime=0.5, interval=0.01))
 )
 
 signalInfo(sigTable)
@@ -141,24 +160,23 @@ signalInfo(sigTable)
 results in the following output
 
 ```julia
-name          unit          size  eltypeOrType kind attributes
-─────────────────────────────────────────────────────────────────────────────────────────
-time          "s"           (6,)  Float64  Var  independent=true
-load.r        "m"           (6,3) Float64  Var
-motor.angle   "rad"         (6,)  Float64  Var  state=true, der="motor.w"
-motor.w       "rad/s"       (6,)  Float64  Var
-motor.w_ref   ["rad","1/s"] (6,2) Float64  Var  info="Reference angle and speed"
-wm            "rad/s"       (6,)  Float64  Var  alias="motor.w"
-ref.clock                   (6,)  Bool     Var  variability="clock"
-ref.trigger                 (6,)  Bool     Var  variability="trigger"
-motor.w_c                   (6,)  Float64  Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"    ()    Float32  Par
-motor.data                  ()    String   Par
-attributes                                 Par  info="This is a test signal table"
+name          unit           size  eltypeOrType           kind attributes
+───────────────────────────────────────────────────────────────────────────────────────────────────────
+time          "s"            [6]   Float64                Var independent=true
+load.r        "m"            [6,3] Float64                Var
+motor.angle   "rad"          [6]   Float64                Var state=true, der="motor.w"
+motor.w       "rad/s"        [6]   Float64                Var
+motor.w_ref   ["rad", "1/s"] [6,2] Float64                Var info="Reference angle and speed"
+wm            "rad/s"        [6]   Float64                Var alias="motor.w"
+ref.clock                    [6]   Union{Missing,Bool}    Var variability="clock"
+motor.w_c                    [6]   Union{Missing,Float64} Var variability="clocked", clock="ref.clock"
+motor.inertia "kg*m/s^2"           Float32                Par
+motor.data                         String                 Par
+attributes                                                Map experiment=Map(stoptime=0.5, interval=0.01)
 ```
 """
 function showInfo(io::IO, signalTable;
-                  sorted=false, Var=true, Par=true, attributes=true)::Nothing
+                  sorted=false, showVar=true, showPar=true, showMap=true, showAttributes=true)::Nothing
     if isnothing(signalTable)
         @info "The call of showInfo(signalTable) is ignored, since the argument is nothing."
         return
@@ -175,15 +193,13 @@ function showInfo(io::IO, signalTable;
     if sorted
         sigNames = sort(sigNames)
     end
-    if attributes
-        iostr = IOBuffer()
-    end
+    iostr = IOBuffer()
 
     for name in sigNames
         signal = getSignalInfo(signalTable, name)
-        kind   = isVar(signal) ? "Var" : "Par"
-        if Var && kind == "Var" || Par && kind == "Par"
-            if attributes
+        kind   = isVar(signal) ? "Var" : (isPar(signal) ? "Par" : "Map")
+        if showVar && kind == "Var" || showPar && kind == "Par" || showMap && kind == "Map"
+            if showAttributes
                 first = true
                 for (key,val) in signal
                     if key in doNotShowAttributes
@@ -196,7 +212,11 @@ function showInfo(io::IO, signalTable;
                         print(iostr, ", ")
                     end
                     print(iostr, key, "=")
-                    show(iostr, val)
+                    if isMap(val)
+                        showMapValue(iostr, val)
+                    else
+                        show(iostr, val)
+                    end
                 end
                 attr = String(take!(iostr))
             end
@@ -205,7 +225,7 @@ function showInfo(io::IO, signalTable;
             valBaseType = string( get(signal, :_eltypeOrType, "") )
             valBaseType = compactPaths(valBaseType)
             valSize = string( get(signal, :_size, "") )
-            valSize = replace(valSize, " " => "")   # Remove blanks
+            valSize = replace(valSize, "()" => "", " " => "", ",)" => "]", "(" => "[", ")" => "]")
             valUnit = get(signal, :unit, "")
             if typeof(valUnit) <: AbstractString
                 if valUnit != ""
@@ -217,29 +237,18 @@ function showInfo(io::IO, signalTable;
                 #valUnit = replace(valUnit, "; " => ";\n")
             end
 
-            if independent
-                pushfirst!(name2    , name)
-                pushfirst!(unit2    , valUnit)
-                pushfirst!(size2    , valSize)
-                pushfirst!(eltypeOrType2, valBaseType)
-                pushfirst!(kind2    , kind)
-                if attributes
-                    pushfirst!(attr2, attr)
-                end
-            else
-                push!(name2    , name)
-                push!(unit2    , valUnit)
-                push!(size2    , valSize)
-                push!(eltypeOrType2, valBaseType)
-                push!(kind2    , kind)
-                if attributes
-                    push!(attr2, attr)
-                end
+            push!(name2    , name)
+            push!(unit2    , valUnit)
+            push!(size2    , valSize)
+            push!(eltypeOrType2, valBaseType)
+            push!(kind2    , kind)
+            if showAttributes
+                push!(attr2, attr)
             end
         end
     end
 
-    if attributes
+    if showAttributes
         infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltypeOrType=eltypeOrType2, kind=kind2, attributes=attr2)
     else
         infoTable = DataFrames.DataFrame(name=name2, unit=unit2, size=size2, eltypeOrType=eltypeOrType2, kind=kind2)
@@ -391,7 +400,8 @@ function getFlattenedSignal(signalTable, name::String;
     independentSignalsSize = getIndependentSignalsSize(signalTable)                                         
     if length(independentSignalsSize) != 1  
         ni = length(independentSignalsSize)
-        error("getFlattenedSignal(.., $name) currently only supported for one independent signal,\nbut number of independent signals = $ni!")
+        @info "getFlattenedSignal(.., \"$name\") supported for one independent signal,\nbut number of independent signals = $(ni)! Signal is ignored."
+        return nothing
     end    
     lenx = independentSignalsSize[1]
     sigPresent = false
@@ -710,8 +720,10 @@ function encodeSignalTableElement(path, element)
     if isSignal(element)
         if isVar(element)
             jdict = OrderedDict{String,Any}("_class" => "Var")
-        else
+        elseif isPar(element)
             jdict = OrderedDict{String,Any}("_class" => "Par")
+        else
+            jdict = OrderedDict{String,Any}("_class" => "Map")            
         end
         available = true
         for (key,val) in element

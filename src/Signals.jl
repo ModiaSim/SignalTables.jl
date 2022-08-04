@@ -80,7 +80,8 @@ A *signal array* has indices `[i1,i2,...,j1,j2,...]` to hold variable elements `
 at the `[i1,i2,...]` independent signal(s). If an element of a signal array is *not defined* 
 it has a value of *missing*. Furthermore, additional attributes can be stored. 
 
-The following keys are recognized (all are *optional*, but usually *:values* is present):
+The following keys are recognized (all are *optional* with exception of *:values* that must be
+either directly defined or via :alias):
 
 |key             | value (of type String, if not obvious from context)                                                   |
 |:---------------|:------------------------------------------------------------------------------------------------------|
@@ -134,11 +135,10 @@ The following keys are recognized (all are *optional*):
 | `:value` | `signal[:value]` is a constant value that holds for all values of the independent signals.            |
 | `:unit`  | String: Unit of all signal elements (parseable with `Unitful.uparse`), e.g., `"kg*m*s^2"`. Array{String,N}: `signal[:unit][j1,j2,...]` is unit of variable element `[j1,j2,...]`.              |
 | `:info`  | Short description of signal (= `description` of [FMI 3.0](https://fmi-standard.org/docs/3.0/) and of [Modelica](https://specification.modelica.org/maint/3.5/MLS.html)).  |
-|`:alias`  | String: `signal[:value]` is a *reference* to [`getSignal`](@ref)`(signalTable, signal[:alias])[:value]`. The *reference* is set and attributes are merged when the Par-signal is added to the signal table. |
+| `:alias` | String: `signal[:value]` is a *reference* to [`getSignal`](@ref)`(signalTable, signal[:alias])[:value]`. The *reference* is set and attributes are merged when the Par-signal is added to the signal table. |
 
 Additionally, any other signal attributes can be stored in `signal` with a desired key, such as
 *Variable Types* of [FMI 3.0](https://fmi-standard.org/docs/3.0/#definition-of-types).
-
 
 # Example
 
@@ -151,6 +151,34 @@ J_alias   = Par(alias = "J")
 ```
 """
 Par(; kwargs...) = newSignal(kwargs, :Par)
+
+
+"""
+    signal = Map(; kwargs...)::OrderedDict{Symbol,Any}
+
+Returns a set of key/value pairs in form of a dictionary.
+A Map is used to associate a set of attributes to a Variable, Parameter or Signal Table.
+
+The following keys are recognized (all are *optional*):
+
+| key      | value                                                |
+|:---------|:-----------------------------------------------------|
+| `:info`  | Short description.                                   |
+
+Additionally, any other signal attributes can be stored in `signal` with a desired key,
+
+# Example
+
+```julia
+using SignalTables
+
+sigTable = SignalTable(
+   J = Par(value = 0.02),
+   attributes = Map(author = "xyz")
+)
+```
+"""
+Map(; kwargs...) = newSignal(kwargs, :Map)
 
 
 """
@@ -170,11 +198,19 @@ isPar(signal) = typeof(signal) <: SymbolDictType && get(signal, :_class, :_) == 
 
 
 """
+    isMap(signal)
+
+Returns true, if signal is a [`Map`](@ref).
+"""
+isMap(signal) = typeof(signal) <: SymbolDictType && get(signal, :_class, :_) == :Map
+
+
+"""
     isSignal(signal)
 
-Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref).
+Returns true, if signal is a [`Var`](@ref) or a [`Par`](@ref) or a [`Map`](@ref)
 """
-isSignal(signal) = isVar(signal) || isPar(signal)
+isSignal(signal) = isVar(signal) || isPar(signal) || isMap(signal)
 
 
 const doNotShow = [:_class]    # [:_class, :_type, :_size]
@@ -189,6 +225,8 @@ function showSignal(io, sig)
         print(io, Var)
     elseif isPar(sig)
         print(io, Par)
+    elseif isMap(sig)
+        print(io, Map)        
     else
         print(io, typeof(sig))
     end
