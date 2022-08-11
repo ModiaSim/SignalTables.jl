@@ -188,6 +188,12 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.4.1
+
+- writeSignalTable(..., log=false): 
+  - Info messages about not written elements only printed if log=true.
+  - Some issues corrected when writing signals.
+
 ### Version 0.4.0
 
 - New signal-type Map added (additionally to Var und Par signals) with two new functions Map(..), isMap(..).

@@ -42,7 +42,7 @@ end
 
 """
     new_signal_table(args...)::OrderedDict{String,Any}
-    
+
 Returns a new signal table, that is `OrderedDict{String,Any}("_class" => :SignalTable, args...)`
 """
 new_signal_table(args...) = OrderedDict{String,Any}("_class" => :SignalTable, args...)
@@ -106,7 +106,7 @@ function showMapValue(iostr,mapValue)::Nothing
     for (key,val) in mapValue
         if key in doNotShowAttributes
             continue
-        end    
+        end
         if first
             first = false
         else
@@ -295,7 +295,7 @@ function eltypeOrTypeWithMeasurements(obj)
                 btype = typeof(obj1.val)
             else
                 btype = eltypeOrType(obj)
-            end                  
+            end
         end
     else
         btype = eltypeOrType(obj)
@@ -315,7 +315,7 @@ function eltypeOrTypeWithMeasurements(obj)
             btype = typeof(obj1.val)
         else
             btype = eltypeOrType(obj)
-        end                  
+        end
     end
     else
         btype = eltypeOrType(obj)
@@ -336,7 +336,7 @@ function eltypeOrTypeWithMeasurements(obj)
         btype = typeof(obj1.val)
     else
         btype = eltypeOrType(obj)
-    end                  
+    end
     return btype
 end
 
@@ -362,7 +362,7 @@ function getValuesFromPar(signal, len::Int)
     end
     return nothing
 end
-    
+
 
 """
     signal = getFlattenedSignal(signalTable, name;
@@ -371,7 +371,7 @@ end
                                 targetFloat  = Float64)
 
 Returns a copy of a signal where the *flattened* and *converted* values (e.g.: missing -> NaN)
-are stored as `signal[:flattenedValues]` and the legend as `signal[:legend]`. 
+are stored as `signal[:flattenedValues]` and the legend as `signal[:legend]`.
 A flattened signal can be, for example, used for traditional plot functions or for traditional tables.
 
 `signal[:flattenedValues]` is a reshape of values into a vector or a matrix with optionally the following transformations:
@@ -396,18 +396,18 @@ so signal[:flattenedValues] = signal[:values].
 function getFlattenedSignal(signalTable, name::String;
                                          missingToNaN = true,
                                          targetInt    = Int,
-                                         targetFloat  = Float64)  
-    independentSignalsSize = getIndependentSignalsSize(signalTable)                                         
-    if length(independentSignalsSize) != 1  
+                                         targetFloat  = Float64)
+    independentSignalsSize = getIndependentSignalsSize(signalTable)
+    if length(independentSignalsSize) != 1
         ni = length(independentSignalsSize)
         @info "getFlattenedSignal(.., \"$name\") supported for one independent signal,\nbut number of independent signals = $(ni)! Signal is ignored."
         return nothing
-    end    
+    end
     lenx = independentSignalsSize[1]
     sigPresent = false
     if hasSignal(signalTable,name)
         # name is a signal name without range
-        signal = getSignal(signalTable,name)  
+        signal = getSignal(signalTable,name)
         if isVar(signal) && haskey(signal, :values)
             sigValues = signal[:values]
         elseif isPar(signal) && haskey(signal, :value)
@@ -416,7 +416,7 @@ function getFlattenedSignal(signalTable, name::String;
                 @goto ERROR
             end
         else
-            @goto ERROR            
+            @goto ERROR
         end
         dims = size(sigValues)
         if dims[1] > 0
@@ -438,7 +438,7 @@ function getFlattenedSignal(signalTable, name::String;
                 nScalarSignals = prod(i for i in varDims)
             end
         end
- 
+
     else
         # Handle signal arrays, such as a.b.c[3] or a.b.c[2:3, 1:5, 3]
         if name[end] == ']'
@@ -456,7 +456,7 @@ function getFlattenedSignal(signalTable, name::String;
                             @goto ERROR
                         end
                     else
-                        @goto ERROR            
+                        @goto ERROR
                     end
                     dims = size(sigValues)
 
@@ -488,21 +488,21 @@ function getFlattenedSignal(signalTable, name::String;
     if !sigPresent
         @goto ERROR
     end
-        
+
     # Transform sigValues
     sigElType = eltype(sigValues)
     eltypeOrType2 = eltypeOrTypeWithMeasurements(sigValues)
     hasMissing = isa(missing, sigElType)
 
-    if  (!isnothing(targetInt)   && eltypeOrType2 == targetInt || 
+    if  (!isnothing(targetInt)   && eltypeOrType2 == targetInt ||
          !isnothing(targetFloat) && eltypeOrType2 == targetFloat) &&
-         !(missingToNaN && hasMissing)        
+         !(missingToNaN && hasMissing)
         # Signal need not be converted - do nothing
 
     elseif hasMissing && missingToNaN && !isnothing(targetFloat)
         # sig contains missing or nothing - convert to targetFloat and replace missing by NaN
         sigNaN     = convert(targetFloat, NaN)
-        sigValues2 = Array{targetFloat, ndims(sigValues)}(undef, size(sigValues))        
+        sigValues2 = Array{targetFloat, ndims(sigValues)}(undef, size(sigValues))
         try
             for i = 1:length(sigValues)
                 sigValues2[i] = ismissing(sigValues[i]) ? sigNaN : convert(targetFloat, sigValues[i])
@@ -513,7 +513,7 @@ function getFlattenedSignal(signalTable, name::String;
             return nothing
         end
         sigValues = sigValues2
-        
+
     elseif !hasMissing && sigElType <: Integer && !isnothing(targetInt)
         # Transform to targetInt
         sigValues2 = Array{targetInt, ndims(sigValues)}(undef, size(sigValues))
@@ -529,7 +529,7 @@ function getFlattenedSignal(signalTable, name::String;
             sigValues2[i] = convert(targetFloat, sigValues[i])
         end
         sigValues = sigValues2
-        
+
     else
         @goto ERROR
     end
@@ -555,7 +555,7 @@ function getFlattenedSignal(signalTable, name::String;
                 for j2 in 1:div(nScalarSignals, sizeLength[1])
                     for j3 in arrayIndices[1]
                         legend[i] *= string(j3)
-                        push!(legendIndices[i], j3)                         
+                        push!(legendIndices[i], j3)
                         # println("i = $i, j2 = $j2, j3 = $j3, legend[$i] = ", legend[i], ", legendIndices[$i] = ", legendIndices[i])
                         i += 1
                     end
@@ -601,7 +601,7 @@ function signalValuesForLinePlots(sigTable, name)
     end
     sig         = signal[:flattenedValues]
     sigLegend   = signal[:legend]
-    variability = get(signal, :variability, "")  
+    variability = get(signal, :variability, "")
     if variability == "independent"
         sigKind = Independent
     elseif variability == "clocked" || variability == "clock" || variability == "trigger" || get(signal, "interpolation", "") == "none"
@@ -630,18 +630,18 @@ function getPlotSignal(sigTable, ysigName::AbstractString; xsigName=nothing)
     (xsig, xsigLegend, xsigKind) = signalValuesForLinePlots(sigTable, xsigName2)
     if isnothing(xsig)
         @goto ERROR
-    end    
+    end
 
     # Check x-axis signal
     if ndims(xsig) != 1
         @info "\"$xsigName\" does not characterize a scalar variable as needed for the x-axis."
         @goto ERROR
-    #elseif !(typeof(xsigValue) <: Real                                   || 
+    #elseif !(typeof(xsigValue) <: Real                                   ||
     #         typeof(xsigValue) <: Measurements.Measurement               ||
     #         typeof(xsigValue) <: MonteCarloMeasurements.StaticParticles ||
     #         typeof(xsigValue) <: MonteCarloMeasurements.Particles       )
     #    @info "\"$xsigName\" is of type " * string(typeof(xsigValue)) * " which is not supported for the x-axis."
-    #    @goto ERROR        
+    #    @goto ERROR
     end
 
     return (xsig, xsigLegend[1], ysig, ysigLegend, ysigKind)
@@ -685,7 +685,7 @@ Encodes a SignalTable suitable to convert to JSON format.
 If a keyword signalNames with a vector of strings is provided, then only
 the corresponding signals are encoded.
 """
-function encodeSignalTable(signalTable; signalNames=nothing)
+function encodeSignalTable(signalTable; signalNames=nothing, log=false)
     if isSignalTable(signalTable)
         jdict = OrderedDict{String,Any}("_class" => "SignalTable",
                                         "_classVersion" => version_SignalTable_JSON)
@@ -699,7 +699,7 @@ function encodeSignalTable(signalTable; signalNames=nothing)
                 delete!(signal, :values)
                 delete!(signal, :value)
             end
-            encodedSignal = encodeSignalTableElement(name, signal)
+            encodedSignal = encodeSignalTableElement(name, signal, log=log)
             if !isnothing(encodedSignal)
                 jdict[name] = encodedSignal
             end
@@ -712,28 +712,27 @@ end
 
 
 """
-    jsigDict = encodeSignalTableElement(path, signalTableElement)
+    jsigDict = encodeSignalTableElement(path, signalTableElement; log=false)
 
 Encodes a signal table element suitable to convert to JSON format.
 """
-function encodeSignalTableElement(path, element)
+function encodeSignalTableElement(path, element; log=false)
     if isSignal(element)
         if isVar(element)
             jdict = OrderedDict{String,Any}("_class" => "Var")
         elseif isPar(element)
             jdict = OrderedDict{String,Any}("_class" => "Par")
         else
-            jdict = OrderedDict{String,Any}("_class" => "Map")            
+            jdict = OrderedDict{String,Any}("_class" => "Map")
         end
-        available = true
+        available = false
         for (key,val) in element
             if key != ":_class"
-                encodedSignal = encodeSignalTableElement(appendNames(path,key),val)
-                if isnothing(encodedSignal)
-                    available = false
-                else
+                encodedSignal = encodeSignalTableElement(appendNames(path,key),val, log=log)
+                if !isnothing(encodedSignal)
+                    available = true
                     jdict[string(key)] = encodedSignal
-                end            
+                end
             end
         end
         if available
@@ -741,49 +740,61 @@ function encodeSignalTableElement(path, element)
         else
             return nothing
         end
-        
-    elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
-        if ndims(element) == 1 && string(eltype(element)) in TypesWithoutEncoding 
-            return element
-        end
-        elunit = unitAsParseableString(element)
-        if elunit == "" 
-            jdict = OrderedDict{String,Any}("_class" => "Array", 
-                                            "eltype" => string(eltype(element)), 
-                                            "size"   => Int[i for i in size(element)],
-                                            "layout" => "column-major",
-                                            "values" => reshape(element, length(element)))
+
+#    elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
+    elseif typeof(element) <: AbstractArray
+        if ndims(element) == 1
+            eltypeElement = eltype(element)
+            if string(eltypeElement) in TypesWithoutEncoding ||  eltypeElement <: AbstractArray && ndims(eltypeElement) == 1
+                return element
+            else
+                if log
+                    @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+                end
+                return nothing
+            end
         else
-            element = ustrip.(element)
-            jdict = OrderedDict{String,Any}("_class" => "Array", 
-                                            "unit"   => elunit,
-                                            "eltype" => string(eltype(element)), 
-                                            "size"   => Int[i for i in size(element)],
-                                            "layout" => "column-major",
-                                            "values" => reshape(element, length(element)))        
+            elunit = unitAsParseableString(element)
+            if elunit == ""
+                jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                "eltype" => string(eltype(element)),
+                                                "size"   => Int[i for i in size(element)],
+                                                "layout" => "column-major",
+                                                "values" => reshape(element, length(element)))
+            else
+                element = ustrip.(element)
+                jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                "unit"   => elunit,
+                                                "eltype" => string(eltype(element)),
+                                                "size"   => Int[i for i in size(element)],
+                                                "layout" => "column-major",
+                                                "values" => reshape(element, length(element)))
+            end
+            return jdict
         end
-        return jdict
 
     elseif string(typeof(element)) in TypesWithoutEncoding
         return element
 
     elseif typeof(element) <: Number
-        elunit = unitAsParseableString(element)    
+        elunit = unitAsParseableString(element)
         if elunit == ""
-            jdict = OrderedDict{String,Any}("_class" => "Number", 
-                                            "type"   => typeof(element), 
+            jdict = OrderedDict{String,Any}("_class" => "Number",
+                                            "type"   => typeof(element),
                                             "value"  => element)
         else
             element = ustrip.(element)
-            jdict = OrderedDict{String,Any}("_class" => "Number", 
+            jdict = OrderedDict{String,Any}("_class" => "Number",
                                             "unit"   => elunit,
-                                            "type"   => typeof(element), 
-                                            "value"  => element)        
+                                            "type"   => typeof(element),
+                                            "value"  => element)
         end
         return jdict
-                                        
+
     else
-        @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+        if log
+            @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+        end
         return nothing
     end
 end
@@ -797,15 +808,15 @@ Returns a JSON string representation of signalTable
 If keyword signalNames with a Vector of strings is provided, then a
 signal table with the corresponding signals are returned as JSON string.
 """
-function signalTableToJSON(signalTable; signalNames = nothing)::String
-    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames)
+function signalTableToJSON(signalTable; signalNames = nothing, log=false)::String
+    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames, log=log)
     return JSON.json(jsignalTable)
 end
 
 
 """
     writeSignalTable(filename::String, signalTable; signalNames=nothing, indent=nothing, log=false)
-    
+
 Write signalTable in JSON format on file `filename`.
 
 If keyword signalNames with a Vector of strings is provided, then a
@@ -818,7 +829,7 @@ function writeSignalTable(filename::String, signalTable; signalNames = nothing, 
     if log
         println("  Write signalTable in JSON format on file \"$file\"")
     end
-    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames)
+    jsignalTable = encodeSignalTable(signalTable; signalNames=signalNames, log=log)
     open(file, "w") do io
         JSON.print(io, jsignalTable, indent)
     end
