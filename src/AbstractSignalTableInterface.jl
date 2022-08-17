@@ -23,22 +23,29 @@ function getIndependentSignalNames(obj)
     if Tables.istable(obj) && Tables.columnaccess(obj)
         return [string(Tables.columnnames(obj)[1])]
     else
-        @error "getIndependentSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+        error("getIndependentSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj)))
     end
 end
 
 
 """
-    getSignalNames(signalTable)::Vector{String}
+    getSignalNames(signalTable; getVar=true, getPar=true, getMap=true)::Vector{String}
 
 Returns a string vector of the signal names that are present in signalTable
 (including independent signal names).
+- If getVar=true, Var(..) variables are included.
+- If getPar=true, Par(..) variables are included.
+- If getMap=true, Map(..) variables are included.
 """
-function getSignalNames(obj)
+function getSignalNames(obj; getVar=true, getPar=true, getMap=true)
     if Tables.istable(obj) && Tables.columnaccess(obj)
-        return string.(Tables.columnnames(obj))
+        if !getVar
+            return String[]
+        else
+            return string.(Tables.columnnames(obj))
+        end
     else
-        @error "getSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj))
+        error("getSignalNames(obj) is not supported for typeof(obj) = " * string(typeof(obj)))
     end
 end
 
@@ -46,14 +53,14 @@ end
 """
     getSignal(signalTable, name::String)
 
-Returns signal `name` from `signalTable` (that is a [`Var`](@ref) or a [`Par`](@ref)).
+Returns signal `name` from `signalTable` (that is a [`Var`](@ref), a [`Par`](@ref) or a [`Map`](@ref)).
 If `name` does not exist, an error is raised.
 """
 function getSignal(obj, name::String)
     if Tables.istable(obj) && Tables.columnaccess(obj)
         return Var(values= Tables.getcolumn(obj, Symbol(name)))
     else
-        @error "getSignal(obj, \"$name\") is not supported for typeof(obj) = " * string(typeof(obj))
+        error("getSignal(obj, \"$name\") is not supported for typeof(obj) = " * string(typeof(obj)))
     end
 end
 
@@ -80,13 +87,13 @@ end
     getSignalInfo(signalTable, name::String)
 
 Returns signal, but [`Var`](@ref) or [`Par`](@ref)) without :values or :value
-but instead with :_eltypeOrType (eltype of the values if AbstractArray, otherwise typeof the values) 
+but instead with :_eltypeOrType (eltype of the values if AbstractArray, otherwise typeof the values)
 and :_size (if defined on the values)
- 
+
 If `name` does not exist, an error is raised.
 
 This function is useful if only the attributes of a signal are needed, but not their values
-(returning the attributes might be a *cheap* operation, whereas returning the values 
+(returning the attributes might be a *cheap* operation, whereas returning the values
 might be an *expensive* operation).
 """
 function getSignalInfo(signalTable, name::String)::SymbolDictType
@@ -94,10 +101,10 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
     signal2 = copy(signal)
     delete!(signal2, :values)
     delete!(signal2, :value)
-    _eltypeOrType = nothing    
+    _eltypeOrType = nothing
     _size         = nothing
     type_available = false
-    size_available = false    
+    size_available = false
     if isVar(signal)
         if haskey(signal, :values)
             type_available = true
@@ -105,19 +112,19 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
                 sig           = signal[:values]
                 _eltypeOrType = eltypeOrType(sig)
                 _size          = size(sig)
-                size_available = true                
+                size_available = true
             catch
                 size_available = false
             end
         end
     else
         if haskey(signal, :value)
-            type_available = true        
+            type_available = true
             try
                 sig           = signal[:value]
-                _eltypeOrType = eltypeOrType(sig)            
+                _eltypeOrType = eltypeOrType(sig)
                 _size         = size(sig)
-                size_available = true                  
+                size_available = true
             catch
                 size_available = false
             end
@@ -125,7 +132,7 @@ function getSignalInfo(signalTable, name::String)::SymbolDictType
     end
     if type_available
         signal2[:_eltypeOrType] = _eltypeOrType
-    end        
+    end
     if size_available
         signal2[:_size] = _size
     end
@@ -136,7 +143,7 @@ end
 """
     getIndependentSignalsSize(signalTable)::Dims
 
-Returns the lengths of the independent signals as Dims. 
+Returns the lengths of the independent signals as Dims.
 E.g. for one independent signal of length 5 return (5,),
 or for two independent signals of length 5 and 7 return (5,7).
 """

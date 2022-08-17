@@ -190,9 +190,12 @@ are different to the Python 2.x version.
 
 ### Version 0.4.1
 
-- writeSignalTable(..., log=false): 
-  - Info messages about not written elements only printed if log=true.
-  - Some issues corrected when writing signals.
+- getSignalNames(signalTable; getVar=true, getPar=true, getMap=true): New keyword arguments
+  getVar, getPar, getMap to only return names of the specified signal categories.
+  
+- writeSignalTable(...): Some issues corrected.
+
+- @error replaced by error(..).
 
 ### Version 0.4.0
 

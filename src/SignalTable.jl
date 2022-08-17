@@ -5,7 +5,7 @@
 
 Returns a new SignalTable dictionary.
 
-Arguments `args...` are dictionary pairs where `values` must be [`Var`](@ref)(...) and/or 
+Arguments `args...` are dictionary pairs where `values` must be [`Var`](@ref)(...) and/or
 [`Par`](@ref)(...) and/or [`Map`](@ref)(...). Example:
 
 The *first* argument must define the *independent* signal, that is, `Var(values=..., independent=true), ...`
@@ -48,15 +48,15 @@ This results in the following output:
 name          unit          size  eltypeOrType            kind attributes
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 time          "s"            [6]   Float64                Var  independent=true
-load.r        "m"            [6,3] Float64                Var  
+load.r        "m"            [6,3] Float64                Var
 motor.angle   "rad"          [6]   Float64                Var  state=true, der="motor.w"
-motor.w       "rad/s"        [6]   Float64                Var  
+motor.w       "rad/s"        [6]   Float64                Var
 motor.w_ref   ["rad", "1/s"] [6,2] Float64                Var  info="Reference angle and speed"
 wm            "rad/s"        [6]   Float64                Var  alias="motor.w"
 ref.clock                    [6]   Union{Missing,Bool}    Var  variability="clock"
 motor.w_c                    [6]   Union{Missing,Float64} Var  variability="clocked", clock="ref.clock"
-motor.inertia "kg*m/s^2"           Float32                Par  
-motor.data                         String                 Par  
+motor.inertia "kg*m/s^2"           Float32                Par
+motor.data                         String                 Par
 attributes                                                Map  experiment=Map(stoptime=0.5, interval=0.01)
 ```
 
@@ -98,7 +98,7 @@ struct SignalTable <: AbstractDict{String,Any}
                     sig_values = sig[:values]
                     if !(typeof(sig_values) <: AbstractArray)
                         error("SignalTable(\"$key\" => signal, ...): typeof(signal[:values]) = $(typeof(sig_values)) but must be an `<: AbstractArray`!")
-                    end                 
+                    end
                     if get(sig, :independent, false)
                         k += 1
                         ndims_sig = ndims(sig_values)
@@ -113,11 +113,11 @@ struct SignalTable <: AbstractDict{String,Any}
                                 error("SignalTable(\"$key\" => signal, ...): size(signal[:values],$i) = $(size(sig_values,i)) but must be $val (= length of independent signal)!")
                             end
                         end
-                    end   
+                    end
                 else
                     # Needs not have :values, e.g. alias
                     # error("SignalTable(\"$key\" => signal, ...) is a Var(..) and has no key :values which is required!")
-                end        
+                end
                 if haskey(sig, :alias)
                     aliasName = sig[:alias]
                     if haskey(sig,:values)
@@ -126,7 +126,7 @@ struct SignalTable <: AbstractDict{String,Any}
                         error("SignalTable(\"$key\" => Var(alias=\"$aliasName\"...): referenced signal does not exist.")
                     end
                     sigAlias = dict[aliasName]
-                    sig = merge(sigAlias,sig)    
+                    sig = merge(sigAlias,sig)
                 end
             elseif isPar(sig)
                 if haskey(sig, :alias)
@@ -190,13 +190,26 @@ end
 isSignalTable(            sigTable::SignalTable)    = true
 getIndependentSignalNames(sigTable::SignalTable)    = sigTable.independendentSignalNames
 getIndependentSignalsSize(sigTable::SignalTable)    = sigTable.independentSignalsSize
-getSignalNames(sigTable::SignalTable)               = setdiff(String.(keys(sigTable)), ["_class"])
 getSignal(     sigTable::SignalTable, name::String) = sigTable[name]
 hasSignal(     sigTable::SignalTable, name::String) = haskey(sigTable, name)
+function getSignalNames(sigTable::SignalTable; getVar=true, getPar=true, getMap=true)
+    if getVar && getPar && getMap
+        sigNames = setdiff(String.(keys(sigTable)), ["_class"])
+    else
+        sigNames = String[]
+        for (key,value) in sigTable.dict
+            if getVar && isVar(value) ||
+               getPar && isPar(value) ||
+               getMap && isMap(value)
+                push!(sigNames, key)
+            end
+        end
+    end
+    return sigNames
+end
 
-
-function getDefaultHeading(sigTable::SignalTable)::String 
-    attr = get(sigTable, "attributes", "")        
+function getDefaultHeading(sigTable::SignalTable)::String
+    attr = get(sigTable, "attributes", "")
     if attr == ""
         return ""
     else
@@ -207,7 +220,7 @@ end
 
 """
     toSignalTable(signalTable)::SignalTable
-    
+
 Returns a signalTable as instance of [`SignalTable`](@ref).
 """
 function toSignalTable(sigTable)::SignalTable
@@ -217,7 +230,7 @@ function toSignalTable(sigTable)::SignalTable
     sigTable2 = SignalTable()
     for name in getSignalNames(sigTable)
         sigTable2[name] = getSignal(sigTable,name)
-    end        
+    end
     return sigTable2
 end
 

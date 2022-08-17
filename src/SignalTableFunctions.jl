@@ -189,7 +189,7 @@ function showInfo(io::IO, signalTable;
     kind2     = String[]
     attr2     = String[]
 
-    sigNames = getSignalNames(signalTable)
+    sigNames = getSignalNames(signalTable, getVar=showVar, getPar=showPar, getMap=showMap)
     if sorted
         sigNames = sort(sigNames)
     end
@@ -672,7 +672,7 @@ getHeading(signalTable, heading::AbstractString) = heading != "" ? heading : get
 
 import JSON
 
-const TypesWithoutEncoding = Set(["Float64", "Int64", "Bool", "String", "Symbol"])
+const TypesWithoutEncoding = Set([Float64, Int64, Bool, String, Symbol])
 
 appendNames(name1, name2) = name1 == "" ? name2 : name1 * "." * string(name2)
 
@@ -710,6 +710,11 @@ function encodeSignalTable(signalTable; signalNames=nothing, log=false)
     end
 end
 
+arrayElementBaseType(::Type{T})                where {T} = T
+arrayElementBaseType(::Type{Array{T,N}})       where {T,N} = arrayElementBaseType(T)
+arrayElementBaseType(::Type{Union{Missing,T}}) where {T}   = T
+arrayElementBaseType(A::Type{<:AbstractArray})             = arrayElementBaseType(eltype(A))
+
 
 """
     jsigDict = encodeSignalTableElement(path, signalTableElement; log=false)
@@ -727,7 +732,7 @@ function encodeSignalTableElement(path, element; log=false)
         end
         available = false
         for (key,val) in element
-            if key != ":_class"
+            if key != :_class
                 encodedSignal = encodeSignalTableElement(appendNames(path,key),val, log=log)
                 if !isnothing(encodedSignal)
                     available = true
@@ -741,61 +746,53 @@ function encodeSignalTableElement(path, element; log=false)
             return nothing
         end
 
-#    elseif typeof(element) <: AbstractArray && (elementBaseType(eltype(element)) <: Number || elementBaseType(eltype(element)) <: String)
-    elseif typeof(element) <: AbstractArray
-        if ndims(element) == 1
-            eltypeElement = eltype(element)
-            if string(eltypeElement) in TypesWithoutEncoding ||  eltypeElement <: AbstractArray && ndims(eltypeElement) == 1
+    else
+        elementType = typeof(element)
+        if elementType <: AbstractArray && (arrayElementBaseType(elementType) <: Number || arrayElementBaseType(elementType) <: String)
+            if ndims(element) == 1 && arrayElementBaseType(elementType) in TypesWithoutEncoding
                 return element
             else
-                if log
-                    @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+                elunit = unitAsParseableString(element)
+                if elunit == ""
+                    jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                    "eltype" => replace(string(eltype(element)), " " => ""),
+                                                    "size"   => Int[i for i in size(element)],
+                                                    "layout" => "column-major",
+                                                    "values" => reshape(element, length(element)))
+                else
+                    element = ustrip.(element)
+                    jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                    "unit"   => elunit,
+                                                    "eltype" => replace(string(eltype(element)), " " => ""),
+                                                    "size"   => Int[i for i in size(element)],
+                                                    "layout" => "column-major",
+                                                    "values" => reshape(element, length(element)))
                 end
-                return nothing
+                return jdict
             end
-        else
+
+        elseif elementType in TypesWithoutEncoding
+            return element
+
+        elseif elementType <: Number
             elunit = unitAsParseableString(element)
             if elunit == ""
-                jdict = OrderedDict{String,Any}("_class" => "Array",
-                                                "eltype" => string(eltype(element)),
-                                                "size"   => Int[i for i in size(element)],
-                                                "layout" => "column-major",
-                                                "values" => reshape(element, length(element)))
+                jdict = OrderedDict{String,Any}("_class" => "Number",
+                                                "type"   => replace(string(typeof(element)), " " => ""),
+                                                "value"  => element)
             else
                 element = ustrip.(element)
-                jdict = OrderedDict{String,Any}("_class" => "Array",
+                jdict = OrderedDict{String,Any}("_class" => "Number",
                                                 "unit"   => elunit,
-                                                "eltype" => string(eltype(element)),
-                                                "size"   => Int[i for i in size(element)],
-                                                "layout" => "column-major",
-                                                "values" => reshape(element, length(element)))
+                                                "type"   => replace(string(typeof(element)), " " => ""),
+                                                "value"  => element)
             end
             return jdict
-        end
 
-    elseif string(typeof(element)) in TypesWithoutEncoding
-        return element
-
-    elseif typeof(element) <: Number
-        elunit = unitAsParseableString(element)
-        if elunit == ""
-            jdict = OrderedDict{String,Any}("_class" => "Number",
-                                            "type"   => typeof(element),
-                                            "value"  => element)
         else
-            element = ustrip.(element)
-            jdict = OrderedDict{String,Any}("_class" => "Number",
-                                            "unit"   => elunit,
-                                            "type"   => typeof(element),
-                                            "value"  => element)
-        end
-        return jdict
-
-    else
-        if log
             @info "$path::$(typeof(element)) is ignored, because mapping to JSON not known"
+            return nothing
         end
-        return nothing
     end
 end
 
