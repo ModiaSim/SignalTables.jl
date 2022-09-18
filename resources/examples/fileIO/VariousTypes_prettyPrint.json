@@ -1,6 +1,6 @@
 {
   "_class": "SignalTable",
-  "_classVersion": "0.3.5",
+  "_classVersion": "0.3.6",
   "time": {
     "_class": "Var",
     "values": [
@@ -178,7 +178,11 @@
     "value": "resources/motorMap.json"
   },
   "attributes": {
-    "_class": "Par",
-    "info": "This is a test signal table"
+    "_class": "Map",
+    "experiment": {
+      "_class": "Map",
+      "stoptime": 0.5,
+      "interval": 0.01
+    }
   }
 }
