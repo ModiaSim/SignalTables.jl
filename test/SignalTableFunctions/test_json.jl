@@ -27,4 +27,25 @@ signalTable1 = SignalTable(
 
 writeSignalTable("test_json_signalTable1.json", signalTable1, log=true, indent=2)
 
+
+t  = 0.0:0.1:10.0
+tc = [rem(i,5) == 0 ? div(i,5)+1 : missing for i in 0:length(t)-1]
+sigTable2 = SignalTable(
+  "_attributes"  => Map(experiment=Map(stopTime=10.0, interval=0.1)),
+  "time"         => Var(values = t, unit="s", independent=true),
+  "motor.angle"  => Var(values = sin.(t), unit="rad", der="motor.w"),
+  "motor.w"      => Var(values = cos.(t), unit="rad/s"),
+  "motor.w_ref"  => Var(values = 0.9*cos.(t), unit="rad/s"),  
+  "baseClock"    => Var(values = tc, variability="clock"),
+  "motor.w_c"    => Var(values = 1.2*cos.((tc.-1)/2), unit="rad/s",
+                        variability="clocked", clock="baseClock"),
+  "motor.file"   => Par(value = "motormap.json", 
+                        info = "File name of motor characteristics")
+)
+showInfo(sigTable2)
+@usingPlotPackage
+plot(sigTable2, ("motor.w", "motor.w_c"), figure=2)
+plot(sigTable2, "motor.w_c", xAxis="baseClock", figure=3)
+writeSignalTable("sigTable2.json", sigTable2, log=true, indent=2)
+
 end

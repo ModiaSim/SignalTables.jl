@@ -754,11 +754,20 @@ function encodeSignalTableElement(path, element; log=false)
             else
                 elunit = unitAsParseableString(element)
                 if elunit == ""
-                    jdict = OrderedDict{String,Any}("_class" => "Array",
-                                                    "eltype" => replace(string(eltype(element)), " " => ""),
-                                                    "size"   => Int[i for i in size(element)],
-                                                    "layout" => "column-major",
-                                                    "values" => reshape(element, length(element)))
+                    if ndims(element) == 1
+                        jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                        "eltype" => replace(string(eltype(element)), " " => ""),
+                                                        "size"   => Int[i for i in size(element)],
+                                                        "values" => element
+                                                        )                    
+                    else
+                        jdict = OrderedDict{String,Any}("_class" => "Array",
+                                                        "eltype" => replace(string(eltype(element)), " " => ""),
+                                                        "size"   => Int[i for i in size(element)],
+                                                        "layout" => "column-major", 
+                                                        "values" => reshape(element, length(element))
+                                                        )
+                    end
                 else
                     element = ustrip.(element)
                     jdict = OrderedDict{String,Any}("_class" => "Array",

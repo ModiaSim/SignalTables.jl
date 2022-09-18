@@ -14,23 +14,17 @@ hasSignal(  obj::DataFrames.DataFrame, name::String) = haskey(obj, name)
 Returns a signal table as [DataFrame](https://github.com/JuliaData/DataFrames.jl) object.     
 """
 function signalTableToDataFrame(sigTable)::DataFrames.DataFrame
-    names = getSignalNames(sigTable)
+    names = getSignalNames(sigTable; getPar=false, getMap=false)
     name = names[1]
     df = DataFrames.DataFrame(name = getSignal(sigTable,name)[:values])
     for i in 2:length(names)
         name = names[i]
         sig  = getSignal(sigTable,name)
-        if isVar(sig)
-            sigValues = sig[:values]
-            if typeof(sigValues) <: AbstractVector
-                df[!,name] = sig[:values]
-            else
-                @info "$name::$(typeof(sigValues)) is ignored, because no Vector"
-            end
-        elseif isPar(sig)
-            @info "$name is ignored, because Par(..) signal."
-        else            
-            @info "$name::$(typeof(sig)) is ignored, because no Var(..) signal"
+        sigValues = sig[:values]
+        if typeof(sigValues) <: AbstractVector
+            df[!,name] = sig[:values]
+        else
+            @info "$name::$(typeof(sigValues)) is ignored, because no Vector"
         end
     end
     return df

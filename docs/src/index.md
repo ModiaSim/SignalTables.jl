@@ -188,6 +188,13 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.4.2
+
+- Fix issue [#6](https://github.com/ModiaSim/SignalTables.jl/issues/6):
+  signalTableToDataFrame(..) is now working if the first signal is not a Var(..).
+  
+- Minor improvement in JSON generation.
+
 ### Version 0.4.1
 
 - getSignalNames(signalTable; getVar=true, getPar=true, getMap=true): New keyword arguments
