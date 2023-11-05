@@ -25,7 +25,7 @@ In all these dictionaries, additional attributes can be stored, for example *uni
 ## Examples
 
 ```julia
-using SignalTables
+using SignalTablesact
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
@@ -187,6 +187,10 @@ are different to the Python 2.x version.
 
 
 ## Release Notes
+
+### Version 0.4.3
+
+- Minor improvements when printing a SignalTable.
 
 ### Version 0.4.2
 

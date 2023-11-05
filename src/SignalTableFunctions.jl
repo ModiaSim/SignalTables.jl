@@ -199,8 +199,16 @@ function showInfo(io::IO, signalTable;
         signal = getSignalInfo(signalTable, name)
         kind   = isVar(signal) ? "Var" : (isPar(signal) ? "Par" : "Map")
         if showVar && kind == "Var" || showPar && kind == "Par" || showMap && kind == "Map"
+            first = true
+            if kind == "Par"
+                val = getValue(signalTable, name)
+                if !ismutable(val)
+                    first = false
+                    print(iostr, "=")
+                    show(iostr, val)
+                end
+            end
             if showAttributes
-                first = true
                 for (key,val) in signal
                     if key in doNotShowAttributes
                         continue
@@ -759,12 +767,12 @@ function encodeSignalTableElement(path, element; log=false)
                                                         "eltype" => replace(string(eltype(element)), " " => ""),
                                                         "size"   => Int[i for i in size(element)],
                                                         "values" => element
-                                                        )                    
+                                                        )
                     else
                         jdict = OrderedDict{String,Any}("_class" => "Array",
                                                         "eltype" => replace(string(eltype(element)), " " => ""),
                                                         "size"   => Int[i for i in size(element)],
-                                                        "layout" => "column-major", 
+                                                        "layout" => "column-major",
                                                         "values" => reshape(element, length(element))
                                                         )
                     end
