@@ -333,10 +333,10 @@ function plot(result, names::AbstractMatrix; heading::AbstractString="", grid::B
     
     # Add overall heading in case of a matrix of diagrams (ncol > 1) and add a figure label on the top level
     if hasTopHeading
-        fig[0,:] = Label(fig, heading2, textsize = 14)
+        fig[0,:] = Label(fig, heading2, fontsize = 14)
     end  
     if showFigureStringInDiagram
-        figText = fig[1,1,TopLeft()] = Label(fig, "showFigure(" * string(figure) * ")", textsize=9, color=:blue, halign = :left)    
+        figText = fig[1,1,TopLeft()] = Label(fig, "showFigure(" * string(figure) * ")", fontsize=9, color=:blue, halign = :left)    
         if hasTopHeading
             figText.padding = (0, 0, 5, 0)    
         else

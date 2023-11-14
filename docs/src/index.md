@@ -188,6 +188,10 @@ are different to the Python 2.x version.
 
 ## Release Notes
 
+### Version 0.4.4
+
+- Adapted to GLMakie 0.8 (`textsize` replaced by `fontsize` in src/makie.jl)
+
 ### Version 0.4.3
 
 - Minor improvements when printing a SignalTable.
