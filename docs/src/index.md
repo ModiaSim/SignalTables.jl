@@ -79,7 +79,7 @@ in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file o
 The commands
 
 ```julia
-using SignalTable
+using SignalTables
 usePlotPackage("PyPlot")    # or ENV["SignalTablesPlotPackage"] = "PyPlot"
 
 sigTable = getSignalTableExample("MissingValues")
