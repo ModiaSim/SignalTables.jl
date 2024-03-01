@@ -25,7 +25,7 @@ In all these dictionaries, additional attributes can be stored, for example *uni
 ## Examples
 
 ```julia
-using SignalTablesact
+using SignalTables
 
 t = 0.0:0.1:0.5
 sigTable = SignalTable(
