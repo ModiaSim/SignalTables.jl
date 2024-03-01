@@ -131,10 +131,6 @@ plot(result, "w", xAxis="phi", figure=7)
 result["phi"] = 0.5*result["phi"];
 plot(result, "phi", prefix="Sim 2: ", reuse=true)
 ```
-
-Example of a matrix of plots:
-
-![Matrix of plots](../../resources/images/matrix-of-plots.png)
 """
 plot(result, names::AbstractString; kwargs...) = plot(result, [names]        ; kwargs...)
 plot(result, names::Symbol        ; kwargs...) = plot(result, [string(names)]; kwargs...)

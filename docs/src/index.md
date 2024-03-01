@@ -74,7 +74,7 @@ attributes                                                Map  experiment=Map(st
 
 
 The various Julia FileIO functions can be directly used to save a signal table
-in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file of sigTable above](../resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
+in various formats, e.g. JSON or HDF5 (see [FileIO Examples](@ref), [json file of sigTable above](./resources/examples/fileIO/VariousTypes_prettyPrint.json) ).
 
 The commands
 
@@ -90,7 +90,7 @@ plot(sigTable, [("sigC", "load.r[2:3]"), ("sigB", "sigD")])
 
 generate the following plot:
 
-![Plots of SigTable](../resources/images/sigTable-line-plots.png)
+![Plots of SigTable](./resources/images/sigTable-line-plots.png)
 
 
 ## Abstract Interfaces

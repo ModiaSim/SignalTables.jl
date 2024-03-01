@@ -18,8 +18,8 @@ writeSignalTable("VariousTypes_compact.json"    , sigTable)
 
 results in the following files
 
-- [VariousTypes_prettyPrint.json](../../resources/examples/fileIO/VariousTypes_prettyPrint.json).
-- [VariousTypes_compact.json](../../resources/examples/fileIO/VariousTypes_compact.json).
+- [VariousTypes_prettyPrint.json](../resources/examples/fileIO/VariousTypes_prettyPrint.json).
+- [VariousTypes_compact.json](../resources/examples/fileIO/VariousTypes_compact.json).
 
 
 ## JSON - Write to String
@@ -56,7 +56,7 @@ save( File(format"JLD", "VariousTypes.jld"), sigTable)
 
 results in the following file:
 
-- [VariousTypes.jld](../../resources/examples/fileIO/VariousTypes.jld).
+- [VariousTypes.jld](../resources/examples/fileIO/VariousTypes.jld).
 
 
 

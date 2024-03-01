@@ -31,7 +31,7 @@ results  in:
  phi         (100,)  Float64       Var
 ```
 
-![OneScalarSignal](../../resources/examples/plots/OneScalarSignal.png)
+![OneScalarSignal](../resources/examples/plots/OneScalarSignal.png)
 
 
 
@@ -61,7 +61,7 @@ results  in:
  phi   "rad"  (100,)  Float64       Var
 ```
 
-![OneScalarSignalWithUnit](../../resources/examples/plots/OneScalarSignalWithUnit.png)
+![OneScalarSignalWithUnit](../resources/examples/plots/OneScalarSignalWithUnit.png)
 
 
 ## OneVectorSignalWithUnit
@@ -90,7 +90,7 @@ results  in:
  r     "m"   (100,3)  Float64       Var
 ```
 
-![OneVectorSignalWithUnit](../../resources/examples/plots/OneVectorSignalWithUnit.png)
+![OneVectorSignalWithUnit](../resources/examples/plots/OneVectorSignalWithUnit.png)
 
 
 ## OneMatrixSignal
@@ -126,7 +126,7 @@ results  in:
  matrix        (10,2,3)  Float64       Var
 ```
 
-![OneMatrixSignal](../../resources/examples/plots/OneMatrixSignal.png)
+![OneMatrixSignal](../resources/examples/plots/OneMatrixSignal.png)
 
 
 ## OneMatrixSignalWithMatrixUnits
@@ -163,7 +163,7 @@ results  in:
  matrix  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (10,2,3)  Float64       Var
 ```
 
-![OneMatrixSignalWithMatrixUnits](../../resources/examples/plots/OneMatrixSignalWithMatrixUnits.png)
+![OneMatrixSignalWithMatrixUnits](../resources/examples/plots/OneMatrixSignalWithMatrixUnits.png)
 
 
 ## ConstantSignals
@@ -208,7 +208,7 @@ results  in:
  matrix3  ["m" "m/s" "m/s^2"; "rad" "rad/s" "rad/s^2"]  (2,3)  Float64       Par   alias="matrix1"
 ```
 
-![ConstantSignals](../../resources/examples/plots/ConstantSignals.png)
+![ConstantSignals](../resources/examples/plots/ConstantSignals.png)
 
 
 # MissingValues
@@ -262,7 +262,7 @@ results  in:
  sigD    "rad/s"  (153,)   Union{Missing,Float64}  Var   variability="clocked", info="Motor angular velocit…
 ```
 
-![MissingValues](../../resources/examples/plots/MissingValues.png)
+![MissingValues](../resources/examples/plots/MissingValues.png)
 
  
 # VariousTypes
@@ -313,5 +313,5 @@ results  in:
  attributes                                                    Par   info="This is a test signal table"
 ```
 
-![VariousTypes](../../resources/examples/plots/VariousTypes.png)
+![VariousTypes](../resources/examples/plots/VariousTypes.png)
 
