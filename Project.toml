@@ -1,7 +1,7 @@
 name = "SignalTables"
 uuid = "3201582d-3078-4276-ba5d-0a1254d79d7c"
 authors = ["Martin.Otter@dlr.de <Martin.Otter@dlr.de>"]
-version = "0.4.4"
+version = "0.4.5"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
@@ -13,11 +13,11 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
-DataFrames = "1, 0.22, 0.21, 0.20, 0.19"
-JSON = "0.21"
+DataFrames = "1"
+JSON = "1"
 OrderedCollections = "1"
 Pkg = "1"
 Tables = "1"
 Test = "1"
 Unitful = "1"
-julia = "1.7"
+julia = "1.10"
